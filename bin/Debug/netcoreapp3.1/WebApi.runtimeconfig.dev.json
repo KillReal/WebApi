@@ -1,8 +1,0 @@
-{
-  "runtimeOptions": {
-    "additionalProbingPaths": [
-      "C:\\Users\\rtimo\\.dotnet\\store\\|arch|\\|tfm|",
-      "C:\\Users\\rtimo\\.nuget\\packages"
-    ]
-  }
-}
