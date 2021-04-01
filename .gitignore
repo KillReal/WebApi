@@ -1,5 +1,7 @@
 WebApi/bin
 WebApi/.vs
+WebApi/obj
 AndroidApp/Calcul/bin
 AndroidApp/Calcul/.vs
+AndroidApp/Calcul/obj
 
