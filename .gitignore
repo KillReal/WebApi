@@ -1,2 +1,5 @@
-bin
-/.vs
+WebApi/bin
+WebApi/.vs
+AndroidApp/Calcul/bin
+AndroidApp/Calcul/.vs
+
