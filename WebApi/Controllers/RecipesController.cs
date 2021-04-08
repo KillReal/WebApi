@@ -22,7 +22,7 @@ namespace WebApi.Controllers
 
         public async Task<String> Index()
         {
-            return new Serialization<Recipe>().WriteList(_context.Recipe.ToList());
+            return Serialization<Recipe>.WriteList(await _context.Recipe.ToListAsync());
         }
     }
 }

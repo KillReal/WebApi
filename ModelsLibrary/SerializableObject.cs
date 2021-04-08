@@ -21,15 +21,15 @@ namespace ModelsLibrary
         public byte[] Image { get; set; }
     }
 
-    public class Serialization<T> where T : SerializableObject
+    public static class Serialization<T> where T : SerializableObject
     {
-        // Использование: List<Recipe> list = new Serialization<Recipe>().ReadList(bytes);
-        public List<T> ReadList(string bytes)
+        // Использование: List<Recipe> list = Serialization<Recipe>.ReadList(bytes);
+        public static List<T> ReadList(string bytes)
         {
             return JsonConvert.DeserializeObject<List<T>>(bytes);
         }
-        // Использование: string bytes = new Serialization<Recipe>().WriteList(List<Recipe>);
-        public string WriteList(List<T> recipes)
+        // Использование: string bytes = Serialization<Recipe>.WriteList(List<Recipe>);
+        public static string WriteList(List<T> recipes)
         {
             return JsonConvert.SerializeObject(recipes.ToArray());
         }
