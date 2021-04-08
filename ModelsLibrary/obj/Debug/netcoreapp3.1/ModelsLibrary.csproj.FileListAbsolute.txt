@@ -1,9 +1,0 @@
-C:\Users\rtimo\Desktop\WebApi\ModelsLibrary\bin\Debug\netcoreapp3.1\ModelsLibrary.deps.json
-C:\Users\rtimo\Desktop\WebApi\ModelsLibrary\bin\Debug\netcoreapp3.1\ModelsLibrary.dll
-C:\Users\rtimo\Desktop\WebApi\ModelsLibrary\bin\Debug\netcoreapp3.1\ModelsLibrary.pdb
-C:\Users\rtimo\Desktop\WebApi\ModelsLibrary\obj\Debug\netcoreapp3.1\ModelsLibrary.csprojAssemblyReference.cache
-C:\Users\rtimo\Desktop\WebApi\ModelsLibrary\obj\Debug\netcoreapp3.1\ModelsLibrary.AssemblyInfoInputs.cache
-C:\Users\rtimo\Desktop\WebApi\ModelsLibrary\obj\Debug\netcoreapp3.1\ModelsLibrary.AssemblyInfo.cs
-C:\Users\rtimo\Desktop\WebApi\ModelsLibrary\obj\Debug\netcoreapp3.1\ModelsLibrary.csproj.CoreCompileInputs.cache
-C:\Users\rtimo\Desktop\WebApi\ModelsLibrary\obj\Debug\netcoreapp3.1\ModelsLibrary.dll
-C:\Users\rtimo\Desktop\WebApi\ModelsLibrary\obj\Debug\netcoreapp3.1\ModelsLibrary.pdb
