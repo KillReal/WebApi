@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WebApi.Data;
-using WebApi.Models;
 using static System.Net.Mime.MediaTypeNames;
 using ModelsLibrary;
 
@@ -72,7 +71,7 @@ namespace WebApi.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Weight,Colories")]  Recipe recipe)
+        public async Task<IActionResult> Create([Bind("Id,Name,Weight,Colories")] Recipe recipe)
         {
             if (ModelState.IsValid)
             {

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ModelsLibrary
 {
-    public class SerializableObject
+    public abstract class SerializableObject
     {
 
     }
@@ -23,11 +23,12 @@ namespace ModelsLibrary
 
     public class Serialization<T> where T : SerializableObject
     {
+        // Использование: List<Recipe> list = new Serialization<Recipe>().ReadList(bytes);
         public List<T> ReadList(string bytes)
         {
             return JsonConvert.DeserializeObject<List<T>>(bytes);
         }
-
+        // Использование: string bytes = new Serialization<Recipe>().WriteList(List<Recipe>);
         public string WriteList(List<T> recipes)
         {
             return JsonConvert.SerializeObject(recipes.ToArray());
