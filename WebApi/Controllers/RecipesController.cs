@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApi.Data;
 using WebApi.Models;
+using ModelsLibrary;
 
 namespace WebApi.Controllers
 {
@@ -21,7 +22,7 @@ namespace WebApi.Controllers
 
         public async Task<String> Index()
         {
-            return JsonConvert.SerializeObject(await _context.Recipe.ToArrayAsync());
+            return new Serialization<Recipe>().WriteList(_context.Recipe.ToList());
         }
     }
 }

@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using WebApi.Data;
 using WebApi.Models;
 using static System.Net.Mime.MediaTypeNames;
+using ModelsLibrary;
 
 namespace WebApi.Controllers
 {

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using WebApi.Models;
+using ModelsLibrary;
 
 namespace WebApi.Data
 {
