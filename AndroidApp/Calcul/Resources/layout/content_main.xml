@@ -9,10 +9,18 @@
     <FrameLayout
         android:minWidth="25px"
         android:minHeight="25px"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:id="@+id/manage"
         android:background="#ff880e4f"
         android:visibility="visible">
     </FrameLayout>
+    <FrameLayout
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/main"
+        android:background="#ff2fa893" />
+
 </RelativeLayout>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Net;
@@ -15,6 +16,7 @@ using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
 using Java.Net;
+using ModelsLibrary;
 
 namespace Calcul
 {
@@ -29,9 +31,37 @@ namespace Calcul
     {
     DrawerLayout drawer;
     NavigationView navigationView;
-    FrameLayout setting; 
+    FrameLayout setting, home; 
     personal user = new personal();
     Android.Support.V7.Widget.Toolbar toolbar;
+        private void Home_Create()
+        {
+            Button back_setting = new Button(home.Context);
+            back_setting.LayoutParameters = new LinearLayout.LayoutParams(500, 500);
+            back_setting.Text = "♦";
+            back_setting.TranslationX = home.Width / 2;
+            back_setting.SetBackgroundColor(Android.Graphics.Color.Indigo);
+            back_setting.SetTextColor(Android.Graphics.Color.White);
+            ImageView imag = new ImageView(home.Context);
+            imag.LayoutParameters = new LinearLayout.LayoutParams(500, 500);
+            imag.TranslationY = 600;
+
+            home.AddView(back_setting);
+            back_setting.Click += (sender, e) =>
+            {
+                WebClient client = new WebClient();
+                Stream data = client.OpenRead("http://33c1320a71d1.ngrok.io/recipes");
+                StreamReader reader = new StreamReader(data);
+                string s = reader.ReadToEnd();
+                data.Close();
+                reader.Close();
+                List<Recipe> list = Serialization<Recipe>.ReadList(s);
+                imag.SetImageBitmap(Android.Graphics.BitmapFactory.DecodeByteArray(list[0].Image, 0, list[0].Image.Length));
+                home.RemoveView(imag);
+                home.AddView(imag);
+                    //FromStream(new MemoryStream(list[0].Image)));
+            };
+        }
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -46,6 +76,8 @@ namespace Calcul
             drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
             setting = FindViewById<FrameLayout>(Resource.Id.manage);
             setting.Visibility = ViewStates.Invisible;
+            home = FindViewById<FrameLayout>(Resource.Id.main);
+            Home_Create();
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, Resource.String.navigation_drawer_open, Resource.String.navigation_drawer_close);
             drawer.AddDrawerListener(toggle);
             toggle.SyncState();
