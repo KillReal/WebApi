@@ -91,9 +91,9 @@ namespace Calcul
         [Obsolete]
         private void Sett()
         {
-            const int N = 4;
+            const int N = 7;
             personal ui = new personal();
-            string[] text_sett_array = new string[N] { "Name:", "Age:", "Height:", "Weight:" };
+            string[] text_sett_array = new string[N] { "Имя:", "Возраст:", "Рост:", "Текущий вес:", "Цель:", "Тип похудения:" , "Физическая активность:" };
             EditText[] edit_sett = new EditText[N];
             TextView[] text_sett = new TextView[N];
             setting.RemoveAllViews();
@@ -116,13 +116,6 @@ namespace Calcul
                     home.Visibility = ViewStates.Visible;
                     navigationView.SetCheckedItem(Resource.Id.nav_home);
                 };
-                string[] data = new string[3] { "A", "B", "C" };
-                Spinner better = new Spinner(setting.Context);
-                better.LayoutParameters = new LinearLayout.LayoutParams(setting.Width / 2, 250); ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, Android.Resource.Layout.SimpleSpinnerItem, data);
-                adapter.SetDropDownViewResource(Android.Resource.Layout.SimpleSpinnerDropDownItem);
-                better.Adapter = adapter;
-                better.TranslationY = setting.Height / 2;
-                setting.AddView(better);
                 toolbar.NavigationClick += (s, ee) =>
                 {
                     if (setting.Visibility != ViewStates.Visible) drawer.OpenDrawer(GravityCompat.Start);
@@ -143,15 +136,15 @@ namespace Calcul
                 edit_sett[i].LayoutParameters = new LinearLayout.LayoutParams(setting.Width / 2, 100);
                 if (i % 2 == 0)
                 {
-                    text_sett[i].TranslationY = i * 200;
-                    if (i != 0) edit_sett[i].TranslationY = i * 250;
+                    text_sett[i].TranslationY = i * 100;
+                    if (i != 0) edit_sett[i].TranslationY = i * 150;
                     else edit_sett[i].TranslationY = 50;
                 }
                 else if (i != 0)
                 {
-                    text_sett[i].TranslationY = (i - 1) * 200;
+                    text_sett[i].TranslationY = (i - 1) * 100;
                     text_sett[i].TranslationX = setting.Width / 2;
-                    if (i != 1) edit_sett[i].TranslationY = (i - 1) * 250;
+                    if (i != 1) edit_sett[i].TranslationY = (i - 1) * 150;
                     else edit_sett[i].TranslationY = 50;
                     edit_sett[i].TranslationX = setting.Width / 2;
                 }
@@ -247,6 +240,50 @@ namespace Calcul
                         }
                     };
             }
+            string[] data_purpose = new string[3] { "Сбросить вес", "Поддержать вес", "Набрать вес" };
+            //string[] data_activite = new string[3] { "Минимум или отсутствие физ нагрузки", "Занятия 3 - 5 раз в неделю",
+            //   "Интенсивная нагрузка каждый день" };
+            List < string[] > data = new List<string[]>(); 
+            string[] item = new string[3] { "Поддержать вес", "Сбросить вес", "Набрать вес" };
+            data.Add(item);
+            item = new string[3] { "Медленное", "Нормальное", "Быстрое" };
+            data.Add(item);
+            item = new string[5] { "Минимум или отсутствие физической нагрузки",
+                "Занятие фитнесом 3 - 5 раз в неделю",
+                "Интенсивная тренировка 5 раз в неделю", 
+                "Занятия фитнесом каждый день", 
+                "Ежедневная интенсивная нагрузка"};
+            data.Add(item);
+            Spinner[] sp = new Spinner[3];
+            for (int i = 0; i < 3; i++)
+            {
+                sp[i] = new Spinner(setting.Context);
+                if (i != 2) sp[i].LayoutParameters = new LinearLayout.LayoutParams(setting.Width / 2, 250);
+                else sp[i].LayoutParameters = new LinearLayout.LayoutParams(setting.Width, 250);
+                if (i != 2) sp[i].TranslationY = 425;
+                else sp[i].TranslationY = 625;
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, Android.Resource.Layout.SimpleSpinnerItem, data[i]);
+                adapter.SetDropDownViewResource(Android.Resource.Layout.SimpleSpinnerDropDownItem);
+                sp[i].Adapter = adapter;
+                setting.AddView(sp[i]);
+                setting.RemoveView(edit_sett[N - 1 - i]);
+            }
+            text_sett[N - 2].Visibility = ViewStates.Invisible;
+            sp[1].TranslationX = setting.Width / 2;
+            sp[1].Visibility = ViewStates.Invisible;
+            sp[0].ItemSelected += (s_, e_) =>
+            {
+                if (sp[0].SelectedItemId == 1)
+                {
+                    text_sett[N - 2].Visibility = ViewStates.Visible;
+                    sp[1].Visibility = ViewStates.Visible;
+                }
+                else
+                {
+                    text_sett[N - 2].Visibility = ViewStates.Invisible;
+                    sp[1].Visibility = ViewStates.Invisible;
+                }
+            };
             edit_sett[0].Text = user.name;
             if (user.age != 0) edit_sett[1].Text = user.age.ToString();
             if (user.height != 0) edit_sett[2].Text = user.height.ToString();
