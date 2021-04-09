@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Net;
-using System.Runtime.Remoting.Contexts;
-using Android;
 using Android.App;
-using Android.Content;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.Design.Widget;
@@ -15,7 +10,6 @@ using Android.Support.V4.Widget;
 using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
-using Java.Net;
 using ModelsLibrary;
 
 namespace Calcul
@@ -24,7 +18,8 @@ namespace Calcul
     {
         public string name = "";
         public int age = 0;
-        public float heigt = 0;
+        public float height = 0;
+        public float weight = 0;
     }
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true)]
     public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
@@ -33,6 +28,7 @@ namespace Calcul
     NavigationView navigationView;
     FrameLayout setting, home; 
     personal user = new personal();
+        int idd = 0;
     Android.Support.V7.Widget.Toolbar toolbar;
         private void Home_Create()
         {
@@ -42,24 +38,29 @@ namespace Calcul
             back_setting.TranslationX = home.Width / 2;
             back_setting.SetBackgroundColor(Android.Graphics.Color.Indigo);
             back_setting.SetTextColor(Android.Graphics.Color.White);
+
             ImageView imag = new ImageView(home.Context);
             imag.LayoutParameters = new LinearLayout.LayoutParams(500, 500);
             imag.TranslationY = 600;
 
+            TextView tx = new TextView(home.Context);
+            tx.LayoutParameters = new LinearLayout.LayoutParams(500, 500);
+            tx.TranslationX = 600;
+
+            home.RemoveView(tx);
+            home.AddView(tx);
+            home.RemoveView(back_setting);
             home.AddView(back_setting);
+            home.RemoveView(imag);
+            home.AddView(imag);
             back_setting.Click += (sender, e) =>
             {
+
                 WebClient client = new WebClient();
-                Stream data = client.OpenRead("http://33c1320a71d1.ngrok.io/recipes");
-                StreamReader reader = new StreamReader(data);
-                string s = reader.ReadToEnd();
-                data.Close();
-                reader.Close();
+                string s = client.DownloadString("http://94353453b761.ngrok.io/recipes");
                 List<Recipe> list = Serialization<Recipe>.ReadList(s);
                 imag.SetImageBitmap(Android.Graphics.BitmapFactory.DecodeByteArray(list[0].Image, 0, list[0].Image.Length));
-                home.RemoveView(imag);
-                home.AddView(imag);
-                    //FromStream(new MemoryStream(list[0].Image)));
+                tx.Text = list[0].Name + '\n' + list[0].Colories.ToString() + '\n' + list[0].Weight.ToString();
             };
         }
         protected override void OnCreate(Bundle savedInstanceState)
@@ -84,14 +85,15 @@ namespace Calcul
 
             navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
             navigationView.SetNavigationItemSelectedListener(this);
+            navigationView.SetCheckedItem(Resource.Id.nav_home);
         }
 
         [Obsolete]
         private void Sett()
         {
-            const int N = 3;
+            const int N = 4;
             personal ui = new personal();
-            string[] text_sett_array = new string[N] { "Name:", "Age:", "Heaight:" };
+            string[] text_sett_array = new string[N] { "Name:", "Age:", "Height:", "Weight:" };
             EditText[] edit_sett = new EditText[N];
             TextView[] text_sett = new TextView[N];
             setting.RemoveAllViews();
@@ -109,15 +111,27 @@ namespace Calcul
                     setting.Visibility = ViewStates.Invisible;
                     user.name = edit_sett[0].Text;
                     user.age = ui.age;
-                    user.heigt = ui.heigt;
-                    navigationView.Visibility = ViewStates.Visible;
+                    user.height = ui.height;
+                    user.weight = ui.weight;
+                    home.Visibility = ViewStates.Visible;
+                    navigationView.SetCheckedItem(Resource.Id.nav_home);
                 };
+                string[] data = new string[3] { "A", "B", "C" };
+                Spinner better = new Spinner(setting.Context);
+                better.LayoutParameters = new LinearLayout.LayoutParams(setting.Width / 2, 250); ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, Android.Resource.Layout.SimpleSpinnerItem, data);
+                adapter.SetDropDownViewResource(Android.Resource.Layout.SimpleSpinnerDropDownItem);
+                better.Adapter = adapter;
+                better.TranslationY = setting.Height / 2;
+                setting.AddView(better);
                 toolbar.NavigationClick += (s, ee) =>
                 {
-                    if (setting.Visibility == ViewStates.Visible)
-                        navigationView.Visibility = ViewStates.Invisible;
+                    if (setting.Visibility != ViewStates.Visible) drawer.OpenDrawer(GravityCompat.Start);
                     else
-                        navigationView.Visibility = ViewStates.Visible;
+                    {
+                        View view = (View)s;
+                        Snackbar.Make(view, "Click ♦)))", Snackbar.LengthLong)
+                            .SetAction("Action", (Android.Views.View.IOnClickListener)null).Show();
+                    }
                 };
             }
             for (int i = 0; i < N; i++)
@@ -126,21 +140,21 @@ namespace Calcul
                 text_sett[i].LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent);
 
                 edit_sett[i] = new EditText(setting.Context);
-                if (i != 0) edit_sett[i].LayoutParameters = new LinearLayout.LayoutParams(setting.Width / 2, 100);
-                else edit_sett[i].LayoutParameters = new LinearLayout.LayoutParams(setting.Width, 100);
-                if (i % 2 != 0)
+                edit_sett[i].LayoutParameters = new LinearLayout.LayoutParams(setting.Width / 2, 100);
+                if (i % 2 == 0)
                 {
                     text_sett[i].TranslationY = i * 200;
-                    edit_sett[i].TranslationY = i * 250;
+                    if (i != 0) edit_sett[i].TranslationY = i * 250;
+                    else edit_sett[i].TranslationY = 50;
                 }
                 else if (i != 0)
                 {
                     text_sett[i].TranslationY = (i - 1) * 200;
                     text_sett[i].TranslationX = setting.Width / 2;
-                    edit_sett[i].TranslationY = (i - 1) * 250;
+                    if (i != 1) edit_sett[i].TranslationY = (i - 1) * 250;
+                    else edit_sett[i].TranslationY = 50;
                     edit_sett[i].TranslationX = setting.Width / 2;
                 }
-                else edit_sett[i].TranslationY = 50;
                 edit_sett[i].TextSize = 15;
                 text_sett[i].TextSize = 17;
                 text_sett[i].Text = text_sett_array[i];
@@ -192,7 +206,7 @@ namespace Calcul
                             sett_and.AddView(sv_age);
                             sett_and.Visibility = ViewStates.Visible;
                         }
-                        if (sender_ == edit_sett[2])
+                        if (sender_ == edit_sett[2] || sender_ == edit_sett[3])
                         {
                             sett_and.RemoveAllViews();
                             sett_and.Visibility = ViewStates.Invisible;
@@ -219,9 +233,10 @@ namespace Calcul
                             sv_age.Text = "♦";
                             sv_age.Click += (s, ee) =>
                             {
-                                edit_sett[2].Text = num_h.Value.ToString() + "," + num_l.Value.ToString();
+                                if (sender_ == edit_sett[2]) edit_sett[2].Text = num_h.Value.ToString() + "," + num_l.Value.ToString();
+                                if (sender_ == edit_sett[3]) edit_sett[3].Text = num_h.Value.ToString() + "," + num_l.Value.ToString();
                                 sett_and.Visibility = ViewStates.Invisible;
-                                ui.heigt = num_h.Value + num_l.Value / 10;
+                                ui.height = num_h.Value + num_l.Value / 10;
                             };
 
                             sett_and.AddView(tx);
@@ -234,7 +249,7 @@ namespace Calcul
             }
             edit_sett[0].Text = user.name;
             if (user.age != 0) edit_sett[1].Text = user.age.ToString();
-            if (user.heigt != 0) edit_sett[2].Text = user.heigt.ToString();
+            if (user.height != 0) edit_sett[2].Text = user.height.ToString();
         }
             
 
@@ -244,6 +259,7 @@ namespace Calcul
             if(drawer.IsDrawerOpen(GravityCompat.Start))
             {
                 drawer.CloseDrawer(GravityCompat.Start);
+                home.Visibility = ViewStates.Visible;
             }
             else
             {
@@ -278,12 +294,14 @@ namespace Calcul
         public bool OnNavigationItemSelected(IMenuItem item)
         {
             DrawerLayout drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
-            drawer.CloseDrawer(GravityCompat.Start); 
+            drawer.CloseDrawer(GravityCompat.Start);
             setting.Visibility = ViewStates.Invisible;
+            home.Visibility = ViewStates.Invisible;
             setting.RemoveAllViews();
             switch (item.ItemId)
             {
-                case Resource.Id.nav_camera:
+                case Resource.Id.nav_home:
+                    home.Visibility = ViewStates.Visible;
                     return true;
                 case Resource.Id.nav_gallery:
                     return true;

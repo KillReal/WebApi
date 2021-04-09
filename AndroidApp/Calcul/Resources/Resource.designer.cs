@@ -3568,10 +3568,10 @@ namespace Calcul
 			public const int navigation_header_container = 2131230833;
 			
 			// aapt resource value: 0x7F08006A
-			public const int nav_camera = 2131230826;
+			public const int nav_gallery = 2131230826;
 			
 			// aapt resource value: 0x7F08006B
-			public const int nav_gallery = 2131230827;
+			public const int nav_home = 2131230827;
 			
 			// aapt resource value: 0x7F08006C
 			public const int nav_manage = 2131230828;
