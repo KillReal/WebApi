@@ -16,7 +16,9 @@
       }
     },
     "WebApi": {
-      "commandName": "Project",
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\rtimo\\Desktop\\WebApi\\WebApi\\bin\\Debug\\netcoreapp3.1\\WebApi.exe",
+      "workingDirectory": "C:\\Users\\rtimo\\Desktop\\WebApi\\WebApi",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

@@ -106,6 +106,10 @@ namespace WebApi
                     name: "admin",
                     pattern: "admin/{*recipes}",
                 defaults: new { controller = "AdminRecipes", action = "Index" });
+                endpoints.MapControllerRoute(
+                    name: "admin",
+                    pattern: "admin/{*schedule}",
+                defaults: new { controller = "AdminSchedule", action = "Index" });
                 endpoints.MapRazorPages();
             });
         }

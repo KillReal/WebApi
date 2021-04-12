@@ -13,25 +13,103 @@ a {
 }
 
 .btn-primary {
-  color: #1b6ec2;
-  background-color: rgba(73, 196, 73, 0.47);
-  border-color: #1861ac;
-  margin-top: 30px;
-  min-width: 200px;
+    color: black;
+    background-color: rgb(45 127 255 / 64%);
+    border-color: #1861ac;
+    min-width: 120px;
+    transition: 0.6s;
 }
 
-.table td, .table th {
+::-webkit-file-upload-button {
+    background: #f1f1f1;
+    color: black;
+    padding: 0.5em;
+}
+
+.btn-addition {
+    color: black;
+    background-color: rgb(232 179 52 / 49%);
+    border-color: #1861ac;
+    font-size: small;
+    transition: 0.6s;
+}
+
+.btn-danger {
+    min-width: 120px;
+}
+
+.table td {
     min-width: 100px;
+    -webkit-animation: fadeEffect 1s;
+    animation: fadeEffect 1s;
+}
+
+.row {
+    -webkit-animation: fadeEffect 1s;
+    animation: fadeEffect 1s;
+}
+
+.table th {
+    min-width: 100px;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
 }
 
 .form-group {
-  min-width: 300px;
+    min-width: 300px;
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
   color: #fff;
   background-color: #1b6ec2;
   border-color: #1861ac;
+}
+
+/* Style the tab */
+.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.6s;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+    background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    -webkit-animation: fadeEffect 1s;
+    animation: fadeEffect 1s;
+}
+
+@keyframes fadeEffect {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 /* Sticky footer styles

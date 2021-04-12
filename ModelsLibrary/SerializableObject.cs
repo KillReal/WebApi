@@ -21,6 +21,14 @@ namespace ModelsLibrary
         public byte[] Image { get; set; }
     }
 
+    public class DayMenu : SerializableObject
+    { 
+        [Key]
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public List<Recipe> recipes { get; set; }
+    }
+
     public static class Serialization<T> where T : SerializableObject
     {
         // Использование: List<Recipe> list = Serialization<Recipe>.ReadList(bytes);

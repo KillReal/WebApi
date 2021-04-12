@@ -1,0 +1,58 @@
+﻿@model IEnumerable<ModelsLibrary.Recipe>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Schedule</h1>
+
+<p></p>
+<!-- Tab links -->
+<div class="tab">
+    <button class="tablinks" onclick="openCity(event, 'Monday')" id="defaultOpen">Monday</button>
+    <button class="tablinks" onclick="openCity(event, 'Tuesday')">Tuesday</button>
+    <button class="tablinks" onclick="openCity(event, 'Wednesday')">Wednesday</button>
+    <button class="tablinks" onclick="openCity(event, 'Thursday')">Thursday </button>
+    <button class="tablinks" onclick="openCity(event, 'Friday')">Friday</button>
+    <button class="tablinks" onclick="openCity(event, 'Saturday')">Saturday</button>
+    <button class="tablinks" onclick="openCity(event, 'Sunday')">Sunday</button>
+</div>
+
+<p></p>
+
+    <!-- Tab content -->
+<div id="Monday" class="tabcontent">
+    <h3>Monday</h3>
+    <p>Monday is &#x1F62D</p>
+</div>
+
+<div id="Tuesday" class="tabcontent">
+    <h3>Tuesday</h3>
+    <p>Tuesday is &#x1F62A</p>
+</div>
+
+<div id="Wednesday" class="tabcontent">
+    <h3>Wednesday</h3>
+    <p>Wednesday is &#x1F629</p>
+</div>
+
+<div id="Thursday" class="tabcontent">
+    <h3>Thursday</h3>
+    <p>Thursday is &#x1F626</p>
+</div>
+
+<div id="Friday" class="tabcontent">
+    <h3>Friday</h3>
+    <p>Friday is &#x1F62E</p>
+</div>
+
+<div id="Saturday" class="tabcontent">
+    <h3>Saturday</h3>
+    <p>Saturday is &#x1F600</p>
+</div>
+
+<div id="Sunday" class="tabcontent">
+    <h3>Sunday</h3>
+    <p>Sunday is &#x1F60A</p>
+</div>
