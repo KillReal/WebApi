@@ -1,4 +1,4 @@
-﻿@model ModelsLibrary.Recipe
+﻿@model WebApi.Models.Recipe
 
 @{
     ViewData["Title"] = "Details";
@@ -30,6 +30,30 @@
             @Html.DisplayFor(model => model.Colories)
         </dd>
         <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Proteins)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Proteins)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Greases)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Greases)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Carbohydrates)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Carbohydrates)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.HaveMeat)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.HaveMeat)
+        </dd>
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Image)
         </dt>
         <dd class="col-sm-10">
@@ -38,6 +62,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a input type="button" class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+    <a input type="button" class="btn btn-primary" asp-action="index">Back</a>
 </div>

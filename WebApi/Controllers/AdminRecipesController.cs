@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WebApi.Data;
 using static System.Net.Mime.MediaTypeNames;
-using ModelsLibrary;
+using WebApi.Models;
 
 namespace WebApi.Controllers
 {
@@ -71,7 +71,7 @@ namespace WebApi.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Weight,Colories")] Recipe recipe)
+        public async Task<IActionResult> Create([Bind("Id,Name,Weight,Colories,Proteins,Greases,Carbohydrates,HaveMeat")] Recipe recipe)
         {
             if (ModelState.IsValid)
             {
@@ -121,7 +121,7 @@ namespace WebApi.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("Id,Name,Weight,Colories")] Recipe recipe)
+        public async Task<IActionResult> Edit(long id, [Bind("Id,Name,Weight,Colories,Proteins,Greases,Carbohydrates,HaveMeat")] Recipe recipe)
         {
             if (id != recipe.Id)
             {

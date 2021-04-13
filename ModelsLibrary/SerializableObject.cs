@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace ModelsLibrary
+namespace ModelLibrary
 {
     public abstract class SerializableObject
     {
@@ -18,7 +18,19 @@ namespace ModelsLibrary
         public int Weight { get; set; }
         [Range(1, 5000, ErrorMessage = "kek")]
         public int Colories { get; set; }
+        public int Proteins { get; set; }
+        public int Greases { get; set; }
+        public int Carbohydrates { get; set; }
+        public bool HaveMeat { get; set; }
         public byte[] Image { get; set; }
+    }
+
+    public class DayMenu : SerializableObject
+    { 
+        [Key]
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public List<Recipe> recipes { get; set; }
     }
 
     public static class Serialization<T> where T : SerializableObject

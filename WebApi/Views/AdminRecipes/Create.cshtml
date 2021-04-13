@@ -1,4 +1,4 @@
-﻿@model ModelsLibrary.Recipe
+﻿@model WebApi.Models.Recipe
 
 @{
     ViewData["Title"] = "Create";
@@ -29,19 +29,36 @@
                 <span asp-validation-for="Colories" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Proteins" class="control-label"></label>
+                <input asp-for="Proteins" class="form-control" />
+                <span asp-validation-for="Proteins" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Greases" class="control-label"></label>
+                <input asp-for="Greases" class="form-control" />
+                <span asp-validation-for="Greases" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Carbohydrates" class="control-label"></label>
+                <input asp-for="Carbohydrates" class="form-control" />
+                <span asp-validation-for="Carbohydrates" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HaveMeat" class="control-label"></label>
+                <input asp-for="HaveMeat" class="form-control" />
+                <span asp-validation-for="HaveMeat" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Image" class="control-label"></label>
                 <input asp-for="Image" type="file" Class="form-control-file" />
             </div>
 
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
+                <a input type="button" class="btn btn-primary" asp-action="index">Back</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
