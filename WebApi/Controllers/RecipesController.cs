@@ -40,7 +40,7 @@ namespace WebApi.Controllers
                     Name = item.Name,
                     Weight = item.Weight,
                     Colories = item.Colories,
-                    Image = item.Image,
+                    Image = null,
                     Proteins = item.Proteins,
                     Greases = item.Greases,
                     Carbohydrates = item.Carbohydrates,
