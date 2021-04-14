@@ -10,7 +10,7 @@ using WebApi.Data;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    [Migration("20210413120001_init")]
+    [Migration("20210413193731_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -97,7 +97,7 @@ namespace WebApi.Migrations
             modelBuilder.Entity("WebApi.Models.DayMenu", b =>
                 {
                     b.HasOne("WebApi.Models.RecipeList", "RecipeList")
-                        .WithMany("DayMenu")
+                        .WithMany("DayMenus")
                         .HasForeignKey("RecipeListId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -108,7 +108,7 @@ namespace WebApi.Migrations
             modelBuilder.Entity("WebApi.Models.Recipe", b =>
                 {
                     b.HasOne("WebApi.Models.RecipeList", "RecipeList")
-                        .WithMany("Recipe")
+                        .WithMany("Recipes")
                         .HasForeignKey("RecipeListId");
 
                     b.Navigation("RecipeList");
@@ -116,9 +116,9 @@ namespace WebApi.Migrations
 
             modelBuilder.Entity("WebApi.Models.RecipeList", b =>
                 {
-                    b.Navigation("DayMenu");
+                    b.Navigation("DayMenus");
 
-                    b.Navigation("Recipe");
+                    b.Navigation("Recipes");
                 });
 #pragma warning restore 612, 618
         }

@@ -3,46 +3,46 @@
 @{
 }
 
-<h1>Schedule</h1>
+<h1>Расписание</h1>
 
 <p></p>
 <!-- Tab links -->
 <div class="tab">
-    <button class="tablinks" onclick="openCity(event, 'Monday')" id="defaultOpen">Monday</button>
-    <button class="tablinks" onclick="openCity(event, 'Tuesday')">Tuesday</button>
-    <button class="tablinks" onclick="openCity(event, 'Wednesday')">Wednesday</button>
-    <button class="tablinks" onclick="openCity(event, 'Thursday')">Thursday </button>
-    <button class="tablinks" onclick="openCity(event, 'Friday')">Friday</button>
-    <button class="tablinks" onclick="openCity(event, 'Saturday')">Saturday</button>
-    <button class="tablinks" onclick="openCity(event, 'Sunday')">Sunday</button>
+    <button class="tablinks" onclick="openCity(event, '@Model.Input.DayMenuName[0]')" id="defaultOpen">@Html.Label("", Model.Input.DayMenuName[0])</button>
+    @for (int i = 1; i < Model.Input.DayMenuName.Count(); i++)
+    {
+<button class="tablinks" onclick="openCity(event, '@Model.Input.DayMenuName[i]')">@Html.Label("", Model.Input.DayMenuName[i])</button>
+    }
 </div>
 
 <p></p>
 
 <!-- Tab content -->
-<div id="Monday" class="tabcontent">
-    <h3>Monday</h3>
-    <p>Monday is &#x1F62D</p>
+@for (int i = 0; i < Model.Input.DayMenuName.Count(); i++)
+{
+<div id="@Model.Input.DayMenuName[i]" class="tabcontent">
+    <label class="label-tab-spacer"></label>
+    <div class="header">@Html.Label("", Model.Input.DayMenuName[i])</div>
     <table class="table">
         <thead>
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.TuesdayRecipes.First().Name)
+                    @Html.DisplayNameFor(model => model.Input.Recipes[0].First().Name)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.TuesdayRecipes.First().Weight)
+                    @Html.DisplayNameFor(model => model.Input.Recipes[0].First().Weight)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.TuesdayRecipes.First().Colories)
+                    @Html.DisplayNameFor(model => model.Input.Recipes[0].First().Colories)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.TuesdayRecipes.First().Image)
+                    @Html.DisplayNameFor(model => model.Input.Recipes[0].First().Image)
                 </th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.TuesdayRecipes)
+            @foreach (var item in Model.Input.Recipes[i])
             {
                 <tr>
                     <td>
@@ -58,42 +58,13 @@
                         <img src="@Url.Action("getImg", "AdminRecipes", new { id = item.Id })" alt="Recipe image" height="150" />
                     </td>
                     <td>
-                        <a input type="button" class="btn btn-addition" asp-controller="AdminRecipes" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                        <a input type="button" class="btn btn-addition" asp-controller="AdminRecipes" asp-action="Details" asp-route-id="@item.Id">Details</a>
-                        <a input type="button" class="btn btn-addition" asp-controller="AdminRecipes" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        <a input type="button" class="btn btn-addition" asp-area="Identity" asp-page="/RecipeModify/Edit" asp-route-id="@item.Id" asp-route-returnUrl="/Schedule/Index">Изменить</a>
+                        <a input type="button" class="btn btn-addition" asp-controller="AdminRecipes" asp-action="Details" asp-route-id="@item.Id">Подробно</a>
+                        <a input type="button" class="btn btn-addition" asp-area="Identity" asp-page="/RecipeModify/Delete" asp-route-id="@item.Id">Удалить</a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
-
-<div id="Tuesday" class="tabcontent">
-    <h3>Tuesday</h3>
-    <p>Tuesday is &#x1F62A</p>
-</div>
-
-<div id="Wednesday" class="tabcontent">
-    <h3>Wednesday</h3>
-    <p>Wednesday is &#x1F629</p>
-</div>
-
-<div id="Thursday" class="tabcontent">
-    <h3>Thursday</h3>
-    <p>Thursday is &#x1F626</p>
-</div>
-
-<div id="Friday" class="tabcontent">
-    <h3>Friday</h3>
-    <p>Friday is &#x1F62E</p>
-</div>
-
-<div id="Saturday" class="tabcontent">
-    <h3>Saturday</h3>
-    <p>Saturday is &#x1F600</p>
-</div>
-
-<div id="Sunday" class="tabcontent">
-    <h3>Sunday</h3>
-    <p>Sunday is &#x1F60A</p>
-</div>
+}

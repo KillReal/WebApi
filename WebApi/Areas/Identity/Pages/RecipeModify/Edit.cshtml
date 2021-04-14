@@ -1,0 +1,97 @@
+﻿@page
+@model WebApi.Areas.Identity.Pages.RecipeModify.EditModel
+@{
+}
+
+<h1>Редактировать</h1>
+
+<form enctype="multipart/form-data" id="edit-recipe-form" method="post">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="tab-title-container">
+                <h4>Рецепт</h4>
+            </div>
+            <hr />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Input.Recipe.Id" />
+            <div class="form-group">
+                <label asp-for="Input.Recipe.Name" class="control-label"></label>
+                <input asp-for="Input.Recipe.Name" class="form-control" />
+                <span asp-validation-for="Input.Recipe.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Recipe.Weight" class="control-label"></label>
+                <input asp-for="Input.Recipe.Weight" class="form-control" />
+                <span asp-validation-for="Input.Recipe.Weight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Recipe.Colories" class="control-label"></label>
+                <input asp-for="Input.Recipe.Colories" class="form-control" />
+                <span asp-validation-for="Input.Recipe.Colories" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Recipe.Proteins" class="control-label"></label>
+                <input asp-for="Input.Recipe.Proteins" class="form-control" />
+                <span asp-validation-for="Input.Recipe.Proteins" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Recipe.Greases" class="control-label"></label>
+                <input asp-for="Input.Recipe.Greases" class="form-control" />
+                <span asp-validation-for="Input.Recipe.Greases" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Recipe.Carbohydrates" class="control-label"></label>
+                <input asp-for="Input.Recipe.Carbohydrates" class="form-control" />
+                <span asp-validation-for="Input.Recipe.Carbohydrates" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Recipe.HaveMeat" class="control-label"></label>
+                <div class="checkbox">
+                    <input class="custom-checkbox" type="checkbox" id="checkboxin" asp-for="Input.Recipe.HaveMeat">
+                    <label for="checkboxin"></label>
+                    <span asp-validation-for="Input.Recipe.HaveMeat" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Recipe.Image" class="control-label"></label><p>
+                    <img src="@Url.Action("getImg", "AdminRecipes", new { id = Model.Input.Recipe.Id })" alt="Recipe image" height="150" />
+                <p>
+                    <input asp-for="Input.Recipe.Image" type="file" Class="form-control-file" />
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="tab-title-container">
+                <h4>Расписание использования</h4>
+            </div>
+            <hr />
+            <label class="label-tab-spacer"></label>
+            @for (int i = 0; i < Model.Input.RecipeInclude.Count(); i++)
+            {
+                <div class="checkbox">
+                    <input class="custom-checkbox" type="checkbox" asp-for="Input.RecipeInclude[i]">
+                    @Html.Label("", Model.Input.DayMenuName[i])
+                    <span asp-validation-for="Input.RecipeInclude[i]" class="text-danger"></span>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                @if (Model.ReturnUrl == null)
+                {
+                    <a input type="button" class="btn btn-primary" asp-controller="AdminRecipes" asp-action="Index">Назад</a>
+                }
+                else
+                {
+                    <a input type="button" class="btn btn-primary" asp-area="Identity" asp-page="@Model.ReturnUrl">Назад</a>
+                }
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }

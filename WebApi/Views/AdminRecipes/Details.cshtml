@@ -5,10 +5,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<h1>Подробно</h1>
 
 <div>
-    <h4>Recipe</h4>
+    <h4>Рецепт</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -65,6 +65,6 @@
     </dl>
 </div>
 <div>
-    <a input type="button" class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
-    <a input type="button" class="btn btn-primary" asp-action="index">Back</a>
+    <a input type="button" class="btn btn-primary" asp-action="index">Назад</a>
+    <a input type="button" class="btn btn-primary" asp-area="Identity" asp-page="/RecipeModify/Edit" asp-route-id="@Model.Id">Изменить</a>
 </div>

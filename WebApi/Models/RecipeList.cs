@@ -11,8 +11,7 @@ namespace WebApi.Models
     {
         [Key]
         public long Id { get; set; }
-
-        public List<Recipe> Recipe { get; set; }
-        public List<DayMenu> DayMenu { get; set; }
+        public Recipe Recipe { get; set; }
+        public DayMenu DayMenu { get; set; }
     }
 }

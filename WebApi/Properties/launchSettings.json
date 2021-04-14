@@ -16,14 +16,20 @@
       }
     },
     "WebApi": {
-      "commandName": "Executable",
-      "executablePath": "C:\\Users\\rtimo\\Desktop\\WebApi\\WebApi\\bin\\Debug\\netcoreapp3.1\\WebApi.exe",
-      "workingDirectory": "C:\\Users\\rtimo\\Desktop\\WebApi\\WebApi\\",
+      "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:5000"
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
+    },
+    "WebApi Staging": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Staging"
+      },
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
     }
   }
 }
