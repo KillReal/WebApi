@@ -11,7 +11,7 @@
     <button class="tablinks" onclick="openCity(event, '@Model.Input.DayMenuName[0]')" id="defaultOpen">@Html.Label("", Model.Input.DayMenuName[0])</button>
     @for (int i = 1; i < Model.Input.DayMenuName.Count(); i++)
     {
-<button class="tablinks" onclick="openCity(event, '@Model.Input.DayMenuName[i]')">@Html.Label("", Model.Input.DayMenuName[i])</button>
+        <button class="tablinks" onclick="openCity(event, '@Model.Input.DayMenuName[i]')">@Html.Label("", Model.Input.DayMenuName[i])</button>
     }
 </div>
 
@@ -58,9 +58,9 @@
                         <img src="@Url.Action("getImg", "AdminRecipes", new { id = item.Id })" alt="Recipe image" height="150" />
                     </td>
                     <td>
-                        <a input type="button" class="btn btn-addition" asp-area="Identity" asp-page="/RecipeModify/Edit" asp-route-id="@item.Id" asp-route-returnUrl="/Schedule/Index">Изменить</a>
-                        <a input type="button" class="btn btn-addition" asp-controller="AdminRecipes" asp-action="Details" asp-route-id="@item.Id">Подробно</a>
-                        <a input type="button" class="btn btn-addition" asp-area="Identity" asp-page="/RecipeModify/Delete" asp-route-id="@item.Id">Удалить</a>
+                        <div><a input type="button" class="btn btn-addition" asp-area="Identity" asp-page="/RecipeModify/Edit" asp-route-id="@item.Id" asp-route-returnUrl="/Schedule/Index">Изменить</a></div>
+                        <div><a input type="button" class="btn btn-addition" asp-controller="AdminRecipes" asp-action="Details" asp-route-id="@item.Id">Подробно</a></div>
+                        <div><a input type="button" class="btn btn-addition" asp-area="Identity" asp-page="/RecipeModify/Delete" asp-route-id="@item.Id">Удалить</a></div>
                     </td>
                 </tr>
             }

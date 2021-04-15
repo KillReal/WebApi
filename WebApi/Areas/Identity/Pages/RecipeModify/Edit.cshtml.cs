@@ -64,12 +64,12 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
                                 bytes = binaryReader.ReadBytes((int)Image.Length);
                             }
                             Input.Recipe.Image = Tools.CorrectResolution(bytes);
-                            _context.Update(Input.Recipe);
                         }
                     }
                 }
                 else
                     Input.Recipe.Image = (await _context.Recipe.AsNoTracking().FirstAsync(m => m.Id == Input.Recipe.Id)).Image;
+                _context.Update(Input.Recipe);
 
                 var DayMenu = await _context.DayMenu.Include(x => x.RecipeList).ToListAsync();
                 Input.Recipe = _context.Recipe.Include(x => x.RecipeList).First(x => x.Id == Input.Recipe.Id);

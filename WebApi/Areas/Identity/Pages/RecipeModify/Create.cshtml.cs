@@ -37,7 +37,7 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
 
         public async Task<IActionResult> OnGet()
         {
-            var DayMenu = await _context.DayMenu.ToListAsync();
+            var DayMenu = await _context.DayMenu.OrderBy(x => x.Id).ToListAsync();
 
             for (int i = 0; i < DayMenu.Count(); i++)
             {
@@ -77,17 +77,19 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
                 }
                 else
                     Input.Recipe.Image = System.IO.File.ReadAllBytes("wwwroot/pics/noimg.jpg");
-
+                _context.Add(Input.Recipe);
+                await _context.SaveChangesAsync();
+                Input.Recipe = _context.Recipe.First(x => x.Name == Input.Recipe.Name);
                 var DayMenu = await _context.DayMenu.Include(x => x.RecipeList).ToListAsync();
+                for (int i = 0; i < DayMenu.Count(); i++)
+                    Input.DayMenuName.Add(DayMenu[i].Name);
                 for (int i = 0; i < Input.DayMenuName.Count(); i++)
                 {
                     if (Input.RecipeInclude[i])
-                    {
-                        DayMenu[i].RecipeList.Add(new RecipeList { DayMenu = DayMenu[i], Recipe = Input.Recipe });
-                        _context.Add(DayMenu[i]);
-                    }
+                    {                   
+                        _context.Add(new RecipeList { DayMenu = DayMenu[i], Recipe = Input.Recipe });   
+                    }   
                 }
-                _context.Add(Input.Recipe);
                 _context.UpdateRange(DayMenu);
                 await _context.SaveChangesAsync();
             }

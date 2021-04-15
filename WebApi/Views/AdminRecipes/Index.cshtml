@@ -44,9 +44,9 @@
                 <img src="@Url.Action("getImg", "AdminRecipes", new { id = item.Id })" alt="Recipe image" height="150"/>
             </td>
             <td>
-                <a input type="button" class="btn btn-addition" asp-area="Identity" asp-page="/RecipeModify/Edit" asp-route-id="@item.Id">Изменить</a>
-                <a input type="button" class="btn btn-addition" asp-action="Details" asp-route-id="@item.Id">Подробно</a>
-                <a input type="button" class="btn btn-addition" asp-area="Identity" asp-page="/RecipeModify/Delete" asp-route-id="@item.Id">Удалить</a>
+                <div><a input type="button" class="btn btn-addition" asp-area="Identity" asp-page="/RecipeModify/Edit" asp-route-id="@item.Id">Изменить</a></div>
+                <div><a input type="button" class="btn btn-addition" asp-action="Details" asp-route-id="@item.Id">Подробно</a></div>
+                <div><a input type="button" class="btn btn-addition" asp-area="Identity" asp-page="/RecipeModify/Delete" asp-route-id="@item.Id">Удалить</a></div>
             </td>
         </tr>
 }
