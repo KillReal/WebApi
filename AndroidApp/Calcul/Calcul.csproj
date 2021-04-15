@@ -53,8 +53,8 @@
     <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ModelsLibrary">
-      <HintPath>..\..\ModelsLibrary\bin\Debug\netcoreapp3.1\ModelsLibrary.dll</HintPath>
+    <Reference Include="ModelLibrary">
+      <HintPath>..\..\ModelLibrary\bin\Debug\netcoreapp3.1\ModelLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
