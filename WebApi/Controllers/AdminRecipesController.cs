@@ -192,7 +192,7 @@ namespace WebApi.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-            var recipe = await _context.Recipe.FindAsync(id);
+            var recipe = await _context.Recipe.FirstAsync(x => x.Id == id);
             _context.Recipe.Remove(recipe);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

@@ -12,7 +12,8 @@ namespace WebApi.Data
         public MainDbContext(DbContextOptions<MainDbContext> options)
             : base(options)
         {
-        }
+        } 
+
         public DbSet<Recipe> Recipe { get; set; }
         public DbSet<RecipeList> RecipeList { get; set; }
         public DbSet<DayMenu> DayMenu { get; set; }

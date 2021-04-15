@@ -5,10 +5,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1>Список рецептов</h1>
 
 <p>
-    <a input type="button" class="btn btn-primary" asp-action="Create">Create new</a>
+    <a input type="button" class="btn btn-primary" asp-area = "Identity" asp-page="/RecipeModify/Create">Создать новый</a>
 </p>
 <table class="table">
     <thead>
@@ -44,9 +44,9 @@
                 <img src="@Url.Action("getImg", "AdminRecipes", new { id = item.Id })" alt="Recipe image" height="150"/>
             </td>
             <td>
-                <a input type="button" class="btn btn-addition" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                <a input type="button" class="btn btn-addition" asp-action="Details" asp-route-id="@item.Id">Details</a>
-                <a input type="button" class="btn btn-addition" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <div><a input type="button" class="btn btn-addition" asp-area="Identity" asp-page="/RecipeModify/Edit" asp-route-id="@item.Id">Изменить</a></div>
+                <div><a input type="button" class="btn btn-addition" asp-action="Details" asp-route-id="@item.Id">Подробно</a></div>
+                <div><a input type="button" class="btn btn-addition" asp-area="Identity" asp-page="/RecipeModify/Delete" asp-route-id="@item.Id">Удалить</a></div>
             </td>
         </tr>
 }

@@ -6,8 +6,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\AdminSchedule\**" />
+    <Content Remove="Views\AdminSchedule\**" />
+    <EmbeddedResource Remove="Views\AdminSchedule\**" />
+    <None Remove="Views\AdminSchedule\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Migrations\20210305192643_init.cs" />
     <Compile Remove="Migrations\20210305192643_init.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <COMReference Include="{d37e2a3e-8545-3a39-9f4f-31827c9124ab}">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>4</VersionMinor>
+      <VersionMajor>2</VersionMajor>
+      <Guid>d37e2a3e-8545-3a39-9f4f-31827c9124ab</Guid>
+    </COMReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -29,16 +45,24 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Npgsql" Version="5.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.2" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
-    <Folder Include="Migrations\" />
-    <Folder Include="Views\AdminSchedule\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ModelLibrary\ModelLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Areas\Identity\Pages\RecipeModify\Edit - Copy - Copy.cshtml.cs">
+      <DependentUpon>Edit - Copy.cshtml.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Areas\Identity\Pages\RecipeModify\Edit - Copy.cshtml.cs">
+      <DependentUpon>Edit.cshtml.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>

@@ -16,12 +16,26 @@
       }
     },
     "WebApi": {
-      "commandName": "Executable",
-      "executablePath": "C:\\Users\\user\\Documents\\GitHub\\stud\\WebApi\\WebApi\\bin\\Debug\\netcoreapp3.1\\WebApi.exe",
-      "workingDirectory": "C:\\Users\\user\\Documents\\GitHub\\stud\\WebApi\\WebApi",
+      "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:5000"
+    },
+    "WebApi Staging": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Staging"
+      },
+      "applicationUrl": "http://localhost:5000"
+    },
+    "WebApi Production": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
       },
       "applicationUrl": "http://localhost:5000"
     }

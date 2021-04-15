@@ -30,7 +30,7 @@ namespace ModelLibrary
         [Key]
         public long Id { get; set; }
         public string Name { get; set; }
-        public List<Recipe> recipes { get; set; }
+        public List<Recipe> Recipes { get; set; }
     }
 
     public static class Serialization<T> where T : SerializableObject
