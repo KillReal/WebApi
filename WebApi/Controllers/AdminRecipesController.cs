@@ -28,14 +28,6 @@ namespace WebApi.Controllers
             _logger = logger;
         }
 
-        public FileContentResult getImg(int id)
-        {
-            var recipe = _context.Recipe.First(m => m.Id == id);
-            return recipe.Image != null
-                ? new FileContentResult(recipe.Image, "image/jpeg")
-                : null;
-        }
-
         // GET: Recipes
         public async Task<IActionResult> Index()
         {
@@ -87,12 +79,12 @@ namespace WebApi.Controllers
                             {
                                 bytes = binaryReader.ReadBytes((int)Image.Length);
                             }
-                            recipe.Image = bytes;
+                            recipe.MainPicture = bytes;
                         }
                     }
                 }
                 else
-                    recipe.Image = System.IO.File.ReadAllBytes("wwwroot/pics/noimg.jpg");
+                    recipe.MainPicture = System.IO.File.ReadAllBytes("wwwroot/pics/noimg.jpg");
                 _context.Add(recipe);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -142,12 +134,12 @@ namespace WebApi.Controllers
                             {
                                 bytes = binaryReader.ReadBytes((int)Image.Length);
                             }
-                            recipe.Image = bytes;
+                            recipe.MainPicture = bytes;
                         }
                     }
                 }
                 else
-                    recipe.Image = (await _context.Recipe.AsNoTracking().FirstAsync(m => m.Id == id)).Image;
+                    recipe.MainPicture = (await _context.Recipe.AsNoTracking().FirstAsync(m => m.Id == id)).MainPicture;
                 try
                 {
                     _context.Update(recipe);

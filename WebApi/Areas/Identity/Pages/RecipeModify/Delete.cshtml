@@ -8,7 +8,7 @@
 <h3>Вы уверены что хотите удалить это?</h3>
 <div>
     <div class="tab-title-container">
-        <h4>Рецепт</h4>
+        <h4>БЖУ</h4>
     </div>
     <hr />
     <dl class="row">
@@ -55,10 +55,10 @@
             @Html.DisplayFor(model => model.Recipe.HaveMeat)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Recipe.Image)
+            @Html.DisplayNameFor(model => model.Recipe.MainPicture)
         </dt>
         <dd class="col-sm-10">
-            <img src="@Url.Action("getImg", "AdminRecipes", new { id = Model.Recipe.Id })" alt="Recipe image" height="150" />
+            <img src="@Url.Action("Image", "Recipes", new { id = Model.Recipe.Id })" alt="Recipe image" height="150" />
         </dd>
     </dl>
 

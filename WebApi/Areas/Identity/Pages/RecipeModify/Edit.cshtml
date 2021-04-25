@@ -8,7 +8,7 @@
         <div class="col-md-4">
             <h1>Редактировать</h1>
             <div class="tab-title-container">
-                <h4>Рецепт</h4>
+                <h4>БЖУ</h4>
             </div>
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -52,10 +52,10 @@
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="Input.Recipe.Image" class="control-label"></label><p>
-                    <img src="@Url.Action("getImg", "AdminRecipes", new { id = Model.Input.Recipe.Id })" alt="Recipe image" height="150" />
+                <label asp-for="Input.Recipe.MainPicture" class="control-label"></label><p>
+                    <img src="@Url.Action("Image", "Recipes", new { id = Model.Input.Recipe.Id })" alt="Recipe image" height="150" />
                 <p>
-                    <input asp-for="Input.Recipe.Image" type="file" Class="form-control-file" />
+                    <input asp-for="Input.Recipe.MainPicture" type="file" Class="form-control-file" />
             </div>
         </div>
         <div class="col-md-4">
@@ -65,14 +65,29 @@
             </div>
             <hr />
             <label class="label-tab-spacer"></label>
-            @for (int i = 0; i < Model.Input.RecipeInclude.Count(); i++)
-            {
-                <div class="checkbox">
-                    <input class="custom-checkbox" type="checkbox" asp-for="Input.RecipeInclude[i]">
-                    @Html.Label("", Model.Input.DayMenuName[i])
-                    <span asp-validation-for="Input.RecipeInclude[i]" class="text-danger"></span>
-                </div>
-            }
+            <table class="table-cell" style="width:100%">
+                <tr>
+                    <th></th>
+                    <th>Завтрак</th>
+                    <th>Обед</th>
+                    <th>Ужин</th>
+                </tr>
+                @for (int i = 0; i < Model.Input.RecipeDayInclude.Count(); i++)
+                {
+                    <tr>
+                        <th>@Html.Label("", Model.Input.DayMenuName[i])</th>
+                        @for (int j = 0; j < 3; j++){
+                            <td>
+                            <div class="checkbox-center">
+                                <input class="custom-checkbox" type="checkbox" asp-for="Input.RecipeDayInclude[i][j]">
+                                @Html.Label("", "")
+                                <span asp-validation-for="Input.RecipeDayInclude[i][j]" class="text-danger"></span>
+                            </div>
+                        </td>
+                        }
+                    </tr>
+                }
+            </table>
         </div>
     </div>
     <div class="row">

@@ -65,6 +65,11 @@ a {
     overflow: hidden;
     border: 1px solid #ccc;
     background-color: #f1f1f1;
+    text-align: center;
+}
+
+.th {
+    text-align: center;
 }
 
 .col-md-4 {
@@ -108,17 +113,41 @@ a {
     background-color: #f1f1f1;
 }
 
+.table-cell {
+    border-collapse: inherit;
+}
+
+.table-cell th {
+    text-align:center;
+    max-width: 7rem;
+}
+
+.table-cell td {
+    min-width: 4rem;
+}
+
 .custom-checkbox {
     z-index: 1;
     opacity: 0;
     width: 2em;
     height: 2em;
     position: absolute;
+    display: table-cell;
+}
+
+.checkbox-center {
+    display: flex;
+    align-content: flex-start;
+    justify-content: center;
+}
+
+.checkbox {
+    display: table-cell;
 }
 
 /* для элемента label, связанного с .custom-checkbox */
 .custom-checkbox + label {
-    display: inline-flex;
+    display: table-cell;
     align-items: center;
     user-select: none;
 }
@@ -126,7 +155,7 @@ a {
 /* создание в label псевдоэлемента before со следующими стилями */
 .custom-checkbox + label::before {
     content: '';
-    display: inline-block;
+    display: table-cell;
     width: 2em;
     height: 2em;
     flex-shrink: 0;
@@ -195,6 +224,7 @@ body {
     cursor: pointer;
     padding: 14px 16px;
     transition: 0.6s;
+    animation: fadeEffect 1s;
 }
 
 /* Change background color of buttons on hover */
@@ -274,3 +304,5 @@ body {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+
+

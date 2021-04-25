@@ -71,12 +71,12 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
                             {
                                 bytes = binaryReader.ReadBytes((int)Image.Length);
                             }
-                            Input.Recipe.Image = Tools.CorrectResolution(bytes);
+                            Input.Recipe.MainPicture = Tools.CorrectResolution(bytes);
                         }
                     }
                 }
                 else
-                    Input.Recipe.Image = System.IO.File.ReadAllBytes("wwwroot/pics/noimg.jpg");
+                    Input.Recipe.MainPicture = System.IO.File.ReadAllBytes("wwwroot/pics/noimg.jpg");
                 _context.Add(Input.Recipe);
                 await _context.SaveChangesAsync();
                 Input.Recipe = _context.Recipe.First(x => x.Name == Input.Recipe.Name);

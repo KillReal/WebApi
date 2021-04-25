@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace WebApi.Models
 {
-    public class RecipeList
+    public class PictureList
     {
         [Key]
         public long Id { get; set; }
-        public bool[] DayUsage { get; set; } = new bool[3] { false, false, false };
         public Recipe Recipe { get; set; }
-        public DayMenu DayMenu { get; set; }
+
+        public byte[] Picture { get; set; }
     }
 }
