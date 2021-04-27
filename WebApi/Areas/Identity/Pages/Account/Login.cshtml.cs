@@ -71,15 +71,6 @@ namespace WebApi.Areas.Identity.Pages.Account
             ReturnUrl = returnUrl;
         }
 
-        public IActionResult LoginRoute(string returnUrl)  //this method is new
-        {
-            if (User.IsInRole("Admin"))
-            {
-                return RedirectToPage("/Admin");
-            }
-            return NotFound();
-        }
-
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");

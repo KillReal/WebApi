@@ -18,7 +18,7 @@ namespace WebApi.Models
         [Range(1, 5000)]
         [Display(Name = "Калории")]
         public int Colories { get; set; }
-        [Display(Name = "Картинка")]
+        [Display(Name = "Фотография")]
         public byte[] MainPicture { get; set; }
         [Display(Name = "Белки")]
         public int Proteins { get; set; }

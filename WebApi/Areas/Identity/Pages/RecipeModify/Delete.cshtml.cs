@@ -31,9 +31,12 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
 
         public async Task<IActionResult> OnPostAsync(long id)
         {
-            var recipe = await _context.Recipe.Include(x => x.RecipeList).FirstAsync(x => x.Id == id);
-            _context.RecipeList.RemoveRange(recipe.RecipeList);
-            _context.Recipe.Remove(recipe);
+            var recipe = await _context.Recipe.Include(x => x.RecipeList)
+                                              .Include(x => x.PictureList)
+                                              .FirstAsync(x => x.Id == id);
+            _context.RemoveRange(recipe.RecipeList);
+            _context.RemoveRange(recipe.PictureList);
+            _context.Remove(recipe);
             await _context.SaveChangesAsync();
 
             return Redirect("/AdminRecipes/Index");

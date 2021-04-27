@@ -4,14 +4,19 @@
 }
 
 <form enctype="multipart/form-data" id="create-recipe-form" method="post">
+    <h1>Создать</h1>
     <div class="row">
         <div class="col-md-4">
-            <h1>Создать</h1>
             <div class="tab-title-container">
                 <h4>БЖУ</h4>
             </div>
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input id="main-picture-id" type="hidden" asp-for="Input.MainPictureId" />
+            <div class="form-group">
+                <input id='files' type='file' multiple asp-for="Input.MainPictureId"/>
+                <output id='result' />
+            </div>
             <div class="form-group">
                 <label asp-for="Input.Recipe.Name" class="control-label"></label>
                 <input asp-for="Input.Recipe.Name" class="form-control" />
@@ -50,27 +55,36 @@
                     <span asp-validation-for="Input.Recipe.HaveMeat" class="text-danger"></span>
                 </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Input.Recipe.MainPicture" class="control-label"></label>
-                <input asp-for="Input.Recipe.MainPicture" type="file" Class="form-control-file" />
-            </div>
         </div>
         <div class="col-md-4">
-            <h1></h1>
             <div class="tab-title-container">
                 <h4>Расписание использования</h4>
             </div>
             <hr />
-            <label class="label-tab-spacer"></label>
-            @for (int i = 0; i < Model.Input.DayMenuName.Count(); i++)
-            {
-                <div class="checkbox">
-                    <input class="custom-checkbox" type="checkbox" asp-for="Input.RecipeInclude[i]">
-                    @Html.Label("", Model.Input.DayMenuName[i])
-                    <span asp-validation-for="Input.RecipeInclude[i]" class="text-danger"></span>
-                </div>
-
-            }
+            <table class="table-cell" style="width:100%">
+                <tr>
+                    <th></th>
+                    <th>Завтрак</th>
+                    <th>Обед</th>
+                    <th>Ужин</th>
+                </tr>
+                @for (int i = 0; i < Model.Input.RecipeDayInclude.Count(); i++)
+                {
+                    <tr>
+                        <th>@Html.Label("", Model.Input.DayMenuName[i])</th>
+                        @for (int j = 0; j < Model.Input.RecipeDayInclude[0].Count(); j++)
+                        {
+                            <td>
+                                <div class="checkbox-center">
+                                    <input class="custom-checkbox" type="checkbox" asp-for="Input.RecipeDayInclude[i][j]">
+                                    @Html.Label("", "")
+                                    <span asp-validation-for="Input.RecipeDayInclude[i][j]" class="text-danger"></span>
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                }
+            </table>
         </div>
     </div>
     <div class="row">
@@ -83,6 +97,48 @@
         </div>
     </div>
 </form>
+
+<script type="text/javascript">
+    window.onload = function () {
+        //Check File API support
+        var count = 0;
+        if (window.File && window.FileList && window.FileReader) {
+            var filesInput = document.getElementById("files");
+            filesInput.addEventListener("change", function (event) {
+                var files = event.target.files; //FileList object
+                var output = document.getElementById("result");
+                var div = document.getElementsByClassName("image-uploader");
+                if (div.length == 0) {
+                    div = document.createElement("div");
+                    div.className = "image-uploader";
+                }
+                else
+                    div = div[0];
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    //Only pics
+                    if (!file.type.match('image'))
+                        continue;
+                    var picReader = new FileReader();             
+                    picReader.addEventListener("load", function (event) {
+                        count++;
+                        var picFile = event.target;
+                        var div2 = document.createElement("div");
+                        div2.className = "image-container";
+                        div2.innerHTML += "<img class='thumbnail' src='" + picFile.result + "' " + "title='" + picFile.name + "' id='img-" + count + "'/>" +
+                            "<button class='imagelinks' type='button' onclick='selectImage(event, " + count + ")' id='selector-" + count + "'></button>";
+                        div.appendChild(div2);
+                        output.insertBefore(div, null);
+                    });
+                    //Read the image
+                    picReader.readAsDataURL(file);
+                }
+            });
+        } else {
+            console.log("Your browser does not support File API");
+        }
+    }
+</script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

@@ -51,11 +51,16 @@ namespace WebApi.Controllers
             return Serialization<ModelLibrary.Recipe>.WriteList(recipes);
         }
 
-        public FileContentResult Image(int id)
+        public FileContentResult Image(int id, int sid = -1)
         {
-            var recipe = _context.Recipe.First(m => m.Id == id);
-            return recipe.MainPicture != null
-                ? new FileContentResult(recipe.MainPicture, "image/jpeg")
+            var recipe = _context.Recipe.Include(x => x.PictureList).First(m => m.Id == id);
+            byte[] pictureBytes;
+            if (sid == -1)
+                pictureBytes = recipe.MainPicture;
+            else
+                pictureBytes = recipe.PictureList.ElementAt(sid).Picture;
+            return pictureBytes != null
+                ? new FileContentResult(pictureBytes, "image/jpeg")
                 : null;
         }
 
@@ -63,7 +68,7 @@ namespace WebApi.Controllers
         {
             _logger.LogInformation($"provided acces to /recipes/details/{id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
 
-            var recipe = await _context.Recipe.FirstAsync(x => x.Id == id);
+            var recipe = await _context.Recipe.FirstOrDefaultAsync(x => x.Id == id);
             if (recipe == null)
                 return null;
             var sRecipe = new ModelLibrary.Recipe()

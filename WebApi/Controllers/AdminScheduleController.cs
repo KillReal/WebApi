@@ -22,8 +22,9 @@ namespace WebApi.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
+            _logger.LogInformation($"provided acces to /admin/schedule/index by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
             return View("Schedule/Index");
         }
     }

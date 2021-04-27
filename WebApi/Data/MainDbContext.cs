@@ -16,6 +16,7 @@ namespace WebApi.Data
 
         public DbSet<Recipe> Recipe { get; set; }
         public DbSet<RecipeList> RecipeList { get; set; }
+        public DbSet<PictureList> PictureList { get; set; }
         public DbSet<DayMenu> DayMenu { get; set; }
     }
 }

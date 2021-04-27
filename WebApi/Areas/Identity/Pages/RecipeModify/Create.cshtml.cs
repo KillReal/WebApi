@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -32,25 +33,27 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
         {
             public Recipe Recipe { get; set; } = new Recipe();
             public List<String> DayMenuName = new List<string>();
-            public List<Boolean> RecipeInclude { get; set; } = new List<bool>();
+            public int MainPictureId { get; set; }
+            public List<List<Boolean>> RecipeDayInclude { get; set; } = new List<List<bool>>();
         }
 
         public async Task<IActionResult> OnGet()
         {
-            var DayMenu = await _context.DayMenu.OrderBy(x => x.Id).ToListAsync();
+            var dayMenus = await _context.DayMenu.Include(x => x.RecipeList)
+                                                 .ThenInclude(x => x.Recipe)
+                                                 .ToListAsync();
 
-            for (int i = 0; i < DayMenu.Count(); i++)
+            for (int i = 0; i < dayMenus.Count(); i++)
             {
-                Input.DayMenuName.Add(DayMenu[i].Name);
-                Input.RecipeInclude.Add(false);
-            }
-            if (DayMenu.Count() == 0)
-            {
-                for (int i = 0; i < Input.DayMenuName.Count(); i++)
+                Input.DayMenuName.Add(dayMenus[i].Name);
+                Input.RecipeDayInclude.Add(new List<bool>());
+                var recipeList = dayMenus[i].RecipeList.Find(x => x.DayMenu.Id == dayMenus[i].Id && x.Recipe.Id == Input.Recipe.Id);
+                if (recipeList == null)
+                    recipeList = new RecipeList();
+                foreach (var usage in recipeList.DayUsage)
                 {
-                    _context.Add(new DayMenu { Name = Input.DayMenuName[i], RecipeList = new List<RecipeList>() });
+                    Input.RecipeDayInclude[i].Add(usage);
                 }
-                await _context.SaveChangesAsync();
             }
             return Page();
         }
@@ -64,14 +67,28 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
                 {
                     foreach (var Image in files)
                     {
-                        if (Image != null && Image.Length > 0)
+                        
+                    }
+                    for (int i = 0; i < files.Count(); i++)
+                    {
+                        if (files[i] != null && files[i].Length > 0)
                         {
                             byte[] bytes;
-                            using (var binaryReader = new BinaryReader(Image.OpenReadStream()))
+                            using (var binaryReader = new BinaryReader(files[i].OpenReadStream()))
                             {
-                                bytes = binaryReader.ReadBytes((int)Image.Length);
+                                bytes = binaryReader.ReadBytes((int)files[i].Length);
                             }
-                            Input.Recipe.MainPicture = Tools.CorrectResolution(bytes);
+                            if (i == Input.MainPictureId)
+                                Input.Recipe.MainPicture = Tools.CorrectResolution(bytes);
+                            else
+                            {
+                                PictureList pictureList = new PictureList()
+                                {
+                                    Picture = Tools.CorrectResolution(bytes),
+                                    Recipe = Input.Recipe
+                                };
+                                _context.Add(pictureList);
+                            }
                         }
                     }
                 }
@@ -80,17 +97,22 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
                 _context.Add(Input.Recipe);
                 await _context.SaveChangesAsync();
                 Input.Recipe = _context.Recipe.First(x => x.Name == Input.Recipe.Name);
+
                 var DayMenu = await _context.DayMenu.Include(x => x.RecipeList).ToListAsync();
+                Input.Recipe = _context.Recipe.Include(x => x.RecipeList).First(x => x.Id == Input.Recipe.Id);
                 for (int i = 0; i < DayMenu.Count(); i++)
-                    Input.DayMenuName.Add(DayMenu[i].Name);
-                for (int i = 0; i < Input.DayMenuName.Count(); i++)
                 {
-                    if (Input.RecipeInclude[i])
-                    {                   
-                        _context.Add(new RecipeList { DayMenu = DayMenu[i], Recipe = Input.Recipe });   
-                    }   
+                    if (Input.RecipeDayInclude[i].Contains(true))
+                    {
+                        var newRecipeList = new RecipeList()
+                        {
+                            Recipe = Input.Recipe,
+                            DayMenu = DayMenu[i],
+                            DayUsage = Input.RecipeDayInclude[i].ToArray()
+                        };
+                        _context.Add(newRecipeList);
+                    }
                 }
-                _context.UpdateRange(DayMenu);
                 await _context.SaveChangesAsync();
             }
             else

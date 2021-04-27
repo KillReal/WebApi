@@ -4,19 +4,35 @@
 }
 
 <form enctype="multipart/form-data" id="edit-recipe-form" method="post">
+    <h1>Редактировать</h1>
     <div class="row">
         <div class="col-md-4">
-            <h1>Редактировать</h1>
             <div class="tab-title-container">
-                <h4>БЖУ</h4>
+                <h4 class="name-edit">
+                    <label class="control-label-custom">
+                        <div class="text-info-custom">@Model.Input.Recipe.Name</div>
+                        <i class="icon-star"></i>
+                    </label>
+                    <input id="label-edit" type="hidden" asp-for="Input.Recipe.Name" />
+                    <div class="controls">
+                        <a href="#" id="edit" class="btn-hidden"></a>
+                        <picture>
+                            <source srcset="/pics/edit.png">
+                            <img src="/pics/edit.png" alt="MDN" class="img-icon">
+                        </picture>
+                    </div>
+                </h4>
             </div>
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Input.Recipe.Id" />
             <div class="form-group">
-                <label asp-for="Input.Recipe.Name" class="control-label"></label>
-                <input asp-for="Input.Recipe.Name" class="form-control" />
-                <span asp-validation-for="Input.Recipe.Name" class="text-danger"></span>
+                <img src="@Url.Action("Image", "Recipes", new { id = Model.Input.Recipe.Id })" alt="Recipe image" height="150" />
+                @for (int i = 0; i < Model.Input.Recipe.PictureList.Count(); i++)
+                {
+                    <img src="@Url.Action("Image", "Recipes", new { id = Model.Input.Recipe.Id, sid = i })" alt="Recipe image" height="150" />
+                }
+
             </div>
             <div class="form-group">
                 <label asp-for="Input.Recipe.Weight" class="control-label"></label>
@@ -51,20 +67,12 @@
                     <span asp-validation-for="Input.Recipe.HaveMeat" class="text-danger"></span>
                 </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Input.Recipe.MainPicture" class="control-label"></label><p>
-                    <img src="@Url.Action("Image", "Recipes", new { id = Model.Input.Recipe.Id })" alt="Recipe image" height="150" />
-                <p>
-                    <input asp-for="Input.Recipe.MainPicture" type="file" Class="form-control-file" />
-            </div>
         </div>
         <div class="col-md-4">
-            <h1></h1>
             <div class="tab-title-container">
                 <h4>Расписание использования</h4>
             </div>
             <hr />
-            <label class="label-tab-spacer"></label>
             <table class="table-cell" style="width:100%">
                 <tr>
                     <th></th>
@@ -76,18 +84,20 @@
                 {
                     <tr>
                         <th>@Html.Label("", Model.Input.DayMenuName[i])</th>
-                        @for (int j = 0; j < 3; j++){
+                        @for (int j = 0; j < Model.Input.RecipeDayInclude[0].Count(); j++)
+                        {
                             <td>
-                            <div class="checkbox-center">
-                                <input class="custom-checkbox" type="checkbox" asp-for="Input.RecipeDayInclude[i][j]">
-                                @Html.Label("", "")
-                                <span asp-validation-for="Input.RecipeDayInclude[i][j]" class="text-danger"></span>
-                            </div>
-                        </td>
+                                <div class="checkbox-center">
+                                    <input class="custom-checkbox" type="checkbox" asp-for="Input.RecipeDayInclude[i][j]">
+                                    @Html.Label("", "")
+                                    <span asp-validation-for="Input.RecipeDayInclude[i][j]" class="text-danger"></span>
+                                </div>
+                            </td>
                         }
                     </tr>
                 }
             </table>
+            <label class="label-tab-spacer"></label>
         </div>
     </div>
     <div class="row">

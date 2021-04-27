@@ -37,6 +37,7 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
         {
             Input.Recipe = await _context.Recipe.Include(x => x.RecipeList)
                                          .ThenInclude(x => x.DayMenu)
+                                         .Include(x => x.PictureList)
                                          .FirstOrDefaultAsync(x => x.Id == id);
             var dayMenus = await _context.DayMenu.Include(x => x.RecipeList)
                                                  .ThenInclude(x => x.Recipe)
@@ -88,7 +89,12 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
                     var recipeList = await _context.RecipeList.FirstOrDefaultAsync(x => x.DayMenu.Id == DayMenu[i].Id && x.Recipe.Id == Input.Recipe.Id);
                     if (Input.RecipeDayInclude[i].Contains(true))
                     {
-                        var newRecipeList = new RecipeList() { Recipe = Input.Recipe, DayMenu = DayMenu[i], DayUsage = Input.RecipeDayInclude[i].ToArray() };
+                        var newRecipeList = new RecipeList() 
+                        { 
+                            Recipe = Input.Recipe, 
+                            DayMenu = DayMenu[i], 
+                            DayUsage = Input.RecipeDayInclude[i].ToArray() 
+                        };
                         if (recipeList == null)
                             _context.Add(newRecipeList);
                         else

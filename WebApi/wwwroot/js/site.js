@@ -30,3 +30,26 @@ function openTab(evt, tabName, tabId) {
 function openTabById(tabName) {
     document.getElementById(tabName).click();
 }
+
+function selectImage(evt, id) {
+    var thumbnails = document.getElementsByClassName("thumbnail");
+    for (i = 0; i < thumbnails.length; i++) {
+        thumbnails[i].setAttribute("style", "border-color: #ced4da");
+    }
+    document.getElementById('img-' + id).setAttribute("style", "border-color: blue");
+    document.getElementById('main-picture-id').value = id;
+}
+
+$('#edit').click(function () {
+    var text = $('.text-info-custom').text();
+    var input = $('<input id="attribute" type="text" class="input-name" value="' + text + '" />')
+    $('.text-info-custom').text('').append(input);
+    input.select();
+
+    input.blur(function () {
+        var text = $('#attribute').val();
+        $('#label-edit').val(text);
+        $('#attribute').parent().text(text);
+        $('#attribute').remove();
+    });
+});
