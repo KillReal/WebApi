@@ -27,11 +27,32 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Input.Recipe.Id" />
             <div class="form-group">
-                <img src="@Url.Action("Image", "Recipes", new { id = Model.Input.Recipe.Id })" alt="Recipe image" height="150" />
-                @for (int i = 0; i < Model.Input.Recipe.PictureList.Count(); i++)
-                {
-                    <img src="@Url.Action("Image", "Recipes", new { id = Model.Input.Recipe.Id, sid = i })" alt="Recipe image" height="150" />
-                }
+                <div class="slideshow-container">
+                    <div class="mySlides">
+                        <div class="numbertext">1 / @(Model.Input.Recipe.PictureList.Count() + 1)</div>
+                        <img src="@Url.Action("Image", "Recipes", new { id = Model.Input.Recipe.Id })" style="width:100%">
+                    </div>
+                    @for (int i = 0; i < Model.Input.Recipe.PictureList.Count(); i++)
+                    {
+                        <div class="mySlides">
+                            <div class="numbertext">@(i + 2) / @(Model.Input.Recipe.PictureList.Count() + 1)</div>
+                            <img src="@Url.Action("Image", "Recipes", new { id = Model.Input.Recipe.Id, sid = i })" style="width:100%">
+                        </div>
+                    }
+                    <!-- Next and previous buttons -->
+                    <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                    <a class="next" onclick="plusSlides(1)">&#10095;</a>
+
+                    <!-- The dots/circles -->
+                    <div style="text-align:center">
+                        <span class="dot" onclick="currentSlide(1)"></span>
+                        @for (int i = 0; i < Model.Input.Recipe.PictureList.Count(); i++)
+                        {
+                            <span class="dot" onclick="currentSlide(@(i + 2))"></span>
+                        }
+                    </div>
+                </div>
+                <br>
 
             </div>
             <div class="form-group">

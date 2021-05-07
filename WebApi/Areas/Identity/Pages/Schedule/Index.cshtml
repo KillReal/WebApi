@@ -3,12 +3,27 @@
 @{
 }
 
-<h1>Меню</h1>
+@if (Model.Input.isHistory)
+{
+    <h1>История меню</h1>
+}
+else
+{
+    <h1>Меню</h1>
+}
 
 <p>
     <div>
-        <a input type="button" class="btn btn-primary" asp-area="Identity" asp-page="/Schedule/Index" asp-page-handler="Create">Добавить меню</a>
-        <a input type="button" class="btn btn-danger" asp-area="Identity" asp-page="/Schedule/Index" asp-page-handler="Delete">Удалить меню</a>
+        @if (!Model.Input.isHistory)
+        {
+            <a input type="button" class="btn btn-primary" asp-area="Identity" asp-page="/Schedule/Index" asp-page-handler="Create">Добавить меню</a>
+            <a input type="button" class="btn btn-danger" asp-area="Identity" asp-page="/Schedule/Index" asp-page-handler="Delete">Удалить меню</a>
+            <a input type="button" class="btn btn-primary" asp-area="Identity" asp-page="/Schedule/Index" asp-page-handler="History" style="float: right;">История</a>
+        }
+        else
+        {
+            <a input type="button" class="btn btn-primary" asp-area="Identity" asp-page="/Schedule/Index">Назад</a>
+        }
     </div>
 </p>
 <!-- Tab links -->
@@ -19,7 +34,8 @@
     }
 </div>
 <p></p>
-@for (int i = 0; i < Model.Input.DayMenuName.Count(); i++){
+@for (int i = 0; i < Model.Input.DayMenuName.Count(); i++)
+{
 <div id="@(Model.Input.DayMenuName[i])-1@(i)" class="tabcontent">
     <div class="header">@Html.Label("", Model.Input.DayMenuName[i])</div>
     <div class="tab">
@@ -28,6 +44,14 @@
             <button class="tablinks" onclick="openTab(event, '@Model.Input.MenuTypeName[j]', '2@(i)')" id="tab-2@(i)">@Html.Label("", Model.Input.MenuTypeName[j])</button>
         }
     </div>
+    <p>
+        <div>
+            @if (Model.Input.isHistory)
+            {
+                <a input type="button" class="btn btn-primary" asp-area="Identity" asp-page="/Schedule/Index" asp-page-handler="CreateFromHistory" asp-route-id="@Model.Input.DayMenuId[i]">Создать новую копию меню</a>
+            }
+        </div>
+    </p>
     @for (int j = 0; j < Model.Input.MenuTypeName.Count(); j++)
     {
         <div id="@(Model.Input.MenuTypeName[j])-2@(i)" class="tabcontent">
@@ -53,25 +77,25 @@
                 <tbody>
                     @foreach (var item in Model.Input.Recipes[i][j])
                     {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Name)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Weight) гр.
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Colories) ккал.
-                        </td>
-                        <td>
-                            <img src="@Url.Action("Image", "Recipes", new { id = item.Id })" alt="Recipe image" height="150" />
-                        </td>
-                        <td>
-                            <div><a input type="button" class="btn btn-addition" asp-area="Identity" asp-page="/RecipeModify/Edit" asp-route-id="@item.Id">Изменить</a></div>
-                            <div><a input type="button" class="btn btn-addition" asp-action="Details" asp-route-id="@item.Id">Подробно</a></div>
-                            <div><a input type="button" class="btn btn-addition" asp-area="Identity" asp-page="/RecipeModify/Delete" asp-route-id="@item.Id">Удалить</a></div>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Weight) гр.
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Colories) ккал.
+                            </td>
+                            <td>
+                                <img src="@Url.Action("Image", "Recipes", new { id = item.Id })" alt="Recipe image" height="150" />
+                            </td>
+                            <td>
+                                <div><a input type="button" class="btn btn-addition" asp-area="Identity" asp-page="/RecipeModify/Edit" asp-route-id="@item.Id">Изменить</a></div>
+                                <div><a input type="button" class="btn btn-addition" asp-action="Details" asp-route-id="@item.Id">Подробно</a></div>
+                                <div><a input type="button" class="btn btn-addition" asp-area="Identity" asp-page="/RecipeModify/Delete" asp-route-id="@item.Id">Удалить</a></div>
+                            </td>
+                        </tr>
                     }
                 </tbody>
             </table>

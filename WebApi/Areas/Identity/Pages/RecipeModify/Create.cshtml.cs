@@ -41,6 +41,7 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
         {
             var dayMenus = await _context.DayMenu.Include(x => x.RecipeList)
                                                  .ThenInclude(x => x.Recipe)
+                                                 .Where(x => x.Date > DateTime.Now)
                                                  .ToListAsync();
 
             for (int i = 0; i < dayMenus.Count(); i++)
