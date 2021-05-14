@@ -30,7 +30,7 @@ namespace WebApi.Controllers
         {
             _logger.LogInformation($"provided acces to /recipes by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
 
-            var list = await _context.Recipe.ToListAsync();
+            var list = await _context.Recipe.Include(x => x.PictureList).ToListAsync();
             List<ModelLibrary.Recipe> recipes = new List<ModelLibrary.Recipe>();
             foreach(var item in list)
             {
@@ -40,7 +40,7 @@ namespace WebApi.Controllers
                     Name = item.Name,
                     Weight = item.Weight,
                     Colories = item.Colories,
-                    Image = null,
+                    PictureCount = item.PictureList.Count() + 1,
                     Proteins = item.Proteins,
                     Greases = item.Greases,
                     Carbohydrates = item.Carbohydrates,
@@ -77,7 +77,7 @@ namespace WebApi.Controllers
                 Name = recipe.Name,
                 Weight = recipe.Weight,
                 Colories = recipe.Colories,
-                Image = recipe.MainPicture,
+                PictureCount = recipe.PictureList.Count() + 1,
                 Proteins = recipe.Proteins,
                 Greases = recipe.Greases,
                 Carbohydrates = recipe.Carbohydrates,

@@ -22,7 +22,7 @@ namespace ModelLibrary
         public int Greases { get; set; }
         public int Carbohydrates { get; set; }
         public bool HaveMeat { get; set; }
-        public byte[] Image { get; set; }
+        public int PictureCount { get; set; }
     }
 
     public class DayMenu : SerializableObject
