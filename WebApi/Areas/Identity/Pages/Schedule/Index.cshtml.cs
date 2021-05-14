@@ -68,7 +68,7 @@ namespace WebApi.Areas.Identity.Pages.Schedule
             var dayMenu = await _context.DayMenu.Include(x => x.RecipeList)
                                                 .FirstAsync(x => x.Id == id);
             var dayMenus = await _context.DayMenu.OrderBy(x => x.Date)
-                                                 .Where(x => x.Date > DateTime.Now)
+                                                 .Where(x => x.Date >= DateTime.Now.AddDays(-1))
                                                  .ToListAsync();
             DateTime date;
             if (dayMenus.Count == 0)
@@ -98,7 +98,7 @@ namespace WebApi.Areas.Identity.Pages.Schedule
         {
             Input = input;
             var dayMenus = await _context.DayMenu.OrderBy(x => x.Date)
-                                                 .Where(x => x.Date > DateTime.Now)
+                                                 .Where(x => x.Date >= DateTime.Now.AddDays(-1))
                                                  .ToListAsync();
             DateTime date;
             if (dayMenus.Count == 0)
@@ -120,11 +120,16 @@ namespace WebApi.Areas.Identity.Pages.Schedule
 
         public async Task<IActionResult> OnGetDelete()
         {
-            var dayMenus = await _context.DayMenu.OrderBy(x => x.Date).Include(x => x.RecipeList).ToListAsync();
-            _context.RemoveRange(dayMenus.Last().RecipeList);
-            _context.Remove(dayMenus.Last());
-            await _context.SaveChangesAsync();
-            await UpdateModelAsync();
+            var dayMenus = await _context.DayMenu.OrderBy(x => x.Date).Include(x => x.RecipeList)
+                                                                      .Where(x => x.Date >= DateTime.Now.AddDays(-1))
+                                                                      .ToListAsync();
+            if (dayMenus.Count > 0)
+            {
+                _context.RemoveRange(dayMenus.Last().RecipeList);
+                _context.Remove(dayMenus.Last());
+                await _context.SaveChangesAsync();
+                await UpdateModelAsync();
+            }
             return Page();
         }
 
