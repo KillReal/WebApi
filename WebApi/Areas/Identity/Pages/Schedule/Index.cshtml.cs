@@ -39,9 +39,9 @@ namespace WebApi.Areas.Identity.Pages.Schedule
             var dayMenus = await _context.DayMenu.Include(x => x.RecipeList).ThenInclude(x => x.Recipe).OrderBy(x => x.Date).ToListAsync();
             foreach (var dayMenu in dayMenus)
             {
-                if (isHistory && (dayMenu.Date - DateTime.Now).TotalDays < 0
+                if (isHistory && dayMenu.Date < DateTime.Now.AddDays(-1)
                     || 
-                    !isHistory && (dayMenu.Date - DateTime.Now).TotalDays >= 0)
+                    !isHistory && dayMenu.Date > DateTime.Now.AddDays(-1))
                 {
                     List<List<Recipe>> dayRecipes = new List<List<Recipe>>() { };
                     dayRecipes.Add(new List<Recipe>());
@@ -68,7 +68,7 @@ namespace WebApi.Areas.Identity.Pages.Schedule
             var dayMenu = await _context.DayMenu.Include(x => x.RecipeList)
                                                 .FirstAsync(x => x.Id == id);
             var dayMenus = await _context.DayMenu.OrderBy(x => x.Date)
-                                                 .Where(x => x.Date >= DateTime.Now.AddDays(-1))
+                                                 .Where(x => x.Date > DateTime.Now.AddDays(-1))
                                                  .ToListAsync();
             DateTime date;
             if (dayMenus.Count == 0)
@@ -98,7 +98,7 @@ namespace WebApi.Areas.Identity.Pages.Schedule
         {
             Input = input;
             var dayMenus = await _context.DayMenu.OrderBy(x => x.Date)
-                                                 .Where(x => x.Date >= DateTime.Now.AddDays(-1))
+                                                 .Where(x => x.Date > DateTime.Now.AddDays(-1))
                                                  .ToListAsync();
             DateTime date;
             if (dayMenus.Count == 0)
@@ -121,7 +121,7 @@ namespace WebApi.Areas.Identity.Pages.Schedule
         public async Task<IActionResult> OnGetDelete()
         {
             var dayMenus = await _context.DayMenu.OrderBy(x => x.Date).Include(x => x.RecipeList)
-                                                                      .Where(x => x.Date >= DateTime.Now.AddDays(-1))
+                                                                      .Where(x => x.Date > DateTime.Now.AddDays(-1))
                                                                       .ToListAsync();
             if (dayMenus.Count > 0)
             {

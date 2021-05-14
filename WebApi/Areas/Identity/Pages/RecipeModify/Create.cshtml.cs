@@ -41,7 +41,7 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
         {
             var dayMenus = await _context.DayMenu.Include(x => x.RecipeList)
                                                  .ThenInclude(x => x.Recipe)
-                                                 .Where(x => x.Date > DateTime.Now)
+                                                 .Where(x => x.Date > DateTime.Now.AddDays(-1))
                                                  .ToListAsync();
 
             for (int i = 0; i < dayMenus.Count(); i++)
@@ -99,7 +99,7 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
                 await _context.SaveChangesAsync();
                 Input.Recipe = _context.Recipe.First(x => x.Name == Input.Recipe.Name);
 
-                var DayMenu = await _context.DayMenu.Include(x => x.RecipeList).ToListAsync();
+                var DayMenu = await _context.DayMenu.Include(x => x.RecipeList).Where(x => x.Date > DateTime.Now.AddDays(-1)).ToListAsync();
                 Input.Recipe = _context.Recipe.Include(x => x.RecipeList).First(x => x.Id == Input.Recipe.Id);
                 for (int i = 0; i < DayMenu.Count(); i++)
                 {
