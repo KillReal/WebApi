@@ -4,19 +4,56 @@
 }
 
 <form enctype="multipart/form-data" id="edit-recipe-form" method="post">
+    <h1>Редактировать</h1>
     <div class="row">
         <div class="col-md-4">
-            <h1>Редактировать</h1>
             <div class="tab-title-container">
-                <h4>Рецепт</h4>
+                <h4 class="name-edit">
+                    <label class="control-label-custom">
+                        <div class="text-info-custom">@Model.Input.Recipe.Name</div>
+                        <i class="icon-star"></i>
+                    </label>
+                    <input id="label-edit" type="hidden" asp-for="Input.Recipe.Name" />
+                    <div class="controls">
+                        <a href="#" id="edit" class="btn-hidden"></a>
+                        <picture>
+                            <source srcset="/pics/edit.png">
+                            <img src="/pics/edit.png" alt="MDN" class="img-icon">
+                        </picture>
+                    </div>
+                </h4>
             </div>
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Input.Recipe.Id" />
             <div class="form-group">
-                <label asp-for="Input.Recipe.Name" class="control-label"></label>
-                <input asp-for="Input.Recipe.Name" class="form-control" />
-                <span asp-validation-for="Input.Recipe.Name" class="text-danger"></span>
+                <div class="slideshow-container">
+                    <div class="mySlides">
+                        <div class="numbertext">1 / @(Model.Input.Recipe.PictureList.Count() + 1)</div>
+                        <img src="@Url.Action("Image", "Recipes", new { id = Model.Input.Recipe.Id })" style="width:100%">
+                    </div>
+                    @for (int i = 0; i < Model.Input.Recipe.PictureList.Count(); i++)
+                    {
+                        <div class="mySlides">
+                            <div class="numbertext">@(i + 2) / @(Model.Input.Recipe.PictureList.Count() + 1)</div>
+                            <img src="@Url.Action("Image", "Recipes", new { id = Model.Input.Recipe.Id, sid = i })" style="width:100%">
+                        </div>
+                    }
+                    <!-- Next and previous buttons -->
+                    <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                    <a class="next" onclick="plusSlides(1)">&#10095;</a>
+
+                    <!-- The dots/circles -->
+                    <div style="text-align:center">
+                        <span class="dot" onclick="currentSlide(1)"></span>
+                        @for (int i = 0; i < Model.Input.Recipe.PictureList.Count(); i++)
+                        {
+                            <span class="dot" onclick="currentSlide(@(i + 2))"></span>
+                        }
+                    </div>
+                </div>
+                <br>
+
             </div>
             <div class="form-group">
                 <label asp-for="Input.Recipe.Weight" class="control-label"></label>
@@ -51,28 +88,37 @@
                     <span asp-validation-for="Input.Recipe.HaveMeat" class="text-danger"></span>
                 </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Input.Recipe.Image" class="control-label"></label><p>
-                    <img src="@Url.Action("getImg", "AdminRecipes", new { id = Model.Input.Recipe.Id })" alt="Recipe image" height="150" />
-                <p>
-                    <input asp-for="Input.Recipe.Image" type="file" Class="form-control-file" />
-            </div>
         </div>
         <div class="col-md-4">
-            <h1></h1>
             <div class="tab-title-container">
                 <h4>Расписание использования</h4>
             </div>
             <hr />
+            <table class="table-cell" style="width:100%">
+                <tr>
+                    <th></th>
+                    <th>Завтрак</th>
+                    <th>Обед</th>
+                    <th>Ужин</th>
+                </tr>
+                @for (int i = 0; i < Model.Input.RecipeDayInclude.Count(); i++)
+                {
+                    <tr>
+                        <th>@Html.Label("", Model.Input.DayMenuName[i])</th>
+                        @for (int j = 0; j < Model.Input.RecipeDayInclude[0].Count(); j++)
+                        {
+                            <td>
+                                <div class="checkbox-center">
+                                    <input class="custom-checkbox" type="checkbox" asp-for="Input.RecipeDayInclude[i][j]">
+                                    @Html.Label("", "")
+                                    <span asp-validation-for="Input.RecipeDayInclude[i][j]" class="text-danger"></span>
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                }
+            </table>
             <label class="label-tab-spacer"></label>
-            @for (int i = 0; i < Model.Input.RecipeInclude.Count(); i++)
-            {
-                <div class="checkbox">
-                    <input class="custom-checkbox" type="checkbox" asp-for="Input.RecipeInclude[i]">
-                    @Html.Label("", Model.Input.DayMenuName[i])
-                    <span asp-validation-for="Input.RecipeInclude[i]" class="text-danger"></span>
-                </div>
-            }
         </div>
     </div>
     <div class="row">

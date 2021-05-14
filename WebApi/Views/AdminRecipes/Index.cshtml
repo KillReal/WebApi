@@ -23,7 +23,7 @@
                 @Html.DisplayNameFor(model => model.Colories)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Image)
+                @Html.DisplayNameFor(model => model.MainPicture)
             </th>
             <th></th>
         </tr>
@@ -35,13 +35,13 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Weight)
+                @Html.DisplayFor(modelItem => item.Weight) гр.
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Colories)
+                @Html.DisplayFor(modelItem => item.Colories) ккал.
             </td>
             <td>
-                <img src="@Url.Action("getImg", "AdminRecipes", new { id = item.Id })" alt="Recipe image" height="150"/>
+                <img src="@Url.Action("Image", "Recipes", new { id = item.Id })" alt="Recipe image" height="150"/>
             </td>
             <td>
                 <div><a input type="button" class="btn btn-addition" asp-area="Identity" asp-page="/RecipeModify/Edit" asp-route-id="@item.Id">Изменить</a></div>

@@ -28,14 +28,6 @@ namespace WebApi.Controllers
             _logger = logger;
         }
 
-        public FileContentResult getImg(int id)
-        {
-            var recipe = _context.Recipe.First(m => m.Id == id);
-            return recipe.Image != null
-                ? new FileContentResult(recipe.Image, "image/jpeg")
-                : null;
-        }
-
         // GET: Recipes
         public async Task<IActionResult> Index()
         {
@@ -56,7 +48,7 @@ namespace WebApi.Controllers
             {
                 return NotFound();
             }
-
+            _logger.LogInformation($"provided acces to /admin/recipes/details{id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
             return View(recipe);
         }
 
@@ -87,16 +79,17 @@ namespace WebApi.Controllers
                             {
                                 bytes = binaryReader.ReadBytes((int)Image.Length);
                             }
-                            recipe.Image = bytes;
+                            recipe.MainPicture = bytes;
                         }
                     }
                 }
                 else
-                    recipe.Image = System.IO.File.ReadAllBytes("wwwroot/pics/noimg.jpg");
+                    recipe.MainPicture = System.IO.File.ReadAllBytes("wwwroot/pics/noimg.jpg");
                 _context.Add(recipe);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            _logger.LogInformation($"provided acces to /admin/recipes/create/{recipe.Id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
             return View(recipe);
         }
 
@@ -113,6 +106,8 @@ namespace WebApi.Controllers
             {
                 return NotFound();
             }
+            _logger.LogInformation($"provided acces to /admin/recipes/edit/{id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
+
             return View(recipe);
         }
 
@@ -142,12 +137,12 @@ namespace WebApi.Controllers
                             {
                                 bytes = binaryReader.ReadBytes((int)Image.Length);
                             }
-                            recipe.Image = bytes;
+                            recipe.MainPicture = bytes;
                         }
                     }
                 }
                 else
-                    recipe.Image = (await _context.Recipe.AsNoTracking().FirstAsync(m => m.Id == id)).Image;
+                    recipe.MainPicture = (await _context.Recipe.AsNoTracking().FirstAsync(m => m.Id == id)).MainPicture;
                 try
                 {
                     _context.Update(recipe);
@@ -166,6 +161,7 @@ namespace WebApi.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            _logger.LogInformation($"provided acces to /admin/recipes/edit/{recipe.Id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
             return View(recipe);
         }
 
@@ -183,7 +179,7 @@ namespace WebApi.Controllers
             {
                 return NotFound();
             }
-
+            _logger.LogInformation($"provided acces to /admin/recipes/delete/{id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
             return View(recipe);
         }
 

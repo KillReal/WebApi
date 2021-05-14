@@ -30,7 +30,9 @@ namespace ModelLibrary
         [Key]
         public long Id { get; set; }
         public string Name { get; set; }
-        public List<Recipe> Recipes { get; set; }
+        public List<long> BreakfastRecipes { get; set; } = new List<long>();
+        public List<long> LaunchRecipes { get; set; } = new List<long>();
+        public List<long> DinnerRecipes { get; set; } = new List<long>();
     }
 
     public static class Serialization<T> where T : SerializableObject
@@ -44,6 +46,17 @@ namespace ModelLibrary
         public static string WriteList(List<T> recipes)
         {
             return JsonConvert.SerializeObject(recipes.ToArray());
+        }
+
+        // Использование: Recipe list = Serialization<Recipe>.Read(bytes);
+        public static T Read(string bytes)
+        {
+            return JsonConvert.DeserializeObject<T>(bytes);
+        }
+        // Использование: string bytes = Serialization<Recipe>.Write(Recipe);
+        public static string Write(T recipe)
+        {
+            return JsonConvert.SerializeObject(recipe);
         }
     }
 }

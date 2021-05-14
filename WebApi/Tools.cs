@@ -36,5 +36,10 @@ namespace WebApi
             }
             return imageBytes;
         }
+
+        public static string UpperLetter(string text)
+        {
+            return Char.ToUpper(text[0]) + text[1..];
+        }
     }
 }

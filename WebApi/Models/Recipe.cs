@@ -16,10 +16,10 @@ namespace WebApi.Models
         [Display(Name = "Вес")]
         public int Weight { get; set; }
         [Range(1, 5000)]
-        [Display(Name = "Колории")]
+        [Display(Name = "Калории")]
         public int Colories { get; set; }
-        [Display(Name = "Картинка")]
-        public byte[] Image { get; set; }
+        [Display(Name = "Фотография")]
+        public byte[] MainPicture { get; set; }
         [Display(Name = "Белки")]
         public int Proteins { get; set; }
         [Display(Name = "Жиры")]
@@ -29,5 +29,7 @@ namespace WebApi.Models
         [Display(Name = "Мясосодержание")]
         public bool HaveMeat { get; set; }
         public List<RecipeList> RecipeList { get; set; }
+
+        public List<PictureList> PictureList { get; set; }
     }
 }

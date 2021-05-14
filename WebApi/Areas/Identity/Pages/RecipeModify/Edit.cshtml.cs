@@ -29,19 +29,31 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
         {
             public Recipe Recipe { get; set; } = new Recipe();
             public List<string> DayMenuName { get; set; } = new List<string>();
-            public List<Boolean> RecipeInclude { get; set; } = new List<bool>();
+
+            public List<List<Boolean>> RecipeDayInclude { get; set; } = new List<List<bool>>();
         }
 
         public async Task<IActionResult> OnGet(long id, string returnUrl = null)
         {
             Input.Recipe = await _context.Recipe.Include(x => x.RecipeList)
                                          .ThenInclude(x => x.DayMenu)
+                                         .Include(x => x.PictureList)
                                          .FirstOrDefaultAsync(x => x.Id == id);
-            var dayMenus = await _context.DayMenu.Include(x => x.RecipeList).ToListAsync();
+            var dayMenus = await _context.DayMenu.Include(x => x.RecipeList)
+                                                 .ThenInclude(x => x.Recipe)
+                                                 .Where(x => x.Date > DateTime.Now)
+                                                 .ToListAsync();
             for (int i = 0; i < dayMenus.Count(); i++)
             {
                 Input.DayMenuName.Add(dayMenus[i].Name);
-                Input.RecipeInclude.Add(dayMenus[i].RecipeList.Contains(Input.Recipe.RecipeList.Find(x => x.DayMenu.Id == dayMenus[i].Id)));
+                Input.RecipeDayInclude.Add(new List<bool>());
+                var recipeList = dayMenus[i].RecipeList.Find(x => x.DayMenu.Id == dayMenus[i].Id && x.Recipe.Id == Input.Recipe.Id);
+                if (recipeList == null)
+                    recipeList = new RecipeList();
+                foreach (var usage in recipeList.DayUsage)
+                {
+                    Input.RecipeDayInclude[i].Add(usage);
+                }
             }
             ReturnUrl = returnUrl;
             return Page();
@@ -63,28 +75,37 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
                             {
                                 bytes = binaryReader.ReadBytes((int)Image.Length);
                             }
-                            Input.Recipe.Image = Tools.CorrectResolution(bytes);
+                            Input.Recipe.MainPicture = Tools.CorrectResolution(bytes);
                         }
                     }
                 }
                 else
-                    Input.Recipe.Image = (await _context.Recipe.AsNoTracking().FirstAsync(m => m.Id == Input.Recipe.Id)).Image;
+                    Input.Recipe.MainPicture = (await _context.Recipe.AsNoTracking().FirstAsync(m => m.Id == Input.Recipe.Id)).MainPicture;
                 _context.Update(Input.Recipe);
 
                 var DayMenu = await _context.DayMenu.Include(x => x.RecipeList).ToListAsync();
                 Input.Recipe = _context.Recipe.Include(x => x.RecipeList).First(x => x.Id == Input.Recipe.Id);
                 for (int i = 0; i < DayMenu.Count(); i++)
                 {
-                    var recipeList = Input.Recipe.RecipeList.Find(x => x.DayMenu.Id == DayMenu[i].Id);
-                    if (recipeList != null)
+                    var recipeList = await _context.RecipeList.FirstOrDefaultAsync(x => x.DayMenu.Id == DayMenu[i].Id && x.Recipe.Id == Input.Recipe.Id);
+                    if (Input.RecipeDayInclude[i].Contains(true))
                     {
-                        if (Input.RecipeInclude[i] == false)
-                            _context.Remove(recipeList);
+                        var newRecipeList = new RecipeList() 
+                        { 
+                            Recipe = Input.Recipe, 
+                            DayMenu = DayMenu[i], 
+                            DayUsage = Input.RecipeDayInclude[i].ToArray() 
+                        };
+                        if (recipeList == null)
+                            _context.Add(newRecipeList);
+                        else
+                        {
+                            recipeList.DayUsage = Input.RecipeDayInclude[i].ToArray();
+                            _context.Update(recipeList);
+                        }
                     }
-                    else if (Input.RecipeInclude[i])
-                    {
-                        _context.Add(new RecipeList { DayMenu = DayMenu[i], Recipe = Input.Recipe });
-                    }
+                    else if (recipeList != null)
+                        _context.Remove(recipeList);
                 }
                 _context.Update(Input.Recipe);
                 await _context.SaveChangesAsync();
