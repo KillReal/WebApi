@@ -51,26 +51,29 @@ namespace WebApi.Controllers
             return Serialization<ModelLibrary.Recipe>.WriteList(recipes);
         }
 
-        public async Task<String> ImageAsync(int id, int sid = -1)
+        public async Task<FileContentResult> ImageAsync(int id, int sid = -1)
         {
             _logger.LogInformation($"provided acces to /recipes/{id}?sid={sid} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
 
             var recipe = await _context.Recipe.Include(x => x.PictureList).FirstOrDefaultAsync(m => m.Id == id);
-            if (recipe == null)
-                return null;
-            byte[] pictureBytes = null;
-            if (sid == -1)
-                pictureBytes = recipe.MainPicture;
-            else if (sid < recipe.PictureList.Count())
-                pictureBytes = recipe.PictureList.ElementAt(sid).Picture;
-            return JsonConvert.SerializeObject(pictureBytes);
+            if (recipe != null)
+            {
+                byte[] pictureBytes = null;
+                if (sid == -1)
+                    pictureBytes = recipe.MainPicture;
+                else if (sid < recipe.PictureList.Count())
+                    pictureBytes = recipe.PictureList.ElementAt(sid).Picture;
+                if (pictureBytes != null)
+                    return new FileContentResult(pictureBytes, "image/jpeg");
+            }
+            return new FileContentResult(System.IO.File.ReadAllBytes("wwwroot/pics/noimg.jpg"), "image/jpeg");
         }
 
         public async Task<String> Details(int id)
         {
             _logger.LogInformation($"provided acces to /recipes/details/{id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
 
-            var recipe = await _context.Recipe.FirstOrDefaultAsync(x => x.Id == id);
+            var recipe = await _context.Recipe.Include(x => x.PictureList).FirstOrDefaultAsync(x => x.Id == id);
             if (recipe == null)
                 return null;
             var sRecipe = new ModelLibrary.Recipe()
