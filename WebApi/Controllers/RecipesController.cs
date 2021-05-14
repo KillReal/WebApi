@@ -51,19 +51,17 @@ namespace WebApi.Controllers
             return Serialization<ModelLibrary.Recipe>.WriteList(recipes);
         }
 
-        public async Task<String> ImageAsync(int id, int sid = -1)
+        public FileContentResult Image(int id, int sid = -1)
         {
-            _logger.LogInformation($"provided acces to /recipes/{id}?sid={sid} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
-
-            var recipe = await _context.Recipe.Include(x => x.PictureList).FirstOrDefaultAsync(m => m.Id == id);
-            if (recipe == null)
-                return null;
-            byte[] pictureBytes = null;
+            var recipe = _context.Recipe.Include(x => x.PictureList).First(m => m.Id == id);
+            byte[] pictureBytes;
             if (sid == -1)
                 pictureBytes = recipe.MainPicture;
-            else if (sid < recipe.PictureList.Count())
+            else
                 pictureBytes = recipe.PictureList.ElementAt(sid).Picture;
-            return JsonConvert.SerializeObject(pictureBytes);
+            return pictureBytes != null
+                ? new FileContentResult(pictureBytes, "image/jpeg")
+                : null;
         }
 
         public async Task<String> Details(int id)
