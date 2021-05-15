@@ -92,15 +92,10 @@ namespace WebApi.Controllers
             return Serialization<ModelLibrary.Recipe>.Write(sRecipe);
         }
 
-        public async Task<string> Menu()
+        public List<ModelLibrary.DayMenu> ToExportDayMenuList(List<Models.DayMenu> list)
         {
-            _logger.LogInformation($"provided acces to /recipes/menu by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
-            var dayMenus = await _context.DayMenu.Include(x => x.RecipeList)
-                                                 .ThenInclude(x => x.Recipe)
-                                                 .Where(x => x.Date > DateTime.Now.AddDays(-1))
-                                                 .ToListAsync();
             var dayMenuList = new List<ModelLibrary.DayMenu>();
-            foreach (var dayMenu in dayMenus)
+            foreach (var dayMenu in list)
             {
                 var sDayMenu = new ModelLibrary.DayMenu()
                 {
@@ -128,7 +123,17 @@ namespace WebApi.Controllers
                 }
                 dayMenuList.Add(sDayMenu);
             }
-            return Serialization<ModelLibrary.DayMenu>.WriteList(dayMenuList);
+            return dayMenuList;
+        }
+
+        public async Task<string> Menu()
+        {
+            _logger.LogInformation($"provided acces to /recipes/menu by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
+            var dayMenus = await _context.DayMenu.Include(x => x.RecipeList)
+                                                 .ThenInclude(x => x.Recipe)
+                                                 .Where(x => x.Date > DateTime.Now.AddDays(-1))
+                                                 .ToListAsync();
+            return Serialization<ModelLibrary.DayMenu>.WriteList(ToExportDayMenuList(dayMenus));
         }
 
         public async Task<String> WeekMenu()
@@ -140,36 +145,7 @@ namespace WebApi.Controllers
                                                 .ThenInclude(x => x.Recipe)
                                                 .Where(x => x.Date > DateTime.Now.AddDays(-1 * firstDay) && x.Date < DateTime.Now.AddDays(lastDay))
                                                 .ToListAsync();
-            var dayMenuList = new List<ModelLibrary.DayMenu>();
-            foreach (var dayMenu in dayMenus)
-            {
-                var sDayMenu = new ModelLibrary.DayMenu()
-                {
-                    Id = dayMenu.Id,
-                    Name = dayMenu.Name,
-                };
-                foreach (var recipeList in dayMenu.RecipeList)
-                {
-                    for (int i = 0; i < recipeList.DayUsage.Count(); i++)
-                        if (recipeList.DayUsage[i])
-                        {
-                            switch (i)
-                            {
-                                case 0:
-                                    sDayMenu.BreakfastRecipes.Add(recipeList.Recipe.Id);
-                                    break;
-                                case 1:
-                                    sDayMenu.LaunchRecipes.Add(recipeList.Recipe.Id);
-                                    break;
-                                case 2:
-                                    sDayMenu.DinnerRecipes.Add(recipeList.Recipe.Id);
-                                    break;
-                            }
-                        }
-                }
-                dayMenuList.Add(sDayMenu);
-            }
-            return Serialization<ModelLibrary.DayMenu>.WriteList(dayMenuList);
+            return Serialization<ModelLibrary.DayMenu>.WriteList(ToExportDayMenuList(dayMenus));
         }
 
         public async Task<String> TodayMenu()

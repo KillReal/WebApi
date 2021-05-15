@@ -53,7 +53,11 @@
                     </div>
                 </div>
                 <br>
-
+            </div>
+            <input id="main-picture-id" type="hidden" asp-for="Input.MainPictureId" />
+            <div class="form-group">
+                <input id='files' type='file' multiple asp-for="Input.Recipe.MainPicture" />
+                <output id='result' />
             </div>
             <div class="form-group">
                 <label asp-for="Input.Recipe.Weight" class="control-label"></label>
@@ -137,6 +141,48 @@
         </div>
     </div>
 </form>
+
+<script type="text/javascript">
+    window.onload = function () {
+        //Check File API support
+        var count = 0;
+        if (window.File && window.FileList && window.FileReader) {
+            var filesInput = document.getElementById("files");
+            filesInput.addEventListener("change", function (event) {
+                var files = event.target.files; //FileList object
+                var output = document.getElementById("result");
+                var div = document.getElementsByClassName("image-uploader");
+                if (div.length == 0) {
+                    div = document.createElement("div");
+                    div.className = "image-uploader";
+                }
+                else
+                    div = div[0];
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    //Only pics
+                    if (!file.type.match('image'))
+                        continue;
+                    var picReader = new FileReader();
+                    picReader.addEventListener("load", function (event) {
+                        count++;
+                        var picFile = event.target;
+                        var div2 = document.createElement("div");
+                        div2.className = "image-container";
+                        div2.innerHTML += "<img class='thumbnail' src='" + picFile.result + "' " + "title='" + picFile.name + "' id='img-" + count + "'/>" +
+                            "<button class='imagelinks' type='button' onclick='selectImage(event, " + count + ")' id='selector-" + count + "'></button>";
+                        div.appendChild(div2);
+                        output.insertBefore(div, null);
+                    });
+                    //Read the image
+                    picReader.readAsDataURL(file);
+                }
+            });
+        } else {
+            console.log("Your browser does not support File API");
+        }
+    }
+</script>
 
     @section Scripts {
         @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

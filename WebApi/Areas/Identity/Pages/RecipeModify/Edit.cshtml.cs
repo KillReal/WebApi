@@ -29,6 +29,7 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
         {
             public Recipe Recipe { get; set; } = new Recipe();
             public List<string> DayMenuName { get; set; } = new List<string>();
+            public int MainPictureId { get; set; }
 
             public List<List<Boolean>> RecipeDayInclude { get; set; } = new List<List<bool>>();
         }
@@ -63,27 +64,50 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
         {
             if (ModelState.IsValid)
             {
+                List<PictureList> pictureList = new List<PictureList>();
                 var files = HttpContext.Request.Form.Files;
                 if (files.Count > 0)
                 {
-                    foreach (var Image in files)
+                    for (int i = 0; i < files.Count(); i++)
                     {
-                        if (Image != null && Image.Length > 0)
+                        if (files[i] != null && files[i].Length > 0)
                         {
                             byte[] bytes;
-                            using (var binaryReader = new BinaryReader(Image.OpenReadStream()))
+                            using (var binaryReader = new BinaryReader(files[i].OpenReadStream()))
                             {
-                                bytes = binaryReader.ReadBytes((int)Image.Length);
+                                bytes = binaryReader.ReadBytes((int)files[i].Length);
                             }
-                            Input.Recipe.MainPicture = Tools.CorrectResolution(bytes);
+                            if (i == Input.MainPictureId)
+                                Input.Recipe.MainPicture = Tools.CorrectResolution(bytes);
+                            else
+                            {
+                                var Picture = new PictureList()
+                                {
+                                    Picture = Tools.CorrectResolution(bytes),
+                                    Recipe = Input.Recipe
+                                };
+                                pictureList.Add(Picture);
+                            }
                         }
                     }
                 }
                 else
+                {
                     Input.Recipe.MainPicture = (await _context.Recipe.AsNoTracking().FirstAsync(m => m.Id == Input.Recipe.Id)).MainPicture;
+                    Input.Recipe.PictureList = (await _context.Recipe.AsNoTracking().Include(x => x.PictureList)
+                                                                                    .FirstAsync(x => x.Id == Input.Recipe.Id))
+                                                                                    .PictureList;
+                }
                 _context.Update(Input.Recipe);
+                Input.Recipe = await _context.Recipe.Include(x => x.PictureList).FirstAsync(x => x.Id == Input.Recipe.Id);
+                if (pictureList.Count > 0)
+                {
+                    _context.RemoveRange(Input.Recipe.PictureList);
+                    _context.AddRange(pictureList);
+                }
+                await _context.SaveChangesAsync();
 
-                var DayMenu = await _context.DayMenu.Include(x => x.RecipeList).ToListAsync();
+                var DayMenu = await _context.DayMenu.Include(x => x.RecipeList).Where(x => x.Date > DateTime.Now.AddDays(-1)).ToListAsync();
                 Input.Recipe = _context.Recipe.Include(x => x.RecipeList).First(x => x.Id == Input.Recipe.Id);
                 for (int i = 0; i < DayMenu.Count(); i++)
                 {

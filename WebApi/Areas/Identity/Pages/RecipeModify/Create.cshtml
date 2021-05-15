@@ -10,11 +10,11 @@
             <div class="tab-title-container">
                 <h4>БЖУ</h4>
             </div>
-            <hr />
+            <hr/>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input id="main-picture-id" type="hidden" asp-for="Input.MainPictureId" />
             <div class="form-group">
-                <input id='files' type='file' multiple asp-for="Input.MainPictureId"/>
+                <input id='files' type='file' multiple asp-for="Input.Recipe.MainPicture" />
                 <output id='result' />
             </div>
             <div class="form-group">
