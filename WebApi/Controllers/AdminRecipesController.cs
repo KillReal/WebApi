@@ -28,6 +28,22 @@ namespace WebApi.Controllers
             _logger = logger;
         }
 
+        public async Task<FileContentResult> ImageAsync(int id, int sid = -1)
+        {
+            var recipe = await _context.Recipe.Include(x => x.PictureList).FirstOrDefaultAsync(m => m.Id == id);
+            if (recipe != null)
+            {
+                byte[] pictureBytes = null;
+                if (sid == -1)
+                    pictureBytes = recipe.MainPicture;
+                else if (sid < recipe.PictureList.Count())
+                    pictureBytes = recipe.PictureList.ElementAt(sid).Picture;
+                if (pictureBytes != null)
+                    return new FileContentResult(pictureBytes, "image/jpeg");
+            }
+            return new FileContentResult(System.IO.File.ReadAllBytes("wwwroot/pics/noimg.jpg"), "image/jpeg");
+        }
+
         // GET: Recipes
         public async Task<IActionResult> Index()
         {

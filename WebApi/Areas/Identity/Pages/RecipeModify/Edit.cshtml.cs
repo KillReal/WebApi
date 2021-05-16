@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using WebApi.Controllers;
 using WebApi.Data;
 using WebApi.Models;
 
@@ -14,10 +17,14 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
     public class EditModel : PageModel
     {
         private readonly MainDbContext _context;
+        private UserManager<IdentityUser> _userManager;
+        private ILogger<HomeController> _logger;
 
-        public EditModel(MainDbContext context)
+        public EditModel(MainDbContext context, UserManager<IdentityUser> userManager, ILogger<HomeController> logger)
         {
             _context = context;
+            _userManager = userManager;
+            _logger = logger;
         }
 
         public string ReturnUrl { get; set; }
@@ -36,6 +43,7 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
 
         public async Task<IActionResult> OnGet(long id, string returnUrl = null)
         {
+            _logger.LogInformation($"provided acces to /admin/recipes/edit?get?id={id} by user: {await _userManager.GetUserAsync(HttpContext.User)}");
             Input.Recipe = await _context.Recipe.Include(x => x.RecipeList)
                                          .ThenInclude(x => x.DayMenu)
                                          .Include(x => x.PictureList)
@@ -62,6 +70,7 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
 
         public async Task<IActionResult> OnPostAsync()
         {
+            _logger.LogInformation($"provided acces to /admin/recipes/edit?post by user: {await _userManager.GetUserAsync(HttpContext.User)}");
             if (ModelState.IsValid)
             {
                 List<PictureList> pictureList = new List<PictureList>();
@@ -77,7 +86,7 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
                             {
                                 bytes = binaryReader.ReadBytes((int)files[i].Length);
                             }
-                            if (i == Input.MainPictureId)
+                            if (i == Input.MainPictureId - 1)
                                 Input.Recipe.MainPicture = Tools.CorrectResolution(bytes);
                             else
                             {

@@ -25,18 +25,18 @@
             </div>
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Input.Recipe.Id" />
+            <input type="hidden" asp-for="Input.Recipe.Id"/>
             <div class="form-group">
                 <div class="slideshow-container">
                     <div class="mySlides">
                         <div class="numbertext">1 / @(Model.Input.Recipe.PictureList.Count() + 1)</div>
-                        <img src="@Url.Action("Image", "Recipes", new { id = Model.Input.Recipe.Id })" style="width:100%">
+                        <img src="@Url.Action("Image", "AdminRecipes", new { id = Model.Input.Recipe.Id })" style="width:100%">
                     </div>
                     @for (int i = 0; i < Model.Input.Recipe.PictureList.Count(); i++)
                     {
                         <div class="mySlides">
                             <div class="numbertext">@(i + 2) / @(Model.Input.Recipe.PictureList.Count() + 1)</div>
-                            <img src="@Url.Action("Image", "Recipes", new { id = Model.Input.Recipe.Id, sid = i })" style="width:100%">
+                            <img src="@Url.Action("Image", "AdminRecipes", new { id = Model.Input.Recipe.Id, sid = i })" style="width:100%">
                         </div>
                     }
                     <!-- Next and previous buttons -->
@@ -54,7 +54,7 @@
                 </div>
                 <br>
             </div>
-            <input id="main-picture-id" type="hidden" asp-for="Input.MainPictureId" />
+            <input id="main-picture-id" type="hidden" asp-for="Input.MainPictureId" value="1"/>
             <div class="form-group">
                 <input id='files' type='file' multiple asp-for="Input.Recipe.MainPicture" />
                 <output id='result' />
@@ -151,7 +151,6 @@
 <script type="text/javascript">
     window.onload = function () {
         //Check File API support
-        var count = 0;
         if (window.File && window.FileList && window.FileReader) {
             var filesInput = document.getElementById("files");
             filesInput.addEventListener("change", function (event) {
@@ -171,15 +170,16 @@
                         continue;
                     var picReader = new FileReader();
                     picReader.addEventListener("load", function (event) {
-                        count++;
                         var picFile = event.target;
+                        var id = event.target.index + 1;
                         var div2 = document.createElement("div");
                         div2.className = "image-container";
-                        div2.innerHTML += "<img class='thumbnail' src='" + picFile.result + "' " + "title='" + picFile.name + "' id='img-" + count + "'/>" +
-                            "<button class='imagelinks' type='button' onclick='selectImage(event, " + count + ")' id='selector-" + count + "'></button>";
+                        div2.innerHTML += "<img class='thumbnail' src='" + picFile.result + "' " + "title='" + picFile.name + "' id='img-" + id + "'/>" +
+                            "<button class='imagelinks' type='button' onclick='selectImage(event, " + id + ")' id='selector-" + id + "'></button>";
                         div.appendChild(div2);
                         output.insertBefore(div, null);
                     });
+                    picReader.index = i;
                     //Read the image
                     picReader.readAsDataURL(file);
                 }

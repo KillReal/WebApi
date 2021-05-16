@@ -31,7 +31,7 @@
 @foreach (var item in Model) {
         <tr onclick="location.href = '@(Url.Page("/RecipeModify/Edit", new { id = item.Id, area = "Identity" }))'" class="main-table">
             <td>
-                <img src="@Url.Action("Image", "Recipes", new { id = item.Id })" alt="Recipe image" height="150" />
+                <img src="@Url.Action("Image", "AdminRecipes", new { id = item.Id })" alt="Recipe image" height="150" />
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)

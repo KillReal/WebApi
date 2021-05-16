@@ -6,10 +6,13 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using WebApi.Controllers;
 using WebApi.Data;
 using WebApi.Models;
 
@@ -18,11 +21,15 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
     public class CreateModel : PageModel
     {
         private readonly MainDbContext _context;
+        private UserManager<IdentityUser> _userManager;
+        private ILogger<HomeController> _logger;
         private IConfiguration Configuration { get; }
 
-        public CreateModel(MainDbContext context, IConfiguration configuration)
+        public CreateModel(MainDbContext context, IConfiguration configuration, UserManager<IdentityUser> userManager, ILogger<HomeController> logger)
         {
             _context = context;
+            _userManager = userManager;
+            _logger = logger;
             Configuration = configuration;
         }
 
@@ -39,6 +46,7 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
 
         public async Task<IActionResult> OnGet()
         {
+            _logger.LogInformation($"provided acces to /admin/recipes/create?get by user: {await _userManager.GetUserAsync(HttpContext.User)}");
             var dayMenus = await _context.DayMenu.Include(x => x.RecipeList)
                                                  .ThenInclude(x => x.Recipe)
                                                  .Where(x => x.Date > DateTime.Now.AddDays(-1))
@@ -62,15 +70,12 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
 
         public async Task<IActionResult> OnPostAsync()
         {
+            _logger.LogInformation($"provided acces to /admin/recipes/create?post?id={Input.Recipe.Id} by user: {await _userManager.GetUserAsync(HttpContext.User)}");
             if (ModelState.IsValid)
             {
                 var files = HttpContext.Request.Form.Files;
                 if (files.Count > 0)
                 {
-                    foreach (var Image in files)
-                    {
-                        
-                    }
                     for (int i = 0; i < files.Count(); i++)
                     {
                         if (files[i] != null && files[i].Length > 0)

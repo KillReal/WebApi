@@ -26,7 +26,7 @@
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <label asp-for="Input.Recipe.MainPicture" class="control-label"></label>
-            <input id="main-picture-id" type="hidden" asp-for="Input.MainPictureId" />
+            <input id="main-picture-id" type="hidden" asp-for="Input.MainPictureId" value="1" />
             <div class="form-group">
                 <input id='files' type='file' multiple asp-for="Input.Recipe.MainPicture" />
                 <output id='result' />
@@ -136,14 +136,16 @@
                     picReader.addEventListener("load", function (event) {
                         count++;
                         var picFile = event.target;
+                        var id = event.target.index + 1;
                         var div2 = document.createElement("div");
                         div2.className = "image-container";
                         div2.innerHTML += "<img class='thumbnail' src='" + picFile.result + "' " + "title='" + picFile.name + "' id='img-" + count + "'/>" +
-                            "<button class='imagelinks' type='button' onclick='selectImage(event, " + count + ")' id='selector-" + count + "'></button>";
+                            "<button class='imagelinks' type='button' onclick='selectImage(event, " + id + ")' id='selector-" + id + "'></button>";
                         div.appendChild(div2);
                         output.insertBefore(div, null);
                     });
                     //Read the image
+                    picReader.index = i;
                     picReader.readAsDataURL(file);
                 }
             });
