@@ -14,6 +14,9 @@
     <thead>
         <tr>
             <th>
+                @Html.DisplayNameFor(model => model.MainPicture)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
@@ -22,15 +25,14 @@
             <th>
                 @Html.DisplayNameFor(model => model.Colories)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MainPicture)
-            </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+        <tr onclick="location.href = '@(Url.Page("/RecipeModify/Edit", new { id = item.Id, area = "Identity" }))'" class="main-table">
+            <td>
+                <img src="@Url.Action("Image", "Recipes", new { id = item.Id })" alt="Recipe image" height="150" />
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
@@ -39,14 +41,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Colories) ккал.
-            </td>
-            <td>
-                <img src="@Url.Action("Image", "Recipes", new { id = item.Id })" alt="Recipe image" height="150"/>
-            </td>
-            <td>
-                <div><a input type="button" class="btn btn-addition" asp-area="Identity" asp-page="/RecipeModify/Edit" asp-route-id="@item.Id">Изменить</a></div>
-                <div><a input type="button" class="btn btn-addition" asp-action="Details" asp-route-id="@item.Id">Подробно</a></div>
-                <div><a input type="button" class="btn btn-addition" asp-area="Identity" asp-page="/RecipeModify/Delete" asp-route-id="@item.Id">Удалить</a></div>
             </td>
         </tr>
 }

@@ -56,6 +56,7 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
                     Input.RecipeDayInclude[i].Add(usage);
                 }
             }
+            Input.Recipe.Name = "Название";
             return Page();
         }
 
