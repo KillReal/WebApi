@@ -12,10 +12,10 @@ namespace WebApi.Models
         public long Id { get; set; }    
         [Display(Name = "Название")]
         public string Name { get; set; }
-        [Range(1, 3000)]
+        [Range(0, 3000)]
         [Display(Name = "Вес")]
         public int Weight { get; set; }
-        [Range(1, 5000)]
+        [Range(0, 5000)]
         [Display(Name = "Калории")]
         public int Colories { get; set; }
         [Display(Name = "Фотография")]

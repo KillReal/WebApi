@@ -25,18 +25,18 @@
             </div>
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Input.Recipe.Id" />
+            <input type="hidden" asp-for="Input.Recipe.Id"/>
             <div class="form-group">
                 <div class="slideshow-container">
                     <div class="mySlides">
                         <div class="numbertext">1 / @(Model.Input.Recipe.PictureList.Count() + 1)</div>
-                        <img src="@Url.Action("Image", "Recipes", new { id = Model.Input.Recipe.Id })" style="width:100%">
+                        <img src="@Url.Action("Image", "AdminRecipes", new { id = Model.Input.Recipe.Id })" style="width:100%">
                     </div>
                     @for (int i = 0; i < Model.Input.Recipe.PictureList.Count(); i++)
                     {
                         <div class="mySlides">
                             <div class="numbertext">@(i + 2) / @(Model.Input.Recipe.PictureList.Count() + 1)</div>
-                            <img src="@Url.Action("Image", "Recipes", new { id = Model.Input.Recipe.Id, sid = i })" style="width:100%">
+                            <img src="@Url.Action("Image", "AdminRecipes", new { id = Model.Input.Recipe.Id, sid = i })" style="width:100%">
                         </div>
                     }
                     <!-- Next and previous buttons -->
@@ -53,8 +53,18 @@
                     </div>
                 </div>
                 <br>
-
             </div>
+            <input id="main-picture-id" type="hidden" asp-for="Input.MainPictureId" value="1"/>
+            <div class="form-group">
+                <input id='files' type='file' multiple asp-for="Input.Recipe.MainPicture" />
+                <output id='result' />
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="tab-title-container">
+                <h4>Параметры</h4>
+            </div>
+            <hr />
             <div class="form-group">
                 <label asp-for="Input.Recipe.Weight" class="control-label"></label>
                 <input asp-for="Input.Recipe.Weight" class="form-control" />
@@ -121,22 +131,64 @@
             <label class="label-tab-spacer"></label>
         </div>
     </div>
+    <label class="label-tab-spacer"></label>
     <div class="row">
-        <div class="col-md-4">
-            <div class="form-group">
-                @if (Model.ReturnUrl == null)
-                {
-                    <a input type="button" class="btn btn-primary" asp-controller="AdminRecipes" asp-action="Index">Назад</a>
-                }
-                else
-                {
-                    <a input type="button" class="btn btn-primary" asp-area="Identity" asp-page="@Model.ReturnUrl">Назад</a>
-                }
-                <button type="submit" class="btn btn-primary">Сохранить</button>
-            </div>
+        <div class="form-group">
+            @if (Model.ReturnUrl == null)
+            {
+                <a input type="button" class="btn btn-primary" asp-controller="AdminRecipes" asp-action="Index">Назад</a>
+            }
+            else
+            {
+                <a input type="button" class="btn btn-primary" asp-area="Identity" asp-page="@Model.ReturnUrl">Назад</a>
+            }
+            <a input type="button" class="btn btn-danger" asp-area="Identity" asp-page="/RecipeModify/Delete" asp-route-id="@Model.Input.Recipe.Id">Удалить</a>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
         </div>
     </div>
 </form>
+
+<script type="text/javascript">
+    window.onload = function () {
+        //Check File API support
+        if (window.File && window.FileList && window.FileReader) {
+            var filesInput = document.getElementById("files");
+            filesInput.addEventListener("change", function (event) {
+                var files = event.target.files; //FileList object
+                var output = document.getElementById("result");
+                var div = document.getElementsByClassName("image-uploader");
+                if (div.length == 0) {
+                    div = document.createElement("div");
+                    div.className = "image-uploader";
+                }
+                else
+                    div = div[0];
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    //Only pics
+                    if (!file.type.match('image'))
+                        continue;
+                    var picReader = new FileReader();
+                    picReader.addEventListener("load", function (event) {
+                        var picFile = event.target;
+                        var id = event.target.index + 1;
+                        var div2 = document.createElement("div");
+                        div2.className = "image-container";
+                        div2.innerHTML += "<img class='thumbnail' src='" + picFile.result + "' " + "title='" + picFile.name + "' id='img-" + id + "'/>" +
+                            "<button class='imagelinks' type='button' onclick='selectImage(event, " + id + ")' id='selector-" + id + "'></button>";
+                        div.appendChild(div2);
+                        output.insertBefore(div, null);
+                    });
+                    picReader.index = i;
+                    //Read the image
+                    picReader.readAsDataURL(file);
+                }
+            });
+        } else {
+            console.log("Your browser does not support File API");
+        }
+    }
+</script>
 
     @section Scripts {
         @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

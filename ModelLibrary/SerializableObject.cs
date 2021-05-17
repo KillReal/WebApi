@@ -30,6 +30,8 @@ namespace ModelLibrary
         [Key]
         public long Id { get; set; }
         public string Name { get; set; }
+
+        public String Date { get; set; }
         public List<long> BreakfastRecipes { get; set; } = new List<long>();
         public List<long> LaunchRecipes { get; set; } = new List<long>();
         public List<long> DinnerRecipes { get; set; } = new List<long>();

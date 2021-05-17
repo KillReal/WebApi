@@ -28,10 +28,26 @@ namespace WebApi.Controllers
             _logger = logger;
         }
 
+        public async Task<FileContentResult> ImageAsync(int id, int sid = -1)
+        {
+            var recipe = await _context.Recipe.Include(x => x.PictureList).FirstOrDefaultAsync(m => m.Id == id);
+            if (recipe != null)
+            {
+                byte[] pictureBytes = null;
+                if (sid == -1)
+                    pictureBytes = recipe.MainPicture;
+                else if (sid < recipe.PictureList.Count())
+                    pictureBytes = recipe.PictureList.ElementAt(sid).Picture;
+                if (pictureBytes != null)
+                    return new FileContentResult(pictureBytes, "image/jpeg");
+            }
+            return new FileContentResult(System.IO.File.ReadAllBytes("wwwroot/pics/noimg.jpg"), "image/jpeg");
+        }
+
         // GET: Recipes
         public async Task<IActionResult> Index()
         {
-            _logger.LogInformation($"provided acces to /admin/index by user: {await _userManager.GetUserAsync(HttpContext.User)}");
+            _logger.LogInformation($"provided acces to /admin/index by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             return View(await _context.Recipe.ToListAsync());
         }
 
@@ -48,7 +64,7 @@ namespace WebApi.Controllers
             {
                 return NotFound();
             }
-            _logger.LogInformation($"provided acces to /admin/recipes/details{id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
+            _logger.LogInformation($"provided acces to /admin/recipes/details{id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             return View(recipe);
         }
 
@@ -89,7 +105,7 @@ namespace WebApi.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            _logger.LogInformation($"provided acces to /admin/recipes/create/{recipe.Id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
+            _logger.LogInformation($"provided acces to /admin/recipes/create/{recipe.Id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             return View(recipe);
         }
 
@@ -106,7 +122,7 @@ namespace WebApi.Controllers
             {
                 return NotFound();
             }
-            _logger.LogInformation($"provided acces to /admin/recipes/edit/{id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
+            _logger.LogInformation($"provided acces to /admin/recipes/edit/{id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
 
             return View(recipe);
         }
@@ -161,7 +177,7 @@ namespace WebApi.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            _logger.LogInformation($"provided acces to /admin/recipes/edit/{recipe.Id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
+            _logger.LogInformation($"provided acces to /admin/recipes/edit/{recipe.Id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             return View(recipe);
         }
 
@@ -179,7 +195,7 @@ namespace WebApi.Controllers
             {
                 return NotFound();
             }
-            _logger.LogInformation($"provided acces to /admin/recipes/delete/{id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
+            _logger.LogInformation($"provided acces to /admin/recipes/delete/{id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             return View(recipe);
         }
 

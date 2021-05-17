@@ -58,7 +58,7 @@
             @Html.DisplayNameFor(model => model.Recipe.MainPicture)
         </dt>
         <dd class="col-sm-10">
-            <img src="@Url.Action("Image", "Recipes", new { id = Model.Recipe.Id })" alt="Recipe image" height="150" />
+            <img src="@Url.Action("Image", "AdminRecipes", new { id = Model.Recipe.Id })" alt="Recipe image" height="150" />
         </dd>
     </dl>
 

@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using WebApi.Controllers;
 using WebApi.Data;
 using WebApi.Models;
 
@@ -14,10 +17,14 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
     public class EditModel : PageModel
     {
         private readonly MainDbContext _context;
+        private UserManager<IdentityUser> _userManager;
+        private ILogger<HomeController> _logger;
 
-        public EditModel(MainDbContext context)
+        public EditModel(MainDbContext context, UserManager<IdentityUser> userManager, ILogger<HomeController> logger)
         {
             _context = context;
+            _userManager = userManager;
+            _logger = logger;
         }
 
         public string ReturnUrl { get; set; }
@@ -29,12 +36,14 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
         {
             public Recipe Recipe { get; set; } = new Recipe();
             public List<string> DayMenuName { get; set; } = new List<string>();
+            public int MainPictureId { get; set; }
 
             public List<List<Boolean>> RecipeDayInclude { get; set; } = new List<List<bool>>();
         }
 
         public async Task<IActionResult> OnGet(long id, string returnUrl = null)
         {
+            _logger.LogInformation($"provided acces to /admin/recipes/edit?get?id={id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             Input.Recipe = await _context.Recipe.Include(x => x.RecipeList)
                                          .ThenInclude(x => x.DayMenu)
                                          .Include(x => x.PictureList)
@@ -61,29 +70,53 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
 
         public async Task<IActionResult> OnPostAsync()
         {
+            _logger.LogInformation($"provided acces to /admin/recipes/edit?post by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             if (ModelState.IsValid)
             {
+                List<PictureList> pictureList = new List<PictureList>();
                 var files = HttpContext.Request.Form.Files;
                 if (files.Count > 0)
                 {
-                    foreach (var Image in files)
+                    for (int i = 0; i < files.Count(); i++)
                     {
-                        if (Image != null && Image.Length > 0)
+                        if (files[i] != null && files[i].Length > 0)
                         {
                             byte[] bytes;
-                            using (var binaryReader = new BinaryReader(Image.OpenReadStream()))
+                            using (var binaryReader = new BinaryReader(files[i].OpenReadStream()))
                             {
-                                bytes = binaryReader.ReadBytes((int)Image.Length);
+                                bytes = binaryReader.ReadBytes((int)files[i].Length);
                             }
-                            Input.Recipe.MainPicture = Tools.CorrectResolution(bytes);
+                            if (i == Input.MainPictureId - 1)
+                                Input.Recipe.MainPicture = Tools.CorrectResolution(bytes);
+                            else
+                            {
+                                var Picture = new PictureList()
+                                {
+                                    Picture = Tools.CorrectResolution(bytes),
+                                    Recipe = Input.Recipe
+                                };
+                                pictureList.Add(Picture);
+                            }
                         }
                     }
                 }
                 else
+                {
                     Input.Recipe.MainPicture = (await _context.Recipe.AsNoTracking().FirstAsync(m => m.Id == Input.Recipe.Id)).MainPicture;
+                    Input.Recipe.PictureList = (await _context.Recipe.AsNoTracking().Include(x => x.PictureList)
+                                                                                    .FirstAsync(x => x.Id == Input.Recipe.Id))
+                                                                                    .PictureList;
+                }
                 _context.Update(Input.Recipe);
+                Input.Recipe = await _context.Recipe.Include(x => x.PictureList).FirstAsync(x => x.Id == Input.Recipe.Id);
+                if (pictureList.Count > 0)
+                {
+                    _context.RemoveRange(Input.Recipe.PictureList);
+                    _context.AddRange(pictureList);
+                }
+                await _context.SaveChangesAsync();
 
-                var DayMenu = await _context.DayMenu.Include(x => x.RecipeList).ToListAsync();
+                var DayMenu = await _context.DayMenu.Include(x => x.RecipeList).Where(x => x.Date > DateTime.Now.AddDays(-1)).ToListAsync();
                 Input.Recipe = _context.Recipe.Include(x => x.RecipeList).First(x => x.Id == Input.Recipe.Id);
                 for (int i = 0; i < DayMenu.Count(); i++)
                 {

@@ -8,20 +8,35 @@
     <div class="row">
         <div class="col-md-4">
             <div class="tab-title-container">
-                <h4>БЖУ</h4>
+                <h4 class="name-edit">
+                    <label class="control-label-custom">
+                        <div class="text-info-custom">@Model.Input.Recipe.Name</div>
+                        <i class="icon-star"></i>
+                    </label>
+                    <input id="label-edit" type="hidden" asp-for="Input.Recipe.Name" />
+                    <div class="controls">
+                        <a href="#" id="edit" class="btn-hidden"></a>
+                        <picture>
+                            <source srcset="/pics/edit.png">
+                            <img src="/pics/edit.png" alt="MDN" class="img-icon">
+                        </picture>
+                    </div>
+                </h4>
             </div>
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input id="main-picture-id" type="hidden" asp-for="Input.MainPictureId" />
+            <label asp-for="Input.Recipe.MainPicture" class="control-label"></label>
+            <input id="main-picture-id" type="hidden" asp-for="Input.MainPictureId" value="1" />
             <div class="form-group">
-                <input id='files' type='file' multiple asp-for="Input.MainPictureId"/>
+                <input id='files' type='file' multiple asp-for="Input.Recipe.MainPicture" />
                 <output id='result' />
             </div>
-            <div class="form-group">
-                <label asp-for="Input.Recipe.Name" class="control-label"></label>
-                <input asp-for="Input.Recipe.Name" class="form-control" />
-                <span asp-validation-for="Input.Recipe.Name" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <div class="tab-title-container">
+                <h4>Параметры</h4>
             </div>
+            <hr />
             <div class="form-group">
                 <label asp-for="Input.Recipe.Weight" class="control-label"></label>
                 <input asp-for="Input.Recipe.Weight" class="form-control" />
@@ -87,13 +102,11 @@
             </table>
         </div>
     </div>
+    <label class="label-tab-spacer"></label>
     <div class="row">
-        <div class="col-md-4">
-            <label class="label-tab-spacer"></label>
-            <div class="form-group">
-                <a input type="button" class="btn btn-primary" asp-controller="AdminRecipes" asp-action="Index">Назад</a>
-                <button type="submit" class="btn btn-primary">Создать</button>
-            </div>
+        <div class="form-group">
+            <a input type="button" class="btn btn-primary" asp-controller="AdminRecipes" asp-action="Index">Назад</a>
+            <button type="submit" class="btn btn-primary">Создать</button>
         </div>
     </div>
 </form>
@@ -123,14 +136,16 @@
                     picReader.addEventListener("load", function (event) {
                         count++;
                         var picFile = event.target;
+                        var id = event.target.index + 1;
                         var div2 = document.createElement("div");
                         div2.className = "image-container";
                         div2.innerHTML += "<img class='thumbnail' src='" + picFile.result + "' " + "title='" + picFile.name + "' id='img-" + count + "'/>" +
-                            "<button class='imagelinks' type='button' onclick='selectImage(event, " + count + ")' id='selector-" + count + "'></button>";
+                            "<button class='imagelinks' type='button' onclick='selectImage(event, " + id + ")' id='selector-" + id + "'></button>";
                         div.appendChild(div2);
                         output.insertBefore(div, null);
                     });
                     //Read the image
+                    picReader.index = i;
                     picReader.readAsDataURL(file);
                 }
             });
