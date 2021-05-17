@@ -21,7 +21,8 @@ namespace ModelLibrary
         public int Proteins { get; set; }
         public int Greases { get; set; }
         public int Carbohydrates { get; set; }
-        public bool HaveMeat { get; set; }
+        public bool IsVegan { get; set; }
+        public bool IsVegetarian { get; set; }
         public int PictureCount { get; set; }
     }
 

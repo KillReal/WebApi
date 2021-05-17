@@ -26,8 +26,10 @@ namespace WebApi.Models
         public int Greases { get; set; }
         [Display(Name = "Углеводы")]
         public int Carbohydrates { get; set; }
-        [Display(Name = "Мясосодержание")]
-        public bool HaveMeat { get; set; }
+        [Display(Name = "Веганское")]
+        public bool IsVegan { get; set; }
+        [Display(Name = "Вегетарианское")]
+        public bool IsVegetarian { get; set; }
         public List<RecipeList> RecipeList { get; set; }
 
         public List<PictureList> PictureList { get; set; }

@@ -38,12 +38,6 @@ else
 {
 <div id="@(Model.Input.DayMenuName[i])-1@(i)" class="tabcontent">
     <div class="header">@Html.Label("", Model.Input.DayMenuName[i])</div>
-    <div class="tab">
-        @for (int j = 0; j < Model.Input.MenuTypeName.Count(); j++)
-        {
-            <button class="tablinks" onclick="openTab(event, '@Model.Input.MenuTypeName[j]', '2@(i)')" id="tab-2@(i)">@Html.Label("", Model.Input.MenuTypeName[j])</button>
-        }
-    </div>
     <p>
         <div>
             @if (Model.Input.isHistory)
@@ -52,6 +46,12 @@ else
             }
         </div>
     </p>
+    <div class="tab">
+        @for (int j = 0; j < Model.Input.MenuTypeName.Count(); j++)
+        {
+            <button class="tablinks" onclick="openTab(event, '@Model.Input.MenuTypeName[j]', '2@(i)')" id="tab-2@(i)">@Html.Label("", Model.Input.MenuTypeName[j])</button>
+        }
+    </div>
     @for (int j = 0; j < Model.Input.MenuTypeName.Count(); j++)
     {
         <div id="@(Model.Input.MenuTypeName[j])-2@(i)" class="tabcontent">
@@ -76,20 +76,20 @@ else
                 <tbody>
                     @foreach (var item in Model.Input.Recipes[i][j])
                     {
-                    <tr onclick="location.href = '@(Url.Page("/RecipeModify/Edit", new { id = item.Id, returnUrl = "/Schedule/Index", area = "Identity" }))'" class="main-table">
-                        <td>
-                            <img src="@Url.Action("Image", "AdminRecipes", new { id = item.Id })" alt="Recipe image" height="150" />
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Name)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Weight) гр.
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Colories) ккал.
-                        </td>
-                    </tr>
+                        <tr onclick="location.href = '@(Url.Page("/RecipeModify/Edit", new { id = item.Id, returnUrl = "/Schedule/Index", area = "Identity" }))'" class="main-table">
+                            <td>
+                                <img src="@Url.Action("Image", "AdminRecipes", new { id = item.Id })" alt="Recipe image" height="150" />
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Weight) гр.
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Colories) ккал.
+                            </td>
+                        </tr>
                     }
                 </tbody>
             </table>

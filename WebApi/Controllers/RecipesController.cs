@@ -26,6 +26,23 @@ namespace WebApi.Controllers
             _userManager = userManager;
         }
 
+        public ModelLibrary.Recipe RecipeToExport(Models.Recipe recipe)
+        {
+            return new ModelLibrary.Recipe()
+            {
+                Id = recipe.Id,
+                Name = recipe.Name,
+                Weight = recipe.Weight,
+                Colories = recipe.Colories,
+                PictureCount = recipe.PictureList.Count() + 1,
+                Proteins = recipe.Proteins,
+                Greases = recipe.Greases,
+                Carbohydrates = recipe.Carbohydrates,
+                IsVegan = recipe.IsVegan,
+                IsVegetarian = recipe.IsVegetarian
+            };
+        }
+
         public async Task<String> Index()
         {
             _logger.LogInformation($"provided acces to /recipes by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
@@ -35,18 +52,7 @@ namespace WebApi.Controllers
             List<ModelLibrary.Recipe> recipes = new List<ModelLibrary.Recipe>();
             foreach(var item in list)
             {
-                recipes.Add(new ModelLibrary.Recipe
-                {
-                    Id = item.Id,
-                    Name = item.Name,
-                    Weight = item.Weight,
-                    Colories = item.Colories,
-                    PictureCount = item.PictureList.Count() + 1,
-                    Proteins = item.Proteins,
-                    Greases = item.Greases,
-                    Carbohydrates = item.Carbohydrates,
-                    HaveMeat = item.HaveMeat
-                });
+                recipes.Add(RecipeToExport(item));
             }
 
             return Serialization<ModelLibrary.Recipe>.WriteList(recipes);
@@ -77,20 +83,8 @@ namespace WebApi.Controllers
             var recipe = await _context.Recipe.Include(x => x.PictureList).FirstOrDefaultAsync(x => x.Id == id);
             if (recipe == null)
                 return null;
-            var sRecipe = new ModelLibrary.Recipe()
-            {
-                Id = recipe.Id,
-                Name = recipe.Name,
-                Weight = recipe.Weight,
-                Colories = recipe.Colories,
-                PictureCount = recipe.PictureList.Count() + 1,
-                Proteins = recipe.Proteins,
-                Greases = recipe.Greases,
-                Carbohydrates = recipe.Carbohydrates,
-                HaveMeat = recipe.HaveMeat
-            };
 
-            return Serialization<ModelLibrary.Recipe>.Write(sRecipe);
+            return Serialization<ModelLibrary.Recipe>.Write(RecipeToExport(recipe));
         }
 
         public List<ModelLibrary.DayMenu> ToExportDayMenuList(List<Models.DayMenu> list)
@@ -141,7 +135,7 @@ namespace WebApi.Controllers
         public async Task<String> WeekMenu()
         {
             _logger.LogInformation($"provided acces to /recipes/weekmenu by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
-            int firstDay = (7 + (DateTime.Now.DayOfWeek - DayOfWeek.Monday)) % 7;
+            int firstDay = (8 + (DateTime.Now.DayOfWeek - DayOfWeek.Monday)) % 7;
             int lastDay = 6 - firstDay;
             var dayMenus = await _context.DayMenu.Include(x => x.RecipeList)
                                                 .ThenInclude(x => x.Recipe)
