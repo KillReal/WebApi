@@ -47,7 +47,7 @@ namespace WebApi.Controllers
         // GET: Recipes
         public async Task<IActionResult> Index()
         {
-            _logger.LogInformation($"provided acces to /admin/index by user: {await _userManager.GetUserAsync(HttpContext.User)}");
+            _logger.LogInformation($"provided acces to /admin/index by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             return View(await _context.Recipe.ToListAsync());
         }
 
@@ -64,7 +64,7 @@ namespace WebApi.Controllers
             {
                 return NotFound();
             }
-            _logger.LogInformation($"provided acces to /admin/recipes/details{id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
+            _logger.LogInformation($"provided acces to /admin/recipes/details{id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             return View(recipe);
         }
 
@@ -105,7 +105,7 @@ namespace WebApi.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            _logger.LogInformation($"provided acces to /admin/recipes/create/{recipe.Id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
+            _logger.LogInformation($"provided acces to /admin/recipes/create/{recipe.Id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             return View(recipe);
         }
 
@@ -122,7 +122,7 @@ namespace WebApi.Controllers
             {
                 return NotFound();
             }
-            _logger.LogInformation($"provided acces to /admin/recipes/edit/{id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
+            _logger.LogInformation($"provided acces to /admin/recipes/edit/{id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
 
             return View(recipe);
         }
@@ -177,7 +177,7 @@ namespace WebApi.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            _logger.LogInformation($"provided acces to /admin/recipes/edit/{recipe.Id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
+            _logger.LogInformation($"provided acces to /admin/recipes/edit/{recipe.Id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             return View(recipe);
         }
 
@@ -195,7 +195,7 @@ namespace WebApi.Controllers
             {
                 return NotFound();
             }
-            _logger.LogInformation($"provided acces to /admin/recipes/delete/{id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
+            _logger.LogInformation($"provided acces to /admin/recipes/delete/{id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             return View(recipe);
         }
 

@@ -72,7 +72,7 @@ namespace WebApi.Areas.Identity.Pages.Schedule
 
         public async Task<IActionResult> OnGetCreateFromHistory(long id)
         {
-            _logger.LogInformation($"provided acces to /admin/schedule/createfromhistory={id} by user: {await _userManager.GetUserAsync(HttpContext.User)}");
+            _logger.LogInformation($"provided acces to /admin/schedule/createfromhistory={id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             var dayMenu = await _context.DayMenu.Include(x => x.RecipeList)
                                                 .FirstAsync(x => x.Id == id);
             var dayMenus = await _context.DayMenu.OrderBy(x => x.Date)
@@ -97,7 +97,7 @@ namespace WebApi.Areas.Identity.Pages.Schedule
 
         public async Task<IActionResult> OnGetHistory()
         {
-            _logger.LogInformation($"provided acces to /admin/schedule/history by user: {await _userManager.GetUserAsync(HttpContext.User)}");
+            _logger.LogInformation($"provided acces to /admin/schedule/history by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             await UpdateModelAsync(true);
             Input.isHistory = true;
             return Page();
@@ -105,7 +105,7 @@ namespace WebApi.Areas.Identity.Pages.Schedule
 
         public async Task<IActionResult> OnGetCreate(InputModel input)
         {
-            _logger.LogInformation($"provided acces to /admin/schedule/create by user: {await _userManager.GetUserAsync(HttpContext.User)}");
+            _logger.LogInformation($"provided acces to /admin/schedule/create by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             Input = input;
             var dayMenus = await _context.DayMenu.OrderBy(x => x.Date)
                                                  .Where(x => x.Date > DateTime.Now.AddDays(-1))
@@ -130,7 +130,7 @@ namespace WebApi.Areas.Identity.Pages.Schedule
 
         public async Task<IActionResult> OnGetDelete()
         {
-            _logger.LogInformation($"provided acces to /admin/schedule/delete by user: {await _userManager.GetUserAsync(HttpContext.User)}");
+            _logger.LogInformation($"provided acces to /admin/schedule/delete by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             var dayMenus = await _context.DayMenu.OrderBy(x => x.Date).Include(x => x.RecipeList)
                                                                       .Where(x => x.Date > DateTime.Now.AddDays(-1))
                                                                       .ToListAsync();
@@ -146,7 +146,7 @@ namespace WebApi.Areas.Identity.Pages.Schedule
 
         public async Task<IActionResult> OnGet()
         {
-            _logger.LogInformation($"provided acces to /admin/schedule by user: {await _userManager.GetUserAsync(HttpContext.User)}");
+            _logger.LogInformation($"provided acces to /admin/schedule by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             await UpdateModelAsync();
             return Page();
         }

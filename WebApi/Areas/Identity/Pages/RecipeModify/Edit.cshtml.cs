@@ -43,7 +43,7 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
 
         public async Task<IActionResult> OnGet(long id, string returnUrl = null)
         {
-            _logger.LogInformation($"provided acces to /admin/recipes/edit?get?id={id} by user: {await _userManager.GetUserAsync(HttpContext.User)}");
+            _logger.LogInformation($"provided acces to /admin/recipes/edit?get?id={id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             Input.Recipe = await _context.Recipe.Include(x => x.RecipeList)
                                          .ThenInclude(x => x.DayMenu)
                                          .Include(x => x.PictureList)
@@ -70,7 +70,7 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
 
         public async Task<IActionResult> OnPostAsync()
         {
-            _logger.LogInformation($"provided acces to /admin/recipes/edit?post by user: {await _userManager.GetUserAsync(HttpContext.User)}");
+            _logger.LogInformation($"provided acces to /admin/recipes/edit?post by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             if (ModelState.IsValid)
             {
                 List<PictureList> pictureList = new List<PictureList>();

@@ -46,7 +46,7 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
 
         public async Task<IActionResult> OnGet()
         {
-            _logger.LogInformation($"provided acces to /admin/recipes/create?get by user: {await _userManager.GetUserAsync(HttpContext.User)}");
+            _logger.LogInformation($"provided acces to /admin/recipes/create?get by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             var dayMenus = await _context.DayMenu.Include(x => x.RecipeList)
                                                  .ThenInclude(x => x.Recipe)
                                                  .Where(x => x.Date > DateTime.Now.AddDays(-1))
@@ -70,7 +70,7 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
 
         public async Task<IActionResult> OnPostAsync()
         {
-            _logger.LogInformation($"provided acces to /admin/recipes/create?post?id={Input.Recipe.Id} by user: {await _userManager.GetUserAsync(HttpContext.User)}");
+            _logger.LogInformation($"provided acces to /admin/recipes/create?post?id={Input.Recipe.Id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             if (ModelState.IsValid)
             {
                 var files = HttpContext.Request.Form.Files;

@@ -28,7 +28,8 @@ namespace WebApi.Controllers
 
         public async Task<String> Index()
         {
-            _logger.LogInformation($"provided acces to /recipes by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
+            _logger.LogInformation($"provided acces to /recipes by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
+
 
             var list = await _context.Recipe.Include(x => x.PictureList).ToListAsync();
             List<ModelLibrary.Recipe> recipes = new List<ModelLibrary.Recipe>();
@@ -53,7 +54,7 @@ namespace WebApi.Controllers
 
         public async Task<FileContentResult> ImageAsync(int id, int sid = -1)
         {
-            _logger.LogInformation($"provided acces to /recipes/{id}?sid={sid} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
+            _logger.LogInformation($"provided acces to /recipes/{id}?sid={sid} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
 
             var recipe = await _context.Recipe.Include(x => x.PictureList).FirstOrDefaultAsync(m => m.Id == id);
             if (recipe != null)
@@ -71,7 +72,7 @@ namespace WebApi.Controllers
 
         public async Task<String> Details(int id)
         {
-            _logger.LogInformation($"provided acces to /recipes/details/{id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
+            _logger.LogInformation($"provided acces to /recipes/details/{id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
 
             var recipe = await _context.Recipe.Include(x => x.PictureList).FirstOrDefaultAsync(x => x.Id == id);
             if (recipe == null)
@@ -101,6 +102,7 @@ namespace WebApi.Controllers
                 {
                     Id = dayMenu.Id,
                     Name = dayMenu.Name,
+                    Date = dayMenu.Date.ToString("dd.MM.yyyy")
                 };
                 foreach (var recipeList in dayMenu.RecipeList)
                 {
@@ -128,7 +130,7 @@ namespace WebApi.Controllers
 
         public async Task<string> Menu()
         {
-            _logger.LogInformation($"provided acces to /recipes/menu by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
+            _logger.LogInformation($"provided acces to /recipes/menu by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             var dayMenus = await _context.DayMenu.Include(x => x.RecipeList)
                                                  .ThenInclude(x => x.Recipe)
                                                  .Where(x => x.Date > DateTime.Now.AddDays(-1))
@@ -138,7 +140,7 @@ namespace WebApi.Controllers
 
         public async Task<String> WeekMenu()
         {
-            _logger.LogInformation($"provided acces to /recipes/weekmenu by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
+            _logger.LogInformation($"provided acces to /recipes/weekmenu by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             int firstDay = (7 + (DateTime.Now.DayOfWeek - DayOfWeek.Monday)) % 7;
             int lastDay = 6 - firstDay;
             var dayMenus = await _context.DayMenu.Include(x => x.RecipeList)
@@ -150,7 +152,7 @@ namespace WebApi.Controllers
 
         public async Task<String> TodayMenu()
         {
-            _logger.LogInformation($"provided acces to /recipes/todaymenu by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.UtcNow}]");
+            _logger.LogInformation($"provided acces to /recipes/todaymenu by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
 
             var dayMenu = await _context.DayMenu.Include(x => x.RecipeList)
                                                 .ThenInclude(x => x.Recipe)
@@ -162,7 +164,8 @@ namespace WebApi.Controllers
             var sDayMenu = new ModelLibrary.DayMenu()
             {
                 Id = dayMenu.Id,
-                Name = dayMenu.Name
+                Name = dayMenu.Name,
+                Date = dayMenu.Date.ToString("dd.MM.yyyy")
             };
 
             foreach (var recipeList in dayMenu.RecipeList)
@@ -171,7 +174,7 @@ namespace WebApi.Controllers
                     if (recipeList.DayUsage[i])
                     {
                         switch (i) 
-                        {
+                        { 
                             case 0:
                                 sDayMenu.BreakfastRecipes.Add(recipeList.Recipe.Id);
                                 break;
