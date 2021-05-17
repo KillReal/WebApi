@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Graphics;
 using Android.OS;
@@ -9,26 +11,46 @@ using Android.Support.Design.Widget;
 using Android.Support.V4.View;
 using Android.Support.V4.Widget;
 using Android.Support.V7.App;
-using Android.Text.Style;
+using Android.Util;
 using Android.Views;
 using Android.Widget;
 using ModelLibrary;
+using Plugin.Media;
 using SkiaSharp;
 using SkiaSharp.Views.Android;
 
 namespace Calcul
 {
-    public class personal
+
+    public class personal : SerializableObject 
     {
         public string name = "";
         public int age = 0;
-        public double height = 0;
-        public double current_weight = 0;
-        public double target_weight = 0;
+        public int height = 0;
+        public int current_weight = 0;
+        public int target_weight = 0;
         public int food = 0; // food {нет, веган, вегетарианец}
         public int purpose = 1; // purpose {сбросить вес, поддержать вес, набрать вес}
         public int activity = 0; // activity {низкий, средний, высокий, очень высокий}
         public bool gender = true; // true - Ж, false - М
+        public byte[] image = null;
+
+        private string uri_ = "http://a55eb202750a.ngrok.io";
+        private List<DayMenu> daymenu;
+        public List<Recipe>[] mas_intake = new List<Recipe>[3];
+
+        public Bitmap Convert_image_to(byte[] im)
+        {
+            return BitmapFactory.DecodeByteArray(im, 0, im.Length);
+        }
+        public byte[] Convert_image_from(Bitmap im)
+        {
+            using (var st = new MemoryStream())
+            {
+                im.Compress(Bitmap.CompressFormat.Jpeg, 0, st);
+                return st.ToArray();
+            }
+        }
         public string Convert_purpose()
         {
             switch (purpose)
@@ -36,6 +58,15 @@ namespace Calcul
                 case 0: return "Сбросить вес";
                 case 1: return "Поддержать вес";
                 case 2: return "Набрать вес";
+            }
+            return "";
+        }
+        public string Convert_gender()
+        {
+            switch (gender)
+            {
+                case true: return "Женский";
+                case false: return "Мужской";
             }
             return "";
         }
@@ -50,6 +81,83 @@ namespace Calcul
             }
             return "";
         }
+        public string[] Week()
+        {
+            string[] wk = new string[7] { "", "", "", "", "", "", ""};
+            DateTime date_ = DateTime.Now.AddDays(-((double)(DateTime.Now.DayOfWeek - 1) % 7));
+            wk[0] = date_.ToString("dd.MM.yyyy");
+            for (int i = 1; i < 7; i++) wk[i] = date_.AddDays(i).ToString("dd.MM.yyyy");
+            return wk;
+        }
+        public void FileWR(personal us)
+        {
+            string path = System.IO.Path.Combine(Xamarin.Essentials.FileSystem.AppDataDirectory, "userfile.txt");
+
+            using (FileStream filew = new FileStream(path, FileMode.OpenOrCreate))
+            {
+                /*filew.SetLength(0);
+                string textin = name + "\n" +
+                    age.ToString() + " " +
+                    height.ToString() + " " +
+                    current_weight.ToString() + " " +
+                    target_weight.ToString() + " " +
+                    food.ToString() + " " +
+                    purpose.ToString() + " " +
+                    activity.ToString() + "\n" +
+                    gender.ToString() + "\n";
+                if (image != null)
+                {
+                    textin += image.ToString();
+                }
+                else textin += "null";
+                
+                */
+
+                string textin = Serialization<personal>.Write(us);
+                byte[] array = System.Text.Encoding.Default.GetBytes(textin);
+                filew.Write(array, 0, array.Length);
+                filew.Close();
+            }
+        }
+        public personal FileRD(personal us)
+        {
+            string path = System.IO.Path.Combine(Xamarin.Essentials.FileSystem.AppDataDirectory, "userfile.txt");
+
+            using (FileStream filer = File.OpenRead(path))
+            {
+                /*byte[] array = new byte[filer.Length];
+                filer.Read(array, 0, array.Length);
+                string textout = System.Text.Encoding.Default.GetString(array);
+                name = textout.Substring(0, textout.IndexOf('\n'));
+                textout = textout.Substring(textout.IndexOf('\n') + 1);
+                age = Convert.ToInt32(textout.Substring(0, textout.IndexOf(' ')));
+                textout = textout.Substring(textout.IndexOf(' ') + 1);
+                height = Convert.ToInt32(textout.Substring(0, textout.IndexOf(' ')));
+                textout = textout.Substring(textout.IndexOf(' ') + 1);
+                current_weight = Convert.ToInt32(textout.Substring(0, textout.IndexOf(' ')));
+                textout = textout.Substring(textout.IndexOf(' ') + 1);
+                target_weight = Convert.ToInt32(textout.Substring(0, textout.IndexOf(' ')));
+                textout = textout.Substring(textout.IndexOf(' ') + 1);
+                food = Convert.ToInt32(textout.Substring(0, textout.IndexOf(' ')));
+                textout = textout.Substring(textout.IndexOf(' ') + 1);
+                purpose = Convert.ToInt32(textout.Substring(0, textout.IndexOf(' ')));
+                textout = textout.Substring(textout.IndexOf(' ') + 1);
+                activity = Convert.ToInt32(textout.Substring(0, textout.IndexOf('\n')));
+                textout = textout.Substring(textout.IndexOf('\n') + 1);
+                gender = Convert.ToBoolean(textout.Substring(0, textout.IndexOf('\n')));
+                textout = textout.Substring(textout.IndexOf('\n') + 1);
+                byte[] imageAsBytes = System.Text.Encoding.Default.GetBytes(textout);
+                image = BitmapFactory.DecodeByteArray(imageAsBytes, 0, imageAsBytes.Length);
+                filer.Close();*/
+
+                byte[] array = new byte[filer.Length];
+                filer.Read(array, 0, array.Length);
+                string textout = System.Text.Encoding.Default.GetString(array);
+                us = Serialization<personal>.Read(textout);
+                filer.Close();
+            }
+            return us;
+        }
         public double Calculation_colories()
         {
             double[] k = new double[4] { 1.2, 1.375, 1.55, 1.725 }; 
@@ -58,15 +166,44 @@ namespace Calcul
             for (int i = 0; i < 4; i++) if (activity == i) BMR *= k[i];
             return BMR;
         }
-        public async void RequestAsync ()
+        public void RequestMenuAsync()
         {
-            List<Recipe> menu;
-            string uri_ = "http://06ff2a3c3b68.ngrok.io";
+            //чтение меню
             {
                 WebClient client = new WebClient();
-                Uri add = new Uri(uri_ + "/recipes");
-                menu = Serialization<Recipe>.ReadList(await client.DownloadStringTaskAsync(add));
+                Uri add = new Uri(uri_ + "/recipes/weekmenu");
+                daymenu = Serialization<DayMenu>.ReadList(client.DownloadString(add));
             }
+        }
+        public void RequestIntakeAsync(int idd, string data)
+        {
+            //чтение блюда
+            int datal = -1;
+            for (int i = 0; i < daymenu.Count; i++) if (data == daymenu[i].Date) datal = i;
+            if (datal != -1)
+            {
+                mas_intake[idd] = new List<Recipe>();
+                List<long>[] kek = new List<long>[3] { daymenu[datal].BreakfastRecipes, daymenu[datal].LaunchRecipes, daymenu[datal].DinnerRecipes };
+                WebClient client = new WebClient();
+                for (int i = 0; i < kek[idd].Count; i++)
+                {
+                    Uri add = new Uri(uri_ + "/recipes/details/" + kek[idd][i].ToString());
+                    Recipe re = (Serialization<Recipe>.Read(client.DownloadString(add)));
+                    mas_intake[idd].Add(re);
+                }
+            }
+            else mas_intake[idd].Clear();
+        }
+        public Bitmap RequestIntakeImage(int idd, string data)
+        {
+            //чтение картинки
+            int datal = 0;
+            for (int i = 0; i < daymenu.Count; i++) if (data == daymenu[i].Date) datal = i;
+            List<long>[] kek = new List<long>[3] { daymenu[datal].BreakfastRecipes, daymenu[datal].LaunchRecipes, daymenu[datal].DinnerRecipes };
+            WebClient client = new WebClient();
+            byte[] s = client.DownloadData(uri_ + "/recipes/image/" + idd);
+            Bitmap bb = BitmapFactory.DecodeByteArray(s, 0, s.Length);
+            return bb;
         }
     }
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true)]
@@ -77,7 +214,6 @@ namespace Calcul
     FrameLayout setting, home;
         RelativeLayout basis;
     personal user = new personal();
-        int idd = 0;
     Android.Support.V7.Widget.Toolbar toolbar;
 
         public FrameLayout Create_framelayout(int w_, int h_, float t_x, float t_y, Android.Graphics.Color color)
@@ -163,6 +299,17 @@ namespace Calcul
             numberpicker.TranslationY = t_y;
             return numberpicker;
         }
+        public DatePicker Create_datepicker(int w_, int h_, /*int[] t_,*/
+                float t_x, float t_y)
+        {
+            DatePicker datepicker = new DatePicker(drawer.Context);
+            datepicker.LayoutParameters = new LinearLayout.LayoutParams(w_, h_);
+            datepicker.TranslationX = t_x;
+            datepicker.TranslationY = t_y;
+            //calendarview.MaxDate = t_[0];
+            //calendarview.MinDate = t_[1];
+            return datepicker;
+        }
         public SKCanvasView Create_canvasview(int w_, int h_, float t_x, float t_y)
         {
             double k = user.target_weight - user.current_weight; //цель - текущее
@@ -207,7 +354,83 @@ namespace Calcul
             return canvasView;
         }
 
-        List<Recipe> menu; string uri_ = "http://99349f52c6d7.ngrok.io";
+       /* public void WorkImage (FrameLayout par, ImageView im)
+        {
+            FrameLayout add_ = Create_framelayout(basis.Width - 100, (basis.Width - 100) / 2, 50, (basis.Height - (basis.Width - 100)) / 2, Color.DarkOrange);
+            //add_.SetBackgroundResource(Resource.Drawable.draver_fram);
+            add_.Visibility = ViewStates.Visible;
+            add_.RemoveAllViews();
+            Button foto = Create_button(basis.Width - 110, (basis.Width - 100) / 4, 5, 0,
+                "Сделать фотографию", GravityFlags.Center, TypefaceStyle.BoldItalic, 20);
+            Button gallery = Create_button(basis.Width - 110, (basis.Width - 100) / 4, 5, (basis.Width - 100) / 4,
+                "Выбор фото из галлереи", GravityFlags.Center, TypefaceStyle.BoldItalic, 20);
+
+            gallery.Click += async (s_, e_) => {
+                await CrossMedia.Current.Initialize();
+
+                if (!CrossMedia.Current.IsPickPhotoSupported)
+                {
+                    Toast.MakeText(this, "Upload not supported on this device", ToastLength.Short).Show();
+                    return;
+                }
+                var file = await CrossMedia.Current.PickPhotoAsync(new Plugin.Media.Abstractions.PickMediaOptions
+                {
+                    PhotoSize = Plugin.Media.Abstractions.PhotoSize.Full,
+                    CompressionQuality = 40
+
+                });
+                if (file != null)
+                {
+                    byte[] imageArray = System.IO.File.ReadAllBytes(file.Path);
+                    Bitmap bitmap = BitmapFactory.DecodeByteArray(imageArray, 0, imageArray.Length);
+                    im.SetImageBitmap(bitmap);
+                }
+                else im.SetImageResource(Resource.Drawable.design_ic_visibility_off);
+                add_.Visibility = ViewStates.Invisible;
+            };
+            foto.Click += async (s_, e_) => {
+
+                Java.IO.File _dir;
+                _dir = new Java.IO.File(Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryPictures), "AndroidCameraVSDemo");
+                if (!_dir.Exists())
+                {
+                    _dir.Mkdirs();
+                }
+                Android.Content.Intent intent = new Android.Content.Intent(Android.Provider.MediaStore.ActionImageCapture);
+                _file = new Java.IO.File(_dir, String.Format("myPhoto_{0}.jpg", Guid.NewGuid()));
+                intent.PutExtra(Android.Provider.MediaStore.ExtraOutput, Android.Net.Uri.FromFile(_file));
+                StartActivityForResult(intent, 0);
+            //im.SetImageDrawable((Android.Graphics.Drawables.Drawable)(_file.Path));
+
+                add_.Visibility = ViewStates.Invisible;
+            };
+            add_.AddView(foto);
+            add_.AddView(gallery);
+            par.AddView(add_);
+        }*/
+        private async Task AnimationObjectAsync (FrameLayout s_, int h, bool f)
+        {
+            if (f)
+            {
+                s_.Visibility = ViewStates.Visible;
+                for (int i = 1; i < h; i += 8)
+                {
+                    s_.LayoutParameters = new FrameLayout.LayoutParams(s_.Width, i);
+                    await Task.Delay(1);
+                }
+            }
+            else
+            {
+                for (int i = h; i > 1; i -= 8)
+                {
+                    s_.LayoutParameters = new FrameLayout.LayoutParams(s_.Width, i);
+                    await Task.Delay(1);
+                }
+                s_.Visibility = ViewStates.Invisible;
+            }
+        }
+
+        List<Recipe> menu; string uri_ = "http://4b32d60be97f.ngrok.io";
         
         public async void Request_data()
         {
@@ -235,7 +458,7 @@ namespace Calcul
             basis.RemoveAllViews();
 
             FrameLayout profile = Create_framelayout(basis.Width, basis.Height, 0, 0, Android.Graphics.Color.Aqua);
-            profile.RemoveAllViews();
+            profile.RemoveAllViews(); 
 
             FrameLayout user_name = Create_framelayout(basis.Width - 100, basis.Height / 5, 50, 50, Android.Graphics.Color.DarkOrange);
             user_name.SetBackgroundResource(Resource.Drawable.draver_fram);
@@ -244,13 +467,32 @@ namespace Calcul
                 user.name.ToUpper(), GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 25);
             user_name.AddView(user_name_textview);
             ImageView user_image = Create_imageview((basis.Width - 100) / 6, basis.Height / 10, (basis.Width - 100) / 12, basis.Height / 20);
-            user_image.SetImageResource(Resource.Drawable.design_ic_visibility_off);
+            if (user.image == null) user_image.SetImageResource(Resource.Drawable.design_ic_visibility_off);
+            else user_image.SetImageBitmap(user.Convert_image_to(user.image));
+            user_image.Click += async (s__, e__) =>
+            {
+                await CrossMedia.Current.Initialize();
+                var file = await CrossMedia.Current.PickPhotoAsync(new Plugin.Media.Abstractions.PickMediaOptions
+                {
+                    PhotoSize = Plugin.Media.Abstractions.PhotoSize.Full,
+                    CompressionQuality = 40
+
+                });
+                if (file != null)
+                {
+                    byte[] imageArray = System.IO.File.ReadAllBytes(file.Path);
+                    user_image.SetImageBitmap(BitmapFactory.DecodeByteArray(imageArray, 0, imageArray.Length));
+                    user.image = imageArray;
+                }
+                else if (user.image == null) user_image.SetImageResource(Resource.Drawable.design_ic_visibility_off);
+                else user_image.SetImageBitmap(user.Convert_image_to(user.image));
+                Create_ProfileFramelayout();
+            };
             user_name.AddView(user_image); 
             TextView setting_text = Create_textview(150, 150, basis.Width - 250, 0,
-                 "⚙", GravityFlags.Center, TypefaceStyle.Bold, 30);
+                 "⚙", GravityFlags.Center, TypefaceStyle.Bold, 45);
             setting_text.Click += (s_, e_) => { Create_SettingFramelayout(); };
             user_name.AddView(setting_text);
-
             Button statistics_button = Create_button(basis.Width / 2, 250, 0, basis.Height / 5 + 100, "Статистика", GravityFlags.Center, TypefaceStyle.Bold, 15);
             Button history_button = Create_button(basis.Width / 2, 250, basis.Width / 2, basis.Height / 5 + 100, "История", GravityFlags.Center, TypefaceStyle.Bold, 15);
 
@@ -285,7 +527,7 @@ namespace Calcul
                 profile.AddView(head_);
             }
             {
-                string s = $"\nВОЗРАСТ   >>   {user.age.ToString()} \n\nПОЛ   >>   {user.gender} " +
+                string s = $"\nВОЗРАСТ   >>   {user.age.ToString()} \n\nПОЛ   >>   {user.Convert_gender()} " +
                     $"\n\nРОСТ   >>   {user.height.ToString()} \n\nТЕКУЩИЙ ВЕС   >>   {user.current_weight.ToString()} " +
                     $"\n\nУРОВЕНЬ АКТИВНОСТИ   >>   {user.Convert_activity()}";
                 TextView head_ = Create_textview(basis.Width - 20, 2 * (basis.Height / 5), 10, ((basis.Height / 5) * 2) + 625,
@@ -299,7 +541,7 @@ namespace Calcul
             profile.AddView(user_grafic);
             basis.AddView(profile);
         }
-        //Настройки framelayout
+        //Настройки профиля framelayout
         private void Create_SettingFramelayout()
         {
             FrameLayout add_ = Create_framelayout(basis.Width - 100, (basis.Width - 100) / 2, 50, (basis.Height - (basis.Width - 100)) / 2, Color.DarkOrange);
@@ -309,8 +551,33 @@ namespace Calcul
             toolbar.RemoveAllViews();
             Button back = Create_button(toolbar.Height, toolbar.Height, -(int)(toolbar.Height * 1.25), 0, "<<", GravityFlags.Center, TypefaceStyle.Bold, 20);
             back.SetBackgroundDrawable(toolbar.Background);
-            back.Click += (s_, e_) => { basis.RemoveView(setting); Create_ProfileFramelayout(); };
+            back.Click += (s_, e_) =>
+            {
+                bool fl = false;
+                if (user.purpose == 1) { user.current_weight = user.target_weight; fl = true; }
+                if (user.purpose == 0) if (user.current_weight > user.target_weight) fl = true;
+                if (user.purpose == 2) if (user.current_weight < user.target_weight) fl = true;
+                if (fl)
+                {
+                    basis.RemoveView(setting);
+                    Create_ProfileFramelayout();
+                    user.FileWR(user);
+                }
+                else
+                {
+
+                    View view = (View)s_;
+                    Snackbar.Make(view, "Целевой и текущий вес не соответствуют поставленной цели.", Snackbar.LengthLong)
+                        .SetAction("Action", (Android.Views.View.IOnClickListener)null).Show();
+                }
+            };
             toolbar.AddView(back);
+            Button fon = Create_button(basis.Width, basis.Height, 0, 0, "", GravityFlags.Center, TypefaceStyle.Normal, 0);
+            fon.SetBackgroundDrawable(setting.Background);
+            fon.Click += (s__, e__) => {
+                for (int i = 0; i < add_.ChildCount; i++) add_.GetChildAt(i).Enabled = false;
+                add_.Visibility = ViewStates.Invisible; fon.Visibility = ViewStates.Invisible; };
+            fon.Visibility = ViewStates.Invisible;
             TextView prof = Create_textview(toolbar.Width, toolbar.Height, -(int)(toolbar.Height * 1.25), 0,
                 "Настройки", GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 20);
             toolbar.AddView(prof);
@@ -330,7 +597,8 @@ namespace Calcul
 
             void Change_weight(object sender, EventArgs eventArgs)
             {
-                double k = user.current_weight;
+                fon.Visibility = ViewStates.Visible;
+                int k = user.current_weight;
                 string s = "Т е к у щ и й   в е с";
                 if (sender == target_button)
                 {
@@ -343,21 +611,19 @@ namespace Calcul
                 EditText text = Create_edittext(basis.Width - 350, (basis.Width - 100) / 2 - 150, 125, 50,
                     k.ToString(), GravityFlags.Center, TypefaceStyle.Bold, 50);
                 text.InputType = Android.Text.InputTypes.ClassNumber;
-                text.TextChanged += (s__, e__) => { if (text.Text != "") k = Convert.ToDouble(text.Text); else k = 0; };
+                text.TextChanged += (s__, e__) => { if (text.Text != "") k = Convert.ToInt32(text.Text); else k = 0; };
                 Button plus = Create_button(100, 100, 50, ((basis.Width - 100) / 2 - 100) / 2 - 50,
                     "+", GravityFlags.Top | GravityFlags.CenterHorizontal, TypefaceStyle.Bold, 25);
                 plus.SetBackgroundResource(Resource.Drawable.draver_fram);
                 plus.Click += (s__, e__) => {
-                    k += 0.1;
-                    k = Math.Round(k * 10) / 10;
+                    k += 1;
                     text.Text = k.ToString();
                 };
                 Button minus = Create_button(100, 100, (basis.Width - 250), ((basis.Width - 100) / 2 - 100) / 2 - 50,
                     "−", GravityFlags.Top | GravityFlags.CenterHorizontal, TypefaceStyle.Bold, 25);
                 minus.SetBackgroundResource(Resource.Drawable.draver_fram);
                 minus.Click += (s__, e__) => {
-                    if (k > 30) k -= 0.1;
-                    k = Math.Round(k * 10) / 10;
+                    if (k > 30) k -= 1;
                     text.Text = k.ToString();
                 };
                 Button save = Create_button(basis.Width - 200, 150, 50, ((basis.Width - 100) / 2) - 175,
@@ -366,7 +632,8 @@ namespace Calcul
                     if (sender == current_button) user.current_weight = k;
                     else user.target_weight = k;
                     add_.Visibility = ViewStates.Invisible;
-                    text.Focusable = false;
+                    fon.Visibility = ViewStates.Invisible;
+                    text.Enabled = false;
                 };
                 add_.AddView(plus);
                 add_.AddView(minus);
@@ -380,6 +647,7 @@ namespace Calcul
                 "М о я   ц е л ь", GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 15);
             purpose_button.Click += (s_, e_) =>
             {
+                fon.Visibility = ViewStates.Visible;
                 add_.RemoveAllViews();
                 for (int i = 0; i < 3; i++)
                 {
@@ -397,6 +665,7 @@ namespace Calcul
                         user.purpose = bt.Id;
                         if (user.purpose == 1) target_button.Visibility = ViewStates.Invisible; else target_button.Visibility = ViewStates.Visible;
                         add_.Visibility = ViewStates.Invisible;
+                        fon.Visibility = ViewStates.Invisible;
                     };
                     add_.AddView(bt);
                 }
@@ -410,10 +679,11 @@ namespace Calcul
                 "И м я", GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 15);
             name_button.Click += (s, e) =>
             {
+                fon.Visibility = ViewStates.Visible;
                 string k = user.name;
                 add_.RemoveAllViews();
                 TextView h_ = Create_textview(basis.Width - 100, 100, 0, 10,
-                    "П о л", GravityFlags.Center, TypefaceStyle.BoldItalic, 20);
+                    "И м я", GravityFlags.Center, TypefaceStyle.BoldItalic, 20);
 
                 EditText name_ = Create_edittext(basis.Width - 350, (basis.Width - 100) / 2 - 150, 125, 50,
                     k.ToString(), GravityFlags.Center, TypefaceStyle.Bold, 35);
@@ -431,6 +701,8 @@ namespace Calcul
                     user.name = name_.Text;
                     add_.Visibility = ViewStates.Invisible;
                     name_.Focusable = false;
+                    fon.Visibility = ViewStates.Invisible;
+                    name_.Enabled = false;
                 };
                 add_.AddView(save);
                 add_.AddView(h_);
@@ -441,6 +713,7 @@ namespace Calcul
                 "П о л", GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 15);
             genger_button.Click += (s, e) =>
             {
+                fon.Visibility = ViewStates.Visible;
                 bool flag = user.gender;
                 add_.RemoveAllViews();
                 TextView h_ = Create_textview(basis.Width - 100, 100, 0, 10,
@@ -451,6 +724,7 @@ namespace Calcul
                 {
                     user.gender = flag;
                     add_.Visibility = ViewStates.Invisible;
+                    fon.Visibility = ViewStates.Invisible;
                 };
 
                 Button w_ = Create_button((basis.Width - 100) / 2 - 25, 150, 25, 150,
@@ -480,6 +754,7 @@ namespace Calcul
                 "В о з р а с т", GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 15);
             age_button.Click += (s, e) =>
             {
+                fon.Visibility = ViewStates.Visible;
                 int k = user.age;
                 add_.RemoveAllViews();
                 TextView h_ = Create_textview(basis.Width - 100, 100, 0, 10,
@@ -510,7 +785,8 @@ namespace Calcul
                 {
                     user.age = k;
                     add_.Visibility = ViewStates.Invisible;
-                    text.Focusable = false;
+                    fon.Visibility = ViewStates.Invisible;
+                    text.Enabled = false;
                 };
                 add_.AddView(plus);
                 add_.AddView(minus);
@@ -523,21 +799,21 @@ namespace Calcul
                 "Р о с т", GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 15);
             height_button.Click += (s, e) =>
             {
-                double k = user.height;
+                fon.Visibility = ViewStates.Visible;
+                int k = user.height;
                 add_.RemoveAllViews();
                 TextView h_ = Create_textview(basis.Width - 100, 100, 0, 10,
                     "Р о с т", GravityFlags.Center, TypefaceStyle.BoldItalic, 20);
                 EditText text = Create_edittext(basis.Width - 350, (basis.Width - 100) / 2 - 150, 125, 50,
                     k.ToString(), GravityFlags.Center, TypefaceStyle.Bold, 50);
                 text.InputType = Android.Text.InputTypes.ClassNumber;
-                text.TextChanged += (s__, e__) => { if (text.Text != "") k = Convert.ToDouble(text.Text); else k = 0; };
+                text.TextChanged += (s__, e__) => { if (text.Text != "") k = Convert.ToInt32(text.Text); else k = 0; };
                 Button plus = Create_button(100, 100, 50, ((basis.Width - 100) / 2 - 100) / 2 - 50,
                     "+", GravityFlags.Top | GravityFlags.CenterHorizontal, TypefaceStyle.Bold, 25);
                 plus.SetBackgroundResource(Resource.Drawable.draver_fram);
                 plus.Click += (s__, e__) =>
                 {
-                    k += 0.1;
-                    k = Math.Round(k * 10) / 10;
+                    k += 1;
                     text.Text = k.ToString();
                 };
                 Button minus = Create_button(100, 100, (basis.Width - 250), ((basis.Width - 100) / 2 - 100) / 2 - 50,
@@ -545,8 +821,7 @@ namespace Calcul
                 minus.SetBackgroundResource(Resource.Drawable.draver_fram);
                 minus.Click += (s__, e__) =>
                 {
-                    if (k > 30) k -= 0.1;
-                    k = Math.Round(k * 10) / 10;
+                    if (k > 30) k -= 1;
                     text.Text = k.ToString();
                 };
                 Button save = Create_button(basis.Width - 200, 150, 50, ((basis.Width - 100) / 2) - 175,
@@ -555,7 +830,8 @@ namespace Calcul
                 {
                     user.height = k;
                     add_.Visibility = ViewStates.Invisible;
-                    text.Focusable = false;
+                    text.Enabled = false;
+                    fon.Visibility = ViewStates.Invisible;
                 };
                 add_.AddView(plus);
                 add_.AddView(minus);
@@ -568,6 +844,7 @@ namespace Calcul
                 "У р о в е н ь   а к т и в н о с т и", GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 15);
             activity_button.Click += (s_, e_) =>
             {
+                fon.Visibility = ViewStates.Visible;
                 add_.RemoveAllViews();
                 for (int i = 0; i < 4; i++)
                 {
@@ -584,6 +861,7 @@ namespace Calcul
                         bt.SetBackgroundColor(Color.Coral);
                         user.activity = bt.Id;
                         add_.Visibility = ViewStates.Invisible;
+                        fon.Visibility = ViewStates.Invisible;
                     };
                     add_.AddView(bt);
                 }
@@ -593,6 +871,7 @@ namespace Calcul
                 "П р е д п о ч т е н и я   в   е д е", GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 15);
             food_button.Click += (s_, e_) =>
             {
+                fon.Visibility = ViewStates.Visible;
                 add_.RemoveAllViews();
                 for (int i = 0; i < 3; i++)
                 {
@@ -609,6 +888,7 @@ namespace Calcul
                         bt.SetBackgroundColor(Color.Coral);
                         user.food = bt.Id;
                         add_.Visibility = ViewStates.Invisible;
+                        fon.Visibility = ViewStates.Invisible;
                     };
                     add_.AddView(bt);
                 }
@@ -627,8 +907,136 @@ namespace Calcul
             setting.AddView(height_button);
             setting.AddView(activity_button);
             setting.AddView(food_button);
+            setting.AddView(fon);
+            setting.Visibility = ViewStates.Visible;
         }
+        //Меню на день framelayout
+        private void CreateMenuFramelayout(string datadef)
+        {
+            toolbar.RemoveAllViews();
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, Resource.String.navigation_drawer_open, Resource.String.navigation_drawer_close);
+            drawer.AddDrawerListener(toggle);
+            toggle.SyncState();
+            TextView prof = Create_textview(toolbar.Width, toolbar.Height, 0, 0,
+                "Меню", GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 20);
+            toolbar.AddView(prof);
+            basis.RemoveAllViews();
 
+            FrameLayout menuday = Create_framelayout(basis.Width, basis.Height, 0, 0, Android.Graphics.Color.DarkOrange);
+            menuday.RemoveAllViews();
+
+            FrameLayout add_ = Create_framelayout(basis.Width, basis.Width / 7 + 10, 0, 100, Android.Graphics.Color.DarkOrange);
+            add_.RemoveAllViews();
+            add_.Visibility = ViewStates.Invisible;
+
+            FrameLayout intake_ = Create_framelayout(basis.Width - 100, basis.Height / 2, 50, 0, Color.MediumPurple);
+            intake_.RemoveAllViews();
+            intake_.Visibility = ViewStates.Invisible;
+
+            bool flag = false;
+            string date = datadef;//DateTime.Now.ToString("dd.MM.yyyy"); ;
+            TextView head_ = Create_textview(basis.Width, 100, 0, 5,
+                  date + "   ▼", GravityFlags.Center, TypefaceStyle.Bold, 25);
+            head_.Click += (s__, e__) =>
+            {
+                if (flag == false)
+                {
+                    add_.Visibility = ViewStates.Visible;
+                    head_.Text = date + "   ▲";
+                    string[] weekbt = new string[7] { "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС" };
+                    string[] datebt = user.Week();
+                    for (int i = 0; i < 7; i++)
+                    {
+                        Button bt = Create_button(basis.Width / 7 - 4, basis.Width / 7 - 4, i * basis.Width / 7 - 4 + 2, 5,
+                            weekbt[i], GravityFlags.Center, TypefaceStyle.Italic, 15);
+                        bt.Id = i;
+                        bt.Click += (s_, e_) =>
+                        {
+                            date = datebt[bt.Id];
+                            add_.Visibility = ViewStates.Invisible;
+                            head_.Text = date + "   ▼";
+                            flag = false; 
+                            ///
+                            CreateMenuFramelayout(date);
+                        };
+                        add_.AddView(bt);
+                    }
+                    flag = true;
+                }
+                else
+                {
+                    add_.Visibility = ViewStates.Invisible;
+                    head_.Text = date + "   ▼";
+                    flag = false;
+                }
+            };
+            menuday.AddView(head_);
+
+            string[] head_but = new string[3] { "З А В Т Р А К", "О Б Е Д", "У Ж И Н" };
+            string[] text_but = new string[3] { "", "", "" };
+            FrameLayout[] button_intake = new FrameLayout[3];
+            //List<Recipe>[] mas_intake = new List<Recipe>[3];
+            for (int i = 0; i < 3; i++) user.RequestIntakeAsync(i, date);
+            for (int i = 0; i < 3; i++)
+            {
+                //400
+                int h = (basis.Height - (basis.Width / 7 + 10 + 200)) / 3;
+                for (int j = 0; j < user.mas_intake[i].Count; j++) text_but[i] += "-   " + user.mas_intake[i][j].Name + "\n\n";
+                button_intake[i] = Create_framelayout(basis.Width - 100, h - 100, 50, (basis.Width / 7 + 10 + 150) + (i * h), Color.AliceBlue);
+                TextView intake_head = Create_textview(basis.Width - 120, h - 45, 10, 10,
+                               head_but[i], GravityFlags.CenterHorizontal, TypefaceStyle.BoldItalic, 20);
+                TextView intake_text = Create_textview(basis.Width - 120, h - 45, 10, 105,
+                               text_but[i], GravityFlags.Left, TypefaceStyle.Normal, 17);
+                button_intake[i].SetBackgroundResource(Resource.Drawable.draver_fram);
+                button_intake[i].Id = i;
+                button_intake[i].AddView(intake_head);
+                button_intake[i].AddView(intake_text);
+                menuday.AddView(button_intake[i]);
+                button_intake[i].Click += (s_, e_) =>
+                {
+                    int idd = 0;
+                    for (int j = 0; j < 3; j++) if (s_ == button_intake[j]) idd = j;
+                    FrameLayout intake_add = Create_framelayout(basis.Width, basis.Height, 0, 0, Color.Beige);
+
+                    toolbar.RemoveAllViews();
+                    Button back = Create_button(toolbar.Height, toolbar.Height, -(int)(toolbar.Height * 1.25), 0, "<<", GravityFlags.Center, TypefaceStyle.Bold, 20);
+                    back.SetBackgroundDrawable(toolbar.Background);
+                    back.Click += (s__, e__) => { basis.RemoveView(intake_add); CreateMenuFramelayout(date); };
+                    toolbar.AddView(back);
+
+                    TextView hd_ = Create_textview(basis.Width, 100, 0, 5,
+                          head_but[idd] + "			" + date, GravityFlags.Center, TypefaceStyle.BoldItalic, 25);
+                    intake_add.AddView(hd_);
+                    int k = (basis.Height - 200);
+                    if (user.mas_intake[idd].Count != 0) k = (basis.Height - 200) / 3;
+                    for (int j = 0; j < user.mas_intake[idd].Count; j++)
+                    {
+                        TextView nm_ = Create_textview(basis.Width - 50 - k, k - 50, 5, (k * j) + 150,
+                              user.mas_intake[idd][j].Name, GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 17);
+                        string bzhu_text = "Вес: " + user.mas_intake[idd][j].Weight.ToString() + " г." + "			" + 
+                        "Б: " + user.mas_intake[idd][j].Proteins.ToString() + "			" +
+                        "Ж: " + user.mas_intake[idd][j].Greases.ToString() + "			" +
+                        "У: " + user.mas_intake[idd][j].Carbohydrates.ToString();
+                        TextView bzhu_ = Create_textview(basis.Width - 10, 50, 5, (k * j) + 150 + (k - 150),
+                              bzhu_text, GravityFlags.Left, TypefaceStyle.Normal, 12);
+                        TextView ccal_ = Create_textview(basis.Width - k + 100, k - 50, 5, (k * j) + 150,
+                              user.mas_intake[idd][j].Colories.ToString() + " кк.", GravityFlags.Right | GravityFlags.CenterVertical, TypefaceStyle.Normal, 17);
+                        ImageView image_ = Create_imageview(k - 200, k - 200, basis.Width - k + 150, (k * j) + 250);
+                        image_.SetImageBitmap(user.RequestIntakeImage((int)user.mas_intake[idd][j].Id, date));
+
+                        intake_add.AddView(nm_);
+                        intake_add.AddView(bzhu_);
+                        intake_add.AddView(ccal_);
+                        intake_add.AddView(image_);
+                    }
+                    menuday.AddView(intake_add);
+                };
+            }
+
+            basis.AddView(menuday);
+            menuday.AddView(add_);
+            //menuday.AddView(intake_);
+        }
         private void Home_Create()
         {
             home.RemoveAllViews();
@@ -730,6 +1138,12 @@ namespace Calcul
             navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
             navigationView.SetNavigationItemSelectedListener(this);
             navigationView.SetCheckedItem(Resource.Id.nav_home);
+
+            string path = System.IO.Path.Combine(Xamarin.Essentials.FileSystem.AppDataDirectory, "userfile.txt");
+            FileInfo ff = new FileInfo(path);
+            if (!ff.Exists) Create_SettingFramelayout();
+            else user = user.FileRD(user);
+            user.RequestMenuAsync();
             //Request_data();
         }
 
@@ -972,19 +1386,20 @@ namespace Calcul
             switch (item.ItemId)
             {
                 case Resource.Id.nav_home:
-                    home.Visibility = ViewStates.Visible;
-                    Home_Create();
+                    CreateMenuFramelayout(DateTime.Now.ToString("dd.MM.yyyy"));
                     return true;
                 case Resource.Id.nav_gallery:
+                    Create_ProfileFramelayout();
                     return true;
                 case Resource.Id.nav_slideshow:
+                    user.FileWR(user);
                     return true;
                 case Resource.Id.nav_manage:
-                    setting.Visibility = ViewStates.Visible; 
-                    Sett();
+                    user.FileRD(user);
+                    //setting.Visibility = ViewStates.Visible; 
+                    //Sett();
                     return true;
                 case Resource.Id.nav_share:
-                    Create_ProfileFramelayout();
                     return true;
                 case Resource.Id.nav_send:
                     return true;
@@ -994,6 +1409,7 @@ namespace Calcul
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
+            user.FileWR(user);
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
