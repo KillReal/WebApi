@@ -26,7 +26,6 @@ namespace WebApi.Areas.Identity.Pages.Schedule
         public class InputModel
         {
             public string SelectedDayMenuTab = "10";
-            public bool isHistory { get; set; } = false;
             public List<string> DayMenuName { get; set; } = new List<string>();
             public List<long> DayMenuId { get; set; } = new List<long>();
             public List<string> MenuTypeName { get; set; } = new List<string>();
@@ -41,14 +40,12 @@ namespace WebApi.Areas.Identity.Pages.Schedule
             _logger = logger;
         }
 
-        private async Task UpdateModelAsync(bool isHistory = false)
+        private async Task UpdateModelAsync()
         {
             var dayMenus = await _context.DayMenu.Include(x => x.RecipeList).ThenInclude(x => x.Recipe).OrderBy(x => x.Date).ToListAsync();
             foreach (var dayMenu in dayMenus)
             {
-                if (isHistory && dayMenu.Date < DateTime.Now.AddDays(-1)
-                    || 
-                    !isHistory && dayMenu.Date > DateTime.Now.AddDays(-1))
+                if (dayMenu.Date > DateTime.Now.AddDays(-1))
                 {
                     List<List<Recipe>> dayRecipes = new List<List<Recipe>>() { };
                     dayRecipes.Add(new List<Recipe>());
@@ -70,38 +67,6 @@ namespace WebApi.Areas.Identity.Pages.Schedule
             Input.MenuTypeName.Add("Ужин");
         }
 
-        public async Task<IActionResult> OnGetCreateFromHistory(long id)
-        {
-            _logger.LogInformation($"provided acces to /admin/schedule/createfromhistory={id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
-            var dayMenu = await _context.DayMenu.Include(x => x.RecipeList)
-                                                .FirstAsync(x => x.Id == id);
-            var dayMenus = await _context.DayMenu.OrderBy(x => x.Date)
-                                                 .Where(x => x.Date > DateTime.Now.AddDays(-1))
-                                                 .ToListAsync();
-            DateTime date;
-            if (dayMenus.Count == 0)
-                date = DateTime.Now;
-            else
-                date = dayMenus.Last().Date.AddDays(1);
-            var newDayMenu = new DayMenu()
-            {
-                Name = Tools.UpperLetter(date.ToString("dddd dd.MM")),
-                RecipeList = dayMenu.RecipeList,
-                Date = date,
-            };
-            _context.Add(newDayMenu);
-            await _context.SaveChangesAsync();
-            await UpdateModelAsync();
-            return Page();
-        }
-
-        public async Task<IActionResult> OnGetHistory()
-        {
-            _logger.LogInformation($"provided acces to /admin/schedule/history by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
-            await UpdateModelAsync(true);
-            Input.isHistory = true;
-            return Page();
-        }
 
         public async Task<IActionResult> OnGetCreate(InputModel input)
         {
@@ -125,7 +90,7 @@ namespace WebApi.Areas.Identity.Pages.Schedule
             await _context.AddAsync(dayMenu);
             await _context.SaveChangesAsync();
             await UpdateModelAsync();
-            return Page();
+            return RedirectToPage();
         }
 
         public async Task<IActionResult> OnGetDelete()
@@ -141,7 +106,7 @@ namespace WebApi.Areas.Identity.Pages.Schedule
                 await _context.SaveChangesAsync();
                 await UpdateModelAsync();
             }
-            return Page();
+            return RedirectToPage();
         }
 
         public async Task<IActionResult> OnGet()

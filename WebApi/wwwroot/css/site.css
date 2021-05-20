@@ -164,8 +164,13 @@ article {
     background: #ced4da;
     border: 1px solid #ced4da;
     border-radius: .25rem;
-    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out, background 0.6s;
 }
+
+    .controls:hover {
+        background-color: rgb(45 127 255 / 64%);
+        transition: 0.6s;
+    }
 
 .img-icon {
     z-index: 0;
@@ -445,7 +450,7 @@ body {
 
 /* Slideshow container */
 .slideshow-container {
-    max-width: 1000px;
+    min-width: 100%;
     position: relative;
     margin: auto;
 }
@@ -469,6 +474,7 @@ body {
     transition: 0.6s ease;
     border-radius: 0 3px 3px 0;
     user-select: none;
+    background: rgb(255 255 255 / 40%);
 }
 
 /* Position the "next button" to the right */
@@ -477,9 +483,9 @@ body {
     border-radius: 3px 0 0 3px;
 }
 
-    /* On hover, add a black background color with a little bit see-through */
+/* On hover, add a black background color with a little bit see-through */
     .prev:hover, .next:hover {
-        background-color: rgba(0,0,0,0.8);
+        background-color: rgb(45 127 255 / 64%);
     }
 
 /* Caption text */
@@ -500,6 +506,7 @@ body {
     padding: 8px 12px;
     position: absolute;
     top: 0;
+    background: rgb(255 255 255 / 40%);
 }
 
 /* The dots/bullets/indicators */

@@ -25,7 +25,7 @@
             </div>
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Input.Recipe.Id"/>
+            <input type="hidden" asp-for="Input.Recipe.Id" />
             <div class="form-group">
                 <div class="slideshow-container">
                     <div class="mySlides">
@@ -54,7 +54,8 @@
                 </div>
                 <br>
             </div>
-            <input id="main-picture-id" type="hidden" asp-for="Input.MainPictureId" value="1"/>
+            <label asp-for="Input.Recipe.MainPicture" class="control-label"></label>
+            <input id="main-picture-id" type="hidden" asp-for="Input.MainPictureId" value="1" />
             <div class="form-group">
                 <input id='files' type='file' multiple asp-for="Input.Recipe.MainPicture" />
                 <output id='result' />
