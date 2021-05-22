@@ -5,10 +5,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Список БЖУ</h1>
+<h1>Список Блюд</h1>
 
 <p>
-    <a input type="button" class="btn btn-primary" asp-area = "Identity" asp-page="/RecipeModify/Create">Создать новый</a>
+    <a input type="button" class="btn btn-primary" asp-area = "Identity" asp-page="/RecipeModify/Modify">Создать новый</a>
 </p>
 <table class="table">
     <thead>
@@ -29,7 +29,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr onclick="location.href = '@(Url.Page("/RecipeModify/Edit", new { id = item.Id, area = "Identity" }))'" class="main-table">
+        <tr onclick="location.href = '@(Url.Page("/RecipeModify/Modify", new { id = item.Id, area = "Identity" }))'" class="main-table">
             <td>
                 <img src="@Url.Action("Image", "AdminRecipes", new { id = item.Id })" alt="Recipe image" height="150" />
             </td>

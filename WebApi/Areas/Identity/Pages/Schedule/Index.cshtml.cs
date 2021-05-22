@@ -80,7 +80,6 @@ namespace WebApi.Areas.Identity.Pages.Schedule
                 date = DateTime.Now;
             else
                 date = dayMenus.Last().Date.AddDays(1);
-            var dateTimeFormats = new CultureInfo("Ru-ru").DateTimeFormat;
             DayMenu dayMenu = new DayMenu()
             {
                 Date = date,

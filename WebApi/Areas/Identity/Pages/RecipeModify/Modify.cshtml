@@ -1,12 +1,19 @@
 ﻿@page
-@model WebApi.Areas.Identity.Pages.RecipeModify.EditModel
+@model WebApi.Areas.Identity.Pages.RecipeModify.ModifyModel
 @{
 }
 
-<form enctype="multipart/form-data" id="edit-recipe-form" method="post">
-    <h1>Редактировать</h1>
+<form enctype="multipart/form-data" id="create-recipe-form" method="post">
+    @if (Model.Input.ModifyType)
+    {
+        <h1>Редактировать блюдо</h1>
+    }
+    else
+    {
+        <h1>Создать блюдо</h1>
+    }
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="tab-title-container">
                 <h4 class="name-edit">
                     <label class="control-label-custom">
@@ -25,35 +32,38 @@
             </div>
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Input.Recipe.Id" />
-            <div class="form-group">
-                <div class="slideshow-container">
-                    <div class="mySlides">
-                        <div class="numbertext">1 / @(Model.Input.Recipe.PictureList.Count() + 1)</div>
-                        <img src="@Url.Action("Image", "AdminRecipes", new { id = Model.Input.Recipe.Id })" style="width:100%">
-                    </div>
-                    @for (int i = 0; i < Model.Input.Recipe.PictureList.Count(); i++)
-                    {
+            <input id="recipe-id" type="hidden" asp-for="Input.Recipe.Id" />
+            @if (Model.Input.ModifyType)
+            {
+                <div class="form-group">
+                    <div class="slideshow-container">
                         <div class="mySlides">
-                            <div class="numbertext">@(i + 2) / @(Model.Input.Recipe.PictureList.Count() + 1)</div>
-                            <img src="@Url.Action("Image", "AdminRecipes", new { id = Model.Input.Recipe.Id, sid = i })" style="width:100%">
+                            <div class="numbertext">1 / @(Model.Input.Recipe.PictureList.Count() + 1)</div>
+                            <img src="@Url.Action("Image", "AdminRecipes", new { id = Model.Input.Recipe.Id })" style="width:100%">
                         </div>
-                    }
-                    <!-- Next and previous buttons -->
-                    <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
-                    <a class="next" onclick="plusSlides(1)">&#10095;</a>
-
-                    <!-- The dots/circles -->
-                    <div style="text-align:center">
-                        <span class="dot" onclick="currentSlide(1)"></span>
                         @for (int i = 0; i < Model.Input.Recipe.PictureList.Count(); i++)
                         {
-                            <span class="dot" onclick="currentSlide(@(i + 2))"></span>
+                            <div class="mySlides">
+                                <div class="numbertext">@(i + 2) / @(Model.Input.Recipe.PictureList.Count() + 1)</div>
+                                <img src="@Url.Action("Image", "AdminRecipes", new { id = Model.Input.Recipe.Id, sid = i })" style="width:100%">
+                            </div>
                         }
+                        <!-- Next and previous buttons -->
+                        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                        <a class="next" onclick="plusSlides(1)">&#10095;</a>
+
+                        <!-- The dots/circles -->
+                        <div style="text-align:center">
+                            <span class="dot" onclick="currentSlide(1)"></span>
+                            @for (int i = 0; i < Model.Input.Recipe.PictureList.Count(); i++)
+                            {
+                                <span class="dot" onclick="currentSlide(@(i + 2))"></span>
+                            }
+                        </div>
                     </div>
+                    <br>
                 </div>
-                <br>
-            </div>
+            }
             <label asp-for="Input.Recipe.MainPicture" class="control-label"></label>
             <input id="main-picture-id" type="hidden" asp-for="Input.MainPictureId" value="1" />
             <div class="form-group">
@@ -61,9 +71,9 @@
                 <output id='result' />
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="tab-title-container">
-                <h4>Параметры</h4>
+                <h4>БЖУ</h4>
             </div>
             <hr />
             <div class="form-group">
@@ -108,37 +118,6 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="tab-title-container">
-                <h4>Расписание использования</h4>
-            </div>
-            <hr />
-            <table class="table-cell" style="width:100%">
-                <tr>
-                    <th></th>
-                    <th>Завтрак</th>
-                    <th>Обед</th>
-                    <th>Ужин</th>
-                </tr>
-                @for (int i = 0; i < Model.Input.RecipeDayInclude.Count(); i++)
-                {
-                    <tr>
-                        <th>@Html.Label("", Model.Input.DayMenuName[i])</th>
-                        @for (int j = 0; j < Model.Input.RecipeDayInclude[0].Count(); j++)
-                        {
-                            <td>
-                                <div class="checkbox-center">
-                                    <input class="custom-checkbox" type="checkbox" asp-for="Input.RecipeDayInclude[i][j]">
-                                    @Html.Label("", "")
-                                    <span asp-validation-for="Input.RecipeDayInclude[i][j]" class="text-danger"></span>
-                                </div>
-                            </td>
-                        }
-                    </tr>
-                }
-            </table>
-            <label class="label-tab-spacer"></label>
-        </div>
     </div>
     <label class="label-tab-spacer"></label>
     <div class="row">
@@ -151,8 +130,15 @@
             {
                 <a input type="button" class="btn btn-primary" asp-area="Identity" asp-page="@Model.ReturnUrl">Назад</a>
             }
-            <a input type="button" class="btn btn-danger" asp-area="Identity" asp-page="/RecipeModify/Delete" asp-route-id="@Model.Input.Recipe.Id">Удалить</a>
-            <button type="submit" class="btn btn-primary">Сохранить</button>
+            @if (!Model.Input.ModifyType)
+            {
+                <button type="submit" class="btn btn-primary">Создать</button>
+            }
+            else
+            {
+                <a input type="button" class="btn btn-danger" asp-area="Identity" asp-page="/RecipeModify/Delete" asp-route-id="@Model.Input.Recipe.Id">Удалить</a>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            }
         </div>
     </div>
 </form>
@@ -160,6 +146,7 @@
 <script type="text/javascript">
     window.onload = function () {
         //Check File API support
+        var count = 0;
         if (window.File && window.FileList && window.FileReader) {
             var filesInput = document.getElementById("files");
             filesInput.addEventListener("change", function (event) {
@@ -177,8 +164,9 @@
                     //Only pics
                     if (!file.type.match('image'))
                         continue;
-                    var picReader = new FileReader();
+                    var picReader = new FileReader();             
                     picReader.addEventListener("load", function (event) {
+                        count++;
                         var picFile = event.target;
                         var id = event.target.index + 1;
                         var div2 = document.createElement("div");
@@ -188,8 +176,8 @@
                         div.appendChild(div2);
                         output.insertBefore(div, null);
                     });
-                    picReader.index = i;
                     //Read the image
+                    picReader.index = i;
                     picReader.readAsDataURL(file);
                 }
             });
@@ -199,6 +187,6 @@
     }
 </script>
 
-    @section Scripts {
-        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    }
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
