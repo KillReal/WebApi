@@ -57,7 +57,7 @@ namespace WebApi
                 date,
                 CalendarWeekRule.FirstDay,
                 DayOfWeek.Monday);
-            return weekNum;
+            return weekNum - 1;
         }
 
         public static DateTime GetDateFromWeek(int year, int week)
@@ -66,7 +66,6 @@ namespace WebApi
             int daysOffset = (int)CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek - (int)jan1.DayOfWeek;
             DateTime firstMonday = jan1.AddDays(daysOffset);
             int firstWeek = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(jan1, CultureInfo.CurrentCulture.DateTimeFormat.CalendarWeekRule, CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek);
-            week -= 1;
             if (firstWeek <= 1)
             {
                 week -= 1;

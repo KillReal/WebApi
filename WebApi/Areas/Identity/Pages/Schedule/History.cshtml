@@ -6,9 +6,9 @@
 <h1>История меню</h1>
 
 <p>
-    <div>
+    <div class="buttons-layout">
         <a input type="button" class="btn btn-primary" asp-area="Identity" asp-page="/Schedule/Index">Назад</a>
-        <input type="week" name="week" id="camp-week" min='@Model.Input.MinDate' max="@Model.Input.MaxDate" onkeydown="event.preventDefault()" value="@Model.Input.CurrentDate" onchange="update(event);" required>
+        <input type="week" name="week" class="week-calendar" id="camp-week" min='@Model.Input.MinDate' max="@Model.Input.MaxDate" onkeydown="event.preventDefault()" value="@Model.Input.CurrentDate" onchange="update(event);" required>
     </div>
 </p>
 <!-- Tab links -->

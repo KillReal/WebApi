@@ -112,7 +112,7 @@ namespace WebApi.Areas.Identity.Pages.Schedule
             _context.AddRange(newRecipeList);
             _context.Add(newDayMenu);
             await _context.SaveChangesAsync();
-            return RedirectToPage("~/Schedule/Index");
+            return RedirectToAction("Schedule", "Identity");
         }
 
         public async Task<IActionResult> OnGet(int year = -1, int week = -1)

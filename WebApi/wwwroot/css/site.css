@@ -150,6 +150,17 @@ article {
     margin-right: 0.5rem;
 }
 
+.buttons-layout {
+    position: relative;
+}
+
+
+.week-calendar {
+    margin-left: 0.5rem;
+    height: 100%;
+    position: absolute;
+}
+
 .imagelinks {
     width: 100%;
     height: 100%;

@@ -67,31 +67,6 @@ namespace WebApi.Areas.Identity.Pages.Schedule
             Input.MenuTypeName.Add("Ужин");
         }
 
-
-        public async Task<IActionResult> OnGetCreate(InputModel input)
-        {
-            _logger.LogInformation($"provided acces to /admin/schedule/create by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
-            Input = input;
-            var dayMenus = await _context.DayMenu.OrderBy(x => x.Date)
-                                                 .Where(x => x.Date > DateTime.Now.AddDays(-1))
-                                                 .ToListAsync();
-            DateTime date;
-            if (dayMenus.Count == 0)
-                date = DateTime.Now;
-            else
-                date = dayMenus.Last().Date.AddDays(1);
-            DayMenu dayMenu = new DayMenu()
-            {
-                Date = date,
-                Name = Tools.UpperLetter(date.ToString("dddd dd.MM")),
-                RecipeList = new List<RecipeList>()
-            };
-            await _context.AddAsync(dayMenu);
-            await _context.SaveChangesAsync();
-            await UpdateModelAsync();
-            return RedirectToPage();
-        }
-
         public async Task<IActionResult> OnGetDelete()
         {
             _logger.LogInformation($"provided acces to /admin/schedule/delete by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
