@@ -28,6 +28,8 @@ namespace WebApi.Controllers
 
         public ModelLibrary.Recipe RecipeToExport(Models.Recipe recipe)
         {
+            if (recipe.PictureList == null)
+                recipe.PictureList = new List<PictureList>();
             return new ModelLibrary.Recipe()
             {
                 Id = recipe.Id,
@@ -39,7 +41,8 @@ namespace WebApi.Controllers
                 Greases = recipe.Greases,
                 Carbohydrates = recipe.Carbohydrates,
                 IsVegan = recipe.IsVegan,
-                IsVegetarian = recipe.IsVegetarian
+                IsVegetarian = recipe.IsVegetarian,
+                Type = (RecipeType)recipe.Type
             };
         }
 
@@ -134,7 +137,8 @@ namespace WebApi.Controllers
 
         public async Task<String> WeekMenu()
         {
-            _logger.LogInformation($"provided acces to /recipes/weekmenu by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
+            _logger.LogInformation($"provided acces to /recipes/weekmenu by user: {await _userManager.GetUserAsync(HttpContext.User)} " +
+                $"[{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             int firstDay = (8 + (DateTime.Now.DayOfWeek - DayOfWeek.Monday)) % 7;
             int lastDay = 6 - firstDay;
             var dayMenus = await _context.DayMenu.Include(x => x.RecipeList)
@@ -142,6 +146,19 @@ namespace WebApi.Controllers
                                                 .Where(x => x.Date > DateTime.Now.AddDays(-1 * firstDay) && x.Date < DateTime.Now.AddDays(lastDay))
                                                 .ToListAsync();
             return Serialization<ModelLibrary.DayMenu>.WriteList(ToExportDayMenuList(dayMenus));
+        }
+        public async Task<String> TodayMenuType(int type)
+        {
+            _logger.LogInformation($"provided acces to /recipes/todaymenutype/{type} by user: {await _userManager.GetUserAsync(HttpContext.User)} " +
+                $"[{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
+            var dayMenu = await _context.DayMenu.Include(x => x.RecipeList)
+                                                .ThenInclude(x => x.Recipe)
+                                                .FirstAsync(x => x.Date.Day == DateTime.Now.Day);
+            var recipes = new List<ModelLibrary.Recipe>();
+            foreach (var recipeList in dayMenu.RecipeList)
+                if (recipeList.Recipe.Type == type)
+                    recipes.Add(RecipeToExport(recipeList.Recipe));
+            return Serialization<ModelLibrary.Recipe>.WriteList(recipes);
         }
 
         public async Task<String> TodayMenu()

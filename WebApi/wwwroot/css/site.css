@@ -14,9 +14,10 @@ a {
 
 .btn-primary {
     color: black;
+    margin-bottom:0.5rem;
     background-color: rgb(45 127 255 / 64%);
     border-color: #1861ac;
-    min-width: 120px;
+    min-width: 80px;
     transition: 0.6s;
 }
 
@@ -31,8 +32,14 @@ a {
     transition: 0.6s;
 }
 
+
 .btn-addition:hover {
     background-color: orange;
+}
+
+.btn-danger {
+    min-width: 80px;
+    margin-bottom: 0.5rem;
 }
 
 .control-label .text-info {
@@ -47,10 +54,6 @@ a {
 
 .header {
     font-size: 2rem;
-}
-
-.btn-danger {
-    min-width: 120px;
 }
 
 .table td {
@@ -257,7 +260,7 @@ picture {
 }
 
 .form-group {
-    min-width: 300px;
+    min-width: 200px;
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
@@ -269,6 +272,7 @@ picture {
 /* Style the tab */
 .tab {
     overflow: hidden;
+    min-width: 500px;
     border: 1px solid #ccc;
     background-color: #f1f1f1;
 }
@@ -464,7 +468,7 @@ body {
   margin-bottom: 60px;
 }
 .footer {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   width: 100%;
   white-space: nowrap;

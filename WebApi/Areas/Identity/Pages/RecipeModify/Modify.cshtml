@@ -102,6 +102,10 @@
                 <span asp-validation-for="Input.Recipe.Carbohydrates" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Input.Recipe.Type" class="control-label"></label>
+                <select asp-for="Input.Recipe.Type" asp-items="@Model.Input.Type" class="form-control"></select>
+            </div>
+            <div class="form-group">
                 <label asp-for="Input.Recipe.IsVegan" class="control-label"></label>
                 <div class="checkbox">
                     <input class="custom-checkbox" type="checkbox" id="checkboxin" asp-for="Input.Recipe.IsVegan">
@@ -171,8 +175,10 @@
                         var id = event.target.index + 1;
                         var div2 = document.createElement("div");
                         div2.className = "image-container";
-                        div2.innerHTML += "<img class='thumbnail' src='" + picFile.result + "' " + "title='" + picFile.name + "' id='img-" + id + "'/>" +
-                            "<button class='imagelinks' type='button' onclick='selectImage(event, " + id + ")' id='selector-" + id + "'></button>";
+                        div2.innerHTML += "<img class='thumbnail' src='" + picFile.result + "' "
+                            + "title='" + picFile.name + "' id='img-" + id + "'/>" +
+                            "<button class='imagelinks' type='button' onclick='selectImage(event, "
+                            + id + ")' id='selector-" + id + "'></button>";
                         div.appendChild(div2);
                         output.insertBefore(div, null);
                     });
@@ -184,6 +190,14 @@
         } else {
             console.log("Your browser does not support File API");
         }
+    }
+    function selectImage(evt, id) {
+        var thumbnails = document.getElementsByClassName("thumbnail");
+        for (i = 0; i < thumbnails.length; i++) {
+            thumbnails[i].setAttribute("style", "border-color: #ced4da");
+        }
+        document.getElementById('img-' + id).setAttribute("style", "border-color: blue");
+        document.getElementById('main-picture-id').value = id;
     }
 </script>
 

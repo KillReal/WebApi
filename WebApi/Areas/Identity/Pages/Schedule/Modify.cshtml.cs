@@ -42,7 +42,6 @@ namespace WebApi.Areas.Identity.Pages.Schedule
         {
             public bool ModifyType { get; set; } = false;
             public DayMenu DayMenu { get; set; } = new DayMenu();
-
             public List<List<bool>> RecipeUsageList { get; set; } = new List<List<bool>>();
 
             public List<Recipe> RecipeList = new List<Recipe>();
@@ -78,14 +77,12 @@ namespace WebApi.Areas.Identity.Pages.Schedule
             Input.RecipeList = await _context.Recipe.Include(x => x.RecipeList).OrderBy(x => x.Id).ToListAsync();
             foreach (var recipe in Input.RecipeList)
             {
-                if (DayMenuExists(Input.DayMenu.Id))
-                {
-                    List<bool> UsageList = (await _context.RecipeList.Where(x => x.DayMenu.Id == Input.DayMenu.Id && x.Recipe.Id == recipe.Id)
-                                                                 .FirstOrDefaultAsync()).DayUsage.ToList();
-                    Input.RecipeUsageList.Add(UsageList);
-                }
-                else
-                    Input.RecipeUsageList.Add(new List<bool>() { false, false, false});
+                var usage = (await _context.RecipeList.Where(x => x.DayMenu.Id == Input.DayMenu.Id && x.Recipe.Id == recipe.Id)
+                                                                 .FirstOrDefaultAsync());
+                List<bool> UsageList = new List<bool>() { false, false, false };
+                if (usage != null)
+                    UsageList = usage.DayUsage.ToList();
+                Input.RecipeUsageList.Add(UsageList);
             }
             ReturnUrl = returnUrl;
             return Page();

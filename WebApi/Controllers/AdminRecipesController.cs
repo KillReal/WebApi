@@ -47,7 +47,8 @@ namespace WebApi.Controllers
         // GET: Recipes
         public async Task<IActionResult> Index()
         {
-            _logger.LogInformation($"provided acces to /admin/index by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
+            _logger.LogInformation($"provided acces to /admin/index by user: " +
+                $"{await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             return View(await _context.Recipe.ToListAsync());
         }
 

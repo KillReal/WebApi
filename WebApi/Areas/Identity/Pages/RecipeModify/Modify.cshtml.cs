@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -42,20 +43,31 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
         {
             public bool ModifyType { get; set; } = false;
             public Recipe Recipe { get; set; } = new Recipe();
+            public List<SelectListItem> Type { get; set; } = new List<SelectListItem>();
             public int MainPictureId { get; set; }
         }
 
         public async Task<IActionResult> OnGet(int id = -1, string returnUrl = null)
         {
-            _logger.LogInformation($"provided acces to /admin/recipes/modify?get&id={id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
+            _logger.LogInformation($"provided acces to /admin/recipes/modify?get&id={id} by user: " +
+                $"{await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             if (RecipeExists(id))
             {
-                Input.Recipe = _context.Recipe.Where(x => x.Id == id)
-                                              .Include(x => x.PictureList).FirstOrDefault();
+                Input.Recipe = _context.Recipe.Where(x => x.Id == id).Include(x => x.PictureList).FirstOrDefault();
                 Input.ModifyType = true;
             }
             else
                 Input.Recipe.Name = "Название";
+            List<ModelLibrary.RecipeType> enums = new List<ModelLibrary.RecipeType>(Enum.GetValues(typeof(ModelLibrary.RecipeType)).Cast<ModelLibrary.RecipeType>().ToList());
+            foreach (var item in enums)
+            {
+                if (item != ModelLibrary.RecipeType.Unknown)
+                    Input.Type.Add(new SelectListItem
+                    {
+                        Value = ((int)item).ToString(),
+                        Text = ModelLibrary.Tools.GetEnumName(item)
+                    }) ; 
+            }
             ReturnUrl = returnUrl;
             return Page();
         }

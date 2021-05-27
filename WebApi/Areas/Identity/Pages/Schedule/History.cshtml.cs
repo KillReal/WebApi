@@ -25,8 +25,6 @@ namespace WebApi.Areas.Identity.Pages.Schedule
 
         public class InputModel
         {
-            public int Year;
-            public int Week;
             public string MinDate;
             public string MaxDate;
             public string CurrentDate;
@@ -48,8 +46,6 @@ namespace WebApi.Areas.Identity.Pages.Schedule
         {
             DateTime selectedWeek = Tools.GetDateFromWeek(year, week);
             Input.CurrentDate = $"{selectedWeek.Year}-W{Tools.GetWeekFromDate(selectedWeek)}";
-            Input.Year = year;
-            Input.Week = week;
             var historyDayMenus = await _context.DayMenu.Where(x => x.Date < DateTime.Now.AddDays(-1)).ToListAsync();
             var dayMenus = await _context.DayMenu.Include(x => x.RecipeList)
                                                  .ThenInclude(x => x.Recipe)
