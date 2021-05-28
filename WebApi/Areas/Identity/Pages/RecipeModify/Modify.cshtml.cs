@@ -104,15 +104,13 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
                         }
                     }
                 }
-                else
+                if (RecipeExists(Input.Recipe.Id))
                 {
-                    Input.Recipe.MainPicture = (await _context.Recipe.AsNoTracking().FirstAsync(m => m.Id == Input.Recipe.Id)).MainPicture;
+                    if (files.Count == 0)
+                        Input.Recipe.MainPicture = (await _context.Recipe.AsNoTracking().FirstOrDefaultAsync(m => m.Id == Input.Recipe.Id)).MainPicture;
                     Input.Recipe.PictureList = (await _context.Recipe.AsNoTracking().Include(x => x.PictureList)
                                                                                     .FirstAsync(x => x.Id == Input.Recipe.Id))
                                                                                     .PictureList;
-                }
-                if (RecipeExists(Input.Recipe.Id))
-                {
                     _context.Update(Input.Recipe);
                     Input.Recipe = await _context.Recipe.Include(x => x.PictureList).FirstAsync(x => x.Id == Input.Recipe.Id);
                     if (pictureList.Count > 0)
@@ -125,6 +123,8 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
                 {
                     if (Input.Recipe.MainPicture == null)
                         Input.Recipe.MainPicture = System.IO.File.ReadAllBytes("wwwroot/pics/noimg.jpg");
+                    Input.Recipe.PictureList = pictureList;
+                    _context.AddRange(pictureList);
                     _context.Add(Input.Recipe);
                 }
                 await _context.SaveChangesAsync();
