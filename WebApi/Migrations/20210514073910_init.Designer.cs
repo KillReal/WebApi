@@ -10,7 +10,7 @@ using WebApi.Data;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    [Migration("20210413193731_init")]
+    [Migration("20210514073910_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,17 +28,35 @@ namespace WebApi.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn);
 
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<long>("RecipeListId")
+                    b.HasKey("Id");
+
+                    b.ToTable("DayMenu");
+                });
+
+            modelBuilder.Entity("WebApi.Models.PictureList", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn);
+
+                    b.Property<byte[]>("Picture")
+                        .HasColumnType("bytea");
+
+                    b.Property<long?>("RecipeId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RecipeListId");
+                    b.HasIndex("RecipeId");
 
-                    b.ToTable("DayMenu");
+                    b.ToTable("PictureList");
                 });
 
             modelBuilder.Entity("WebApi.Models.Recipe", b =>
@@ -60,7 +78,7 @@ namespace WebApi.Migrations
                     b.Property<bool>("HaveMeat")
                         .HasColumnType("boolean");
 
-                    b.Property<byte[]>("Image")
+                    b.Property<byte[]>("MainPicture")
                         .HasColumnType("bytea");
 
                     b.Property<string>("Name")
@@ -69,15 +87,10 @@ namespace WebApi.Migrations
                     b.Property<int>("Proteins")
                         .HasColumnType("integer");
 
-                    b.Property<long?>("RecipeListId")
-                        .HasColumnType("bigint");
-
                     b.Property<int>("Weight")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RecipeListId");
 
                     b.ToTable("Recipe");
                 });
@@ -89,36 +102,58 @@ namespace WebApi.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn);
 
+                    b.Property<long?>("DayMenuId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool[]>("DayUsage")
+                        .HasColumnType("boolean[]");
+
+                    b.Property<long?>("RecipeId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("DayMenuId");
+
+                    b.HasIndex("RecipeId");
 
                     b.ToTable("RecipeList");
                 });
 
+            modelBuilder.Entity("WebApi.Models.PictureList", b =>
+                {
+                    b.HasOne("WebApi.Models.Recipe", "Recipe")
+                        .WithMany("PictureList")
+                        .HasForeignKey("RecipeId");
+
+                    b.Navigation("Recipe");
+                });
+
+            modelBuilder.Entity("WebApi.Models.RecipeList", b =>
+                {
+                    b.HasOne("WebApi.Models.DayMenu", "DayMenu")
+                        .WithMany("RecipeList")
+                        .HasForeignKey("DayMenuId");
+
+                    b.HasOne("WebApi.Models.Recipe", "Recipe")
+                        .WithMany("RecipeList")
+                        .HasForeignKey("RecipeId");
+
+                    b.Navigation("DayMenu");
+
+                    b.Navigation("Recipe");
+                });
+
             modelBuilder.Entity("WebApi.Models.DayMenu", b =>
                 {
-                    b.HasOne("WebApi.Models.RecipeList", "RecipeList")
-                        .WithMany("DayMenus")
-                        .HasForeignKey("RecipeListId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("RecipeList");
                 });
 
             modelBuilder.Entity("WebApi.Models.Recipe", b =>
                 {
-                    b.HasOne("WebApi.Models.RecipeList", "RecipeList")
-                        .WithMany("Recipes")
-                        .HasForeignKey("RecipeListId");
+                    b.Navigation("PictureList");
 
                     b.Navigation("RecipeList");
-                });
-
-            modelBuilder.Entity("WebApi.Models.RecipeList", b =>
-                {
-                    b.Navigation("DayMenus");
-
-                    b.Navigation("Recipes");
                 });
 #pragma warning restore 612, 618
         }
