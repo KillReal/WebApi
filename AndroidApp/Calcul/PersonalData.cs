@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 using Android.App;
@@ -15,6 +17,16 @@ using ModelLibrary;
 
 namespace Calcul
 {
+    public enum Food_
+    {
+        [Description("Нет")]
+        No,
+        [Description("Веган")]
+        Vegan,
+        [Description("Вегетарианец")]
+        Vegetarian
+        
+    }
     class PersonalData : SerializableObject
     {
         public string name;
@@ -22,7 +34,7 @@ namespace Calcul
         public int height;
         public int current_weight;
         public int target_weight;
-        public int food;			// food: {нет, веган, вегетарианец}
+        public Food_ food;			// food: {нет, веган, вегетарианец}
         public int purpose;			// purpose: {сбросить вес, поддержать вес, набрать вес}
         public int activity;		// activity: {низкий, средний, высокий, очень высокий}
         public bool gender;		// gender: true - Ж, false - М
@@ -30,7 +42,6 @@ namespace Calcul
         public int calories;
 
         private string path = System.IO.Path.Combine(Xamarin.Essentials.FileSystem.AppDataDirectory, "userfile.txt");
-
         public PersonalData()
         {
             name = "";
@@ -89,6 +100,9 @@ namespace Calcul
         }
         public void FileWR(PersonalData us)
         {
+            calories = (int)Calculation_colories();
+            FileInfo flw = new FileInfo(path);
+            flw.Delete();
             using (FileStream filew = new FileStream(path, FileMode.OpenOrCreate))
             {
                 string textin = Serialization<PersonalData>.Write(us);
@@ -110,10 +124,12 @@ namespace Calcul
         }
         public double Calculation_colories()
         {
-            double[] k = new double[4] { 1.2, 1.375, 1.55, 1.725 };
+            double[] activ_k = new double[4] { 1.2, 1.46, 1.64, 1.9 };
             double BMR;
-            BMR = 66.56 + (11.3 * current_weight) + (3.95 * height) - (5 * age);
-            BMR *= k[activity];
+            if (gender == true) 
+                BMR = (((9.99 * current_weight) + (6.25 * height) - (4.92 * age) - 161) * activ_k[activity]) * ((double)target_weight / (double)current_weight);
+            else
+                BMR = (((9.99 * current_weight) + (6.25 * height) - (4.92 * age)  + 5) * activ_k[activity]) * ((double)target_weight / (double)current_weight);
             return BMR;
         }
        /* ~PersonalData()
