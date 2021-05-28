@@ -168,6 +168,7 @@ namespace WebApi.Controllers
 
             var dayMenu = await _context.DayMenu.Include(x => x.RecipeList)
                                                 .ThenInclude(x => x.Recipe)
+                                                .ThenInclude(x => x.PictureList)
                                                 .FirstAsync(x => x.Date.Day == DateTime.Now.Day);
 
             if (dayMenu == null)
