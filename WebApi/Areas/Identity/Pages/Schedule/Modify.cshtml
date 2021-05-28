@@ -1,0 +1,165 @@
+﻿@page
+@model WebApi.Areas.Identity.Pages.Schedule.ModifyModel
+@{
+}
+
+<form enctype="multipart/form-data" id="create-daymenu-form" method="post">
+    @if (Model.Input.ModifyType)
+    {
+        <h1>Редактировать меню</h1>
+    }
+    else
+    {
+        <h1>Создать меню</h1>
+    }
+    <div class="row">
+        <div class="col-md-6" style="float: right;">
+            <div class="tab-title-container">
+                <h4 class="name-edit">
+                    <label class="control-label-custom">
+                        <div class="text-info-custom">@Model.Input.DayMenu.Name</div>
+                        <i class="icon-star"></i>
+                    </label>
+                    <input id="label-edit" type="hidden" asp-for="Input.DayMenu.Name" />
+                    <div class="controls">
+                        <a href="#" id="edit" class="btn-hidden"></a>
+                        <picture>
+                            <source srcset="/pics/edit.png">
+                            <img src="/pics/edit.png" alt="MDN" class="img-icon">
+                        </picture>
+                    </div>
+                </h4>
+            </div>
+            <hr />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input id="recipe-id" type="hidden" asp-for="Input.DayMenu.Id" />
+            <input id="recipe-date-id" type="hidden" asp-for="Input.DayMenu.Date" />
+            @if (Model.Input.ModifyType)
+            {
+
+            }
+        </div>
+    </div>
+    <div class="row">
+    @for (int i = 0; i < Model.Input.MenuType.Count(); i++)
+    {
+        <div class="col-md-6">
+            <div class="tab-title-container">
+                <h4>@Html.Label("", Model.Input.MenuType[i])</h4>
+            </div>
+            <hr />
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Input.RecipeList[0].Name)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Input.RecipeList[0].Weight)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Input.RecipeList[0].Colories)
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int j = 0; j < Model.Input.RecipeList.Count(); j++)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(model => model.Input.RecipeList[j].Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => model.Input.RecipeList[j].Weight) гр.
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => model.Input.RecipeList[j].Colories) ккал.
+                                </td>
+                                <td>
+                                    <div class="checkbox">
+                                        <input class="custom-checkbox" type="checkbox" id="checkboxin" asp-for="Input.RecipeUsageList[j][i]">
+                                        <label for="checkboxin"></label>
+                                        <span asp-validation-for="Input.RecipeUsageList[j][i]" class="text-danger"></span>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    </div>
+    <label class="label-tab-spacer"></label>
+    <div class="row">
+        <div class="form-group">
+            @if (Model.ReturnUrl == null)
+            {
+                <a input type="button" class="btn btn-primary" asp-area="Identity" asp-page="/Schedule/Index">Назад</a>
+            }
+            else
+            {
+                <a input type="button" class="btn btn-primary" asp-area="Identity" asp-page="@Model.ReturnUrl">Назад</a>
+            }
+            @if (!Model.Input.ModifyType)
+            {
+                <button type="submit" class="btn btn-primary">Создать</button>
+            }
+            else
+            {
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            }
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+    window.onload = function () {
+        //Check File API support
+        var count = 0;
+        if (window.File && window.FileList && window.FileReader) {
+            var filesInput = document.getElementById("files");
+            filesInput.addEventListener("change", function (event) {
+                var files = event.target.files; //FileList object
+                var output = document.getElementById("result");
+                var div = document.getElementsByClassName("image-uploader");
+                if (div.length == 0) {
+                    div = document.createElement("div");
+                    div.className = "image-uploader";
+                }
+                else
+                    div = div[0];
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    //Only pics
+                    if (!file.type.match('image'))
+                        continue;
+                    var picReader = new FileReader();             
+                    picReader.addEventListener("load", function (event) {
+                        count++;
+                        var picFile = event.target;
+                        var id = event.target.index + 1;
+                        var div2 = document.createElement("div");
+                        div2.className = "image-container";
+                        div2.innerHTML += "<img class='thumbnail' src='" + picFile.result + "' " + "title='" + picFile.name + "' id='img-" + id + "'/>" +
+                            "<button class='imagelinks' type='button' onclick='selectImage(event, " + id + ")' id='selector-" + id + "'></button>";
+                        div.appendChild(div2);
+                        output.insertBefore(div, null);
+                    });
+                    //Read the image
+                    picReader.index = i;
+                    picReader.readAsDataURL(file);
+                }
+            });
+        } else {
+            console.log("Your browser does not support File API");
+        }
+    }
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,89 @@
+﻿@page
+@model WebApi.Areas.Identity.Pages.Schedule.HistoryModel
+@{
+}
+
+<h1>История меню</h1>
+
+<p>
+    <div class="buttons-layout">
+        <a input type="button" class="btn btn-primary" asp-area="Identity" asp-page="/Schedule/Index">Назад</a>
+        <input type="week" name="week" class="week-calendar" id="camp-week" min='@Model.Input.MinDate' max="@Model.Input.MaxDate" onkeydown="event.preventDefault()" value="@Model.Input.CurrentDate" onchange="update(event);" required>
+    </div>
+</p>
+<!-- Tab links -->
+<div class="tab">
+    @for (int i = 0; i < Model.Input.DayMenuName.Count(); i++)
+    {
+        <button class="tablinks" onclick="openTab(event, '@Model.Input.DayMenuName[i]', '1@(i)')" id="tab-1@(i)">@Html.Label("", Model.Input.DayMenuName[i])</button>
+    }
+</div>
+<p></p>
+@for (int i = 0; i < Model.Input.DayMenuName.Count(); i++)
+{
+    <div id="@(Model.Input.DayMenuName[i])-1@(i)" class="tabcontent">
+        <div class="header">@Html.Label("", Model.Input.DayMenuName[i])</div>
+        <p>
+            <div>
+                <a input type="button" class="btn btn-primary" asp-area="Identity" asp-page="/Schedule/History" asp-page-handler="CreateFromHistory" asp-route-id="@Model.Input.DayMenuId[i]">Создать новую копию меню</a>
+            </div>
+        </p>
+        <div class="tab">
+            @for (int j = 0; j < Model.Input.MenuTypeName.Count(); j++)
+            {
+                <button class="tablinks" onclick="openTab(event, '@Model.Input.MenuTypeName[j]', '2@(i)')" id="tab-2@(i)">@Html.Label("", Model.Input.MenuTypeName[j])</button>
+            }
+        </div>
+        @for (int j = 0; j < Model.Input.MenuTypeName.Count(); j++)
+        {
+            <div id="@(Model.Input.MenuTypeName[j])-2@(i)" class="tabcontent">
+                <div class="header">@Html.Label("", Model.Input.MenuTypeName[j])</div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Input.Recipes[0][0][0].MainPicture)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Input.Recipes[0][0][0].Name)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Input.Recipes[0][0][0].Weight)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Input.Recipes[0][0][0].Colories)
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Input.Recipes[i][j])
+                        {
+                            <tr onclick="location.href = '@(Url.Page("/RecipeModify/Edit", new { id = item.Id, returnUrl = "/Schedule/Index", area = "Identity" }))'" class="main-table">
+                                <td>
+                                    <img src="@Url.Action("Image", "AdminRecipes", new { id = item.Id })" alt="Recipe image" height="150" />
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Weight) гр.
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Colories) ккал.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+}
+
+<script>
+    function update(event) {
+        var date = $('#camp-week').val().split("-");
+        window.location = "./history?year=" + date[0] + "&week=" + date[1].replace('W', '');
+    }
+</script>
+

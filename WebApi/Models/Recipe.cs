@@ -30,8 +30,9 @@ namespace WebApi.Models
         public bool IsVegan { get; set; }
         [Display(Name = "Вегетарианское")]
         public bool IsVegetarian { get; set; }
+        [Display(Name = "Тип блюда")]
+        public int Type { get; set; }
         public List<RecipeList> RecipeList { get; set; }
-
         public List<PictureList> PictureList { get; set; }
     }
 }
