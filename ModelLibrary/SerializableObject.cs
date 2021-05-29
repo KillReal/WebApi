@@ -14,8 +14,6 @@ namespace ModelLibrary
 
     public enum RecipeType
     {
-        [Display(Name = "Неизвестно")]
-        Unknown = -1,
         [Display(Name = "Первое")]
         Primary = 0,
         [Display(Name = "Второе")]

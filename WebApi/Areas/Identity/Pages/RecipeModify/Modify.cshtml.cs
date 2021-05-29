@@ -61,12 +61,11 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
             List<ModelLibrary.RecipeType> enums = new List<ModelLibrary.RecipeType>(Enum.GetValues(typeof(ModelLibrary.RecipeType)).Cast<ModelLibrary.RecipeType>().ToList());
             foreach (var item in enums)
             {
-                if (item != ModelLibrary.RecipeType.Unknown)
-                    Input.Type.Add(new SelectListItem
-                    {
-                        Value = ((int)item).ToString(),
-                        Text = ModelLibrary.Tools.GetEnumName(item)
-                    }) ; 
+                Input.Type.Add(new SelectListItem
+                {
+                    Value = ((int)item).ToString(),
+                    Text = ModelLibrary.Tools.GetEnumName(item)
+                });
             }
             ReturnUrl = returnUrl;
             return Page();
