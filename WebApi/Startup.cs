@@ -29,7 +29,7 @@ namespace WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<Data.MainDbContext>(options =>
+            services.AddDbContext<MainDbContext>(options =>
                  {
                      var builder = new NpgsqlDbContextOptionsBuilder(options);
                      builder.SetPostgresVersion(new Version(9, 6));
@@ -37,7 +37,7 @@ namespace WebApi
                  });
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<Data.MainDbContext>()
+                .AddEntityFrameworkStores<MainDbContext>()
                 .AddDefaultTokenProviders();
 
             //services.AddControllersWithViews();

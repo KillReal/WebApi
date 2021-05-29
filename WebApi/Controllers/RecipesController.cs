@@ -28,15 +28,13 @@ namespace WebApi.Controllers
 
         public ModelLibrary.Recipe RecipeToExport(Models.Recipe recipe)
         {
-            if (recipe.PictureList == null)
-                recipe.PictureList = new List<PictureList>();
             return new ModelLibrary.Recipe()
             {
                 Id = recipe.Id,
                 Name = recipe.Name,
                 Weight = recipe.Weight,
                 Colories = recipe.Colories,
-                PictureCount = recipe.PictureList.Count() + 1,
+                PictureCount = recipe.PictureList == null ? 0 : recipe.PictureList.Count() + 1,
                 Proteins = recipe.Proteins,
                 Greases = recipe.Greases,
                 Carbohydrates = recipe.Carbohydrates,
@@ -109,13 +107,13 @@ namespace WebApi.Controllers
                             switch (i)
                             {
                                 case 0:
-                                    sDayMenu.BreakfastRecipes.Add(recipeList.Recipe.Id);
+                                    sDayMenu.BreakfastRecipes.Add(RecipeToExport(recipeList.Recipe));
                                     break;
                                 case 1:
-                                    sDayMenu.LaunchRecipes.Add(recipeList.Recipe.Id);
+                                    sDayMenu.LaunchRecipes.Add(RecipeToExport(recipeList.Recipe));
                                     break;
                                 case 2:
-                                    sDayMenu.DinnerRecipes.Add(recipeList.Recipe.Id);
+                                    sDayMenu.DinnerRecipes.Add(RecipeToExport(recipeList.Recipe));
                                     break;
                             }
                         }
@@ -130,6 +128,7 @@ namespace WebApi.Controllers
             _logger.LogInformation($"provided acces to /recipes/menu by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             var dayMenus = await _context.DayMenu.Include(x => x.RecipeList)
                                                  .ThenInclude(x => x.Recipe)
+                                                 .ThenInclude(x => x.PictureList)
                                                  .Where(x => x.Date > DateTime.Now.AddDays(-1))
                                                  .ToListAsync();
             return Serialization<ModelLibrary.DayMenu>.WriteList(ToExportDayMenuList(dayMenus));
@@ -143,6 +142,7 @@ namespace WebApi.Controllers
             int lastDay = 6 - firstDay;
             var dayMenus = await _context.DayMenu.Include(x => x.RecipeList)
                                                 .ThenInclude(x => x.Recipe)
+                                                .ThenInclude(x => x.PictureList)
                                                 .Where(x => x.Date > DateTime.Now.AddDays(-1 * firstDay) && x.Date < DateTime.Now.AddDays(lastDay))
                                                 .ToListAsync();
             return Serialization<ModelLibrary.DayMenu>.WriteList(ToExportDayMenuList(dayMenus));
@@ -153,6 +153,7 @@ namespace WebApi.Controllers
                 $"[{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             var dayMenu = await _context.DayMenu.Include(x => x.RecipeList)
                                                 .ThenInclude(x => x.Recipe)
+                                                .ThenInclude(x => x.PictureList)
                                                 .FirstAsync(x => x.Date.Day == DateTime.Now.Day);
             var recipes = new List<ModelLibrary.Recipe>();
             foreach (var recipeList in dayMenu.RecipeList)
@@ -167,6 +168,7 @@ namespace WebApi.Controllers
 
             var dayMenu = await _context.DayMenu.Include(x => x.RecipeList)
                                                 .ThenInclude(x => x.Recipe)
+                                                .ThenInclude(x => x.PictureList)
                                                 .FirstAsync(x => x.Date.Day == DateTime.Now.Day);
 
             if (dayMenu == null)
@@ -187,13 +189,13 @@ namespace WebApi.Controllers
                         switch (i) 
                         { 
                             case 0:
-                                sDayMenu.BreakfastRecipes.Add(recipeList.Recipe.Id);
+                                sDayMenu.BreakfastRecipes.Add(RecipeToExport(recipeList.Recipe));
                                 break;
                             case 1:
-                                sDayMenu.LaunchRecipes.Add(recipeList.Recipe.Id);
+                                sDayMenu.LaunchRecipes.Add(RecipeToExport(recipeList.Recipe));
                                 break;
                             case 2:
-                                sDayMenu.DinnerRecipes.Add(recipeList.Recipe.Id);
+                                sDayMenu.DinnerRecipes.Add(RecipeToExport(recipeList.Recipe));
                                 break;
                         }
                     }

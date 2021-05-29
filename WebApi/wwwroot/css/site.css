@@ -313,6 +313,7 @@ picture {
 
 .checkbox {
     display: table-cell;
+    position: relative;
 }
 
 /* для элемента label, связанного с .custom-checkbox */
