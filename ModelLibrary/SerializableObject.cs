@@ -20,14 +20,12 @@ namespace ModelLibrary
         Primary = 0,
         [Display(Name = "Второе")]
         Secondary = 1,
-        [Display(Name = "Десерт")]
-        Desert = 2,
-        [Display(Name = "Салат")]
-        Salad = 3,
+        [Display(Name = "Гарнир")]
+        Garnish = 2,
+        [Display(Name = "Холодные закуски")]
+        Desert = 3,
         [Display(Name = "Напиток")]
         Drink = 4,
-        [Display(Name = "Гарнир")]
-        Garnish = 5,
 
     }
 
