@@ -20,24 +20,12 @@ namespace ModelLibrary
         Primary = 0,
         [Display(Name = "Второе")]
         Secondary = 1,
-<<<<<<< Updated upstream
-        [Display(Name = "Десерт")]
-        Desert = 2,
-        [Display(Name = "Салат")]
-        Salad = 3,
-        [Display(Name = "Напиток")]
-        Drink = 4,
-        [Display(Name = "Гарнир")]
-        Garnish = 5,
-
-=======
         [Display(Name = "Гарнир")]
         Garnish = 2,
         [Display(Name = "Холодные закуски")]
         ColdSnacks = 3,
         [Display(Name = "Напиток")]
         Drink = 4
->>>>>>> Stashed changes
     }
 
     public static class Tools 
