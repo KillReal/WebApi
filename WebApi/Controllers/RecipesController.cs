@@ -40,6 +40,7 @@ namespace WebApi.Controllers
                 Carbohydrates = recipe.Carbohydrates,
                 IsVegan = recipe.IsVegan,
                 IsVegetarian = recipe.IsVegetarian,
+                MainPicture = recipe.MainPicture,
                 Type = (RecipeType)recipe.Type
             };
         }
@@ -61,7 +62,7 @@ namespace WebApi.Controllers
 
         public async Task<FileContentResult> ImageAsync(int id, int sid = -1)
         {
-            _logger.LogInformation($"provided acces to /recipes/{id}?sid={sid} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
+            _logger.LogInformation($"provided acces to /recipes/image/{id}?sid={sid} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
 
             var recipe = await _context.Recipe.Include(x => x.PictureList).FirstOrDefaultAsync(m => m.Id == id);
             if (recipe != null)

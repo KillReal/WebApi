@@ -57,6 +57,7 @@ namespace ModelLibrary
         public int Carbohydrates { get; set; }
         public bool IsVegan { get; set; }
         public bool IsVegetarian { get; set; }
+        public byte[] MainPicture { get; set; }
         public int PictureCount { get; set; }
         public RecipeType Type { get; set; }
     }
