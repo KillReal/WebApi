@@ -20,38 +20,38 @@ namespace Calcul
     class MenuOfDay
     {
         public string date;
-        public List<Recipe> breakfast;
-        public List<Recipe> lunch;
-        public List<Recipe> dinner;
+        public List<Recipe> BreakfastRecipes;
+        public List<Recipe> LaunchRecipes;
+        public List<Recipe> DinnerRecipes;
     }
     class MenuData : SerializableObject
     {
         public string data_update;
-        public MenuOfDay[] menu_of_week;
-        public MenuOfDay[] menu_of_week_add;
+        public DayMenu[] menu_of_week;
+        public DayMenu[] menu_of_week_add;
 
         private Recipe error_;
         private string path = System.IO.Path.Combine(Xamarin.Essentials.FileSystem.AppDataDirectory, "weekmenu_file.txt");
-        private string uri_ = "http://4aee6b9146f2.ngrok.io/";
+        private string uri_ = "http://4aee6b9146f2.ngrok.io";
 
         public MenuData()
         {
             data_update = DateTime.Now.ToString("dd.MM.yyyy");
-            menu_of_week = new MenuOfDay[7];
+            menu_of_week = new DayMenu[7];
             string[] date_of_week = Week();
-            menu_of_week_add = new MenuOfDay[7];
+            menu_of_week_add = new DayMenu[7];
             for (int i = 0; i < 7; i++)
             {
-                menu_of_week[i] = new MenuOfDay();
-                menu_of_week[i].date = date_of_week[i];
-                menu_of_week[i].breakfast = new List<Recipe>();
-                menu_of_week[i].lunch = new List<Recipe>();
-                menu_of_week[i].dinner = new List<Recipe>();
-                menu_of_week_add[i] = new MenuOfDay();
-                menu_of_week_add[i].date = date_of_week[i];
-                menu_of_week_add[i].breakfast = new List<Recipe>();
-                menu_of_week_add[i].lunch = new List<Recipe>();
-                menu_of_week_add[i].dinner = new List<Recipe>();
+                menu_of_week[i] = new DayMenu();
+                menu_of_week[i].Date = date_of_week[i];
+                menu_of_week[i].BreakfastRecipes = new List<Recipe>();
+                menu_of_week[i].LaunchRecipes = new List<Recipe>();
+                menu_of_week[i].DinnerRecipes = new List<Recipe>();
+                menu_of_week_add[i] = new DayMenu();
+                menu_of_week_add[i].Date = date_of_week[i];
+                menu_of_week_add[i].BreakfastRecipes = new List<Recipe>();
+                menu_of_week_add[i].LaunchRecipes = new List<Recipe>();
+                menu_of_week_add[i].DinnerRecipes = new List<Recipe>();
             }
             error_ = new Recipe();
             error_.Name = "На сегодня нет меню";
@@ -96,7 +96,7 @@ namespace Calcul
             for (int i = 1; i < 7; i++) date_of_week[i] = date_.AddDays(i).ToString("dd.MM.yyyy");
             return date_of_week;
         }
-        public void RequestMenu()
+        public void RequestMenu(int cal)
         {
             List<DayMenu> week;
             List<DayMenu> week_number = new List<DayMenu>();
@@ -106,64 +106,85 @@ namespace Calcul
             {
                 Uri add = new Uri(uri_ + "/recipes/weekmenu");
                 week = Serialization<DayMenu>.ReadList(client.DownloadString(add));
-                for (int j = 0; j < week.Count; j++) for (int i = 0; i < 7; i++) if (week[j].Date == menu_of_week[i].date) week_number[i] = week[j];
-                for (int i = 0; i < 7; i++)
-                {
-                    if (week_number[i] != null)
-                    {
-                        for (int j = 0; j < week_number[i].BreakfastRecipes.Count; j++)
-                            menu_of_week[i].breakfast.Add(RequestFood(week_number[i].BreakfastRecipes[j]));
-
-                        for (int j = 0; j < week_number[i].LaunchRecipes.Count; j++)
-                            menu_of_week[i].lunch.Add(RequestFood(week_number[i].LaunchRecipes[j]));
-
-                        for (int j = 0; j < week_number[i].DinnerRecipes.Count; j++)
-                            menu_of_week[i].dinner.Add(RequestFood(week_number[i].DinnerRecipes[j]));
-                    }
-                }
+                for (int j = 0; j < week.Count; j++) for (int i = 0; i < 7; i++) if (week[j].Date == menu_of_week[i].Date) menu_of_week[i] = week[j];
+                RequestCalcul(cal);
             }
             catch { };
         }
-        /*public void RequestTodayMenu()
-        {
-            DayMenu today;
-            WebClient client = new WebClient();
-            if (client.IsBusy)
-            {
-                Uri add = new Uri(uri_ + "/recipes/todaymenu");
-                today = Serialization<DayMenu>.Read(client.DownloadString(add));
-                if (today != null)
-                {
-                    for (int j = 0; j < today.BreakfastRecipes.Count; j++)
-                        menu_of_day.breakfast.Add(RequestFood(today.BreakfastRecipes[j]));
-
-                    for (int j = 0; j < today.LaunchRecipes.Count; j++)
-                        menu_of_day.lunch.Add(RequestFood(today.LaunchRecipes[j]));
-
-                    for (int j = 0; j < today.DinnerRecipes.Count; j++)
-                        menu_of_day.dinner.Add(RequestFood(today.DinnerRecipes[j]));
-                }
-            }
-        }*/
         public void RequestCalcul(int calories)
         {
-            int b = (int)(calories * 0.25);
-            int l = (int)(calories * 0.50);
-            int d = (int)(calories * 0.25);
             for (int i = 0; i < 7; i++)
             {
-                for (int j = 0; j < menu_of_week[i].breakfast.Count; j++)
+                int b = (int)(calories * 0.25);
+                int l = (int)(calories * 0.50);
+                int d = (int)(calories * 0.25);
+                List<Recipe>[] br = new List<Recipe>[2];
+                for (int j = 0; j < 2; j++) br[j] = new List<Recipe>();
+                List<Recipe>[] lu = new List<Recipe>[5];
+                for (int j = 0; j < 5; j++) lu[j] = new List<Recipe>();
+                List<Recipe>[] di = new List<Recipe>[4];
+                for (int j = 0; j < 4; j++) di[j] = new List<Recipe>();
+                for (int j = 0; j < menu_of_week[i].BreakfastRecipes.Count; j++)
                 {
-                    if (menu_of_week[i].breakfast[j].Colories <= (int)(b * 0.75))
+                    if ((menu_of_week[i].BreakfastRecipes[j].Type != RecipeType.Drink) & (menu_of_week[i].BreakfastRecipes[j].Colories <= (int)(b * 0.9)))
+                        br[0].Add(menu_of_week[i].BreakfastRecipes[j]);
+                    if ((menu_of_week[i].BreakfastRecipes[j].Type == RecipeType.Drink) & (menu_of_week[i].BreakfastRecipes[j].Colories <= (int)(b * 0.1)))
+                        br[1].Add(menu_of_week[i].BreakfastRecipes[j]);
+                }
+                for (int j = 0; j < 2; j++)
+                {
+                    if (br[j].Count != 0)
                     {
-                        menu_of_week_add[i].breakfast.Add(menu_of_week[i].breakfast[j]);
-                        b = b - menu_of_week[i].breakfast[j].Colories;
+                        Recipe max = br[j][0];
+                        for (int k = 1; k < br[j].Count; k++) if (max.Colories <= br[j][k].Colories) max = br[j][k];
+                        menu_of_week_add[i].BreakfastRecipes.Add(max);
                     }
                 }
-                for (int j = 0; j < menu_of_week[i].lunch.Count; j++) ;
-                for (int j = 0; j < menu_of_week[i].dinner.Count; j++) ;
-            }
 
+
+                for (int j = 0; j < menu_of_week[i].LaunchRecipes.Count; j++)
+                {
+                    if ((menu_of_week[i].LaunchRecipes[j].Type == RecipeType.Primary) & (menu_of_week[i].LaunchRecipes[j].Colories <= (int)(l * 0.2)))
+                        lu[0].Add(menu_of_week[i].LaunchRecipes[j]);
+                    if ((menu_of_week[i].LaunchRecipes[j].Type == RecipeType.Secondary) & (menu_of_week[i].LaunchRecipes[j].Colories <= (int)(l * 0.4)))
+                        lu[1].Add(menu_of_week[i].LaunchRecipes[j]);
+                    if ((menu_of_week[i].LaunchRecipes[j].Type == RecipeType.Garnish) & (menu_of_week[i].LaunchRecipes[j].Colories <= (int)(l * 0.3)))
+                        lu[2].Add(menu_of_week[i].LaunchRecipes[j]);
+                    if ((menu_of_week[i].LaunchRecipes[j].Type == RecipeType.Drink) & (menu_of_week[i].LaunchRecipes[j].Colories <= (int)(l * 0.1)))
+                        lu[3].Add(menu_of_week[i].LaunchRecipes[j]);
+                }
+                for (int j = 0; j < 4; j++)
+                {
+                    if (lu[j].Count != 0)
+                    {
+                        Recipe max = lu[j][0];
+                        for (int k = 1; k < lu[j].Count; k++) if (max.Colories <= lu[j][k].Colories) max = lu[j][k];
+                        menu_of_week_add[i].LaunchRecipes.Add(max);
+                    }
+                }
+
+
+                for (int j = 0; j < menu_of_week[i].DinnerRecipes.Count; j++)
+                {
+                    if ((menu_of_week[i].DinnerRecipes[j].Type == RecipeType.Secondary) & (menu_of_week[i].DinnerRecipes[j].Colories <= (int)(d * 0.45)))
+                        di[0].Add(menu_of_week[i].DinnerRecipes[j]);
+                    if ((menu_of_week[i].DinnerRecipes[j].Type == RecipeType.Garnish) & (menu_of_week[i].DinnerRecipes[j].Colories <= (int)(d * 0.35)))
+                        di[1].Add(menu_of_week[i].DinnerRecipes[j]);
+                    if ((menu_of_week[i].DinnerRecipes[j].Type == RecipeType.Drink) & (menu_of_week[i].DinnerRecipes[j].Colories <= (int)(d * 0.2)))
+                        di[2].Add(menu_of_week[i].DinnerRecipes[j]);
+                    /*if ((menu_of_week[i].DinnerRecipes[j].Type == RecipeType.Drink) & (menu_of_week[i].DinnerRecipes[j].Colories <= (int)(d * 0.1)))
+                        di[3].Add(menu_of_week[i].DinnerRecipes[j]);*/
+                }
+                for (int j = 0; j < 3; j++)
+                {
+                    if (di[j].Count != 0)
+                    {
+                        Recipe max = di[j][0];
+                        for (int k = 1; k < di[j].Count; k++) if (max.Colories <= di[j][k].Colories) max = di[j][k];
+                        menu_of_week_add[i].DinnerRecipes.Add(max);
+                    }
+                }
+            }
         }
         private Recipe RequestFood(long id_food)
         {

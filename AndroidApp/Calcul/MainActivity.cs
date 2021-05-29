@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Android.App;
+using Android.Content;
 using Android.Graphics;
 using Android.OS;
 using Android.Runtime;
@@ -29,9 +30,90 @@ namespace Calcul
         MenuData week;
         List<FrameLayout> interface_fl;
         Color main_;
+        bool flagexit = false;
 
         Android.Support.V7.Widget.Toolbar toolbar;
 
+        public class OnSwipeTouchListener : Java.Lang.Object, View.IOnTouchListener
+        {
+            private GestureDetector gestureDetector;
+            public OnSwipeTouchListener(Context ctx)
+            {
+                gestureDetector = new GestureDetector(ctx, new GestureListener());
+            }
+
+            public bool OnTouch(View v, MotionEvent e)
+            {
+                return gestureDetector.OnTouchEvent(e);
+            }
+        }
+        public class GestureListener : GestureDetector.SimpleOnGestureListener
+        {
+            private static int SWIPE_THRESHOLD = 100;
+            private static int SWIPE_VELOCITY_THRESHOLD = 100;
+            public override bool OnFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
+            {
+                // TODO
+                bool result = false;
+                try
+                {
+                    float diffY = e2.GetY() - e1.GetY();
+                    float diffX = e2.GetX() - e1.GetX();
+                    if (Math.Abs(diffX) > Math.Abs(diffY))
+                    {
+                        if (Math.Abs(diffX) > SWIPE_THRESHOLD && Math.Abs(velocityX) > SWIPE_VELOCITY_THRESHOLD)
+                        {
+                            if (diffX > 0)
+                            {
+                                onSwipeRight();
+                            }
+                            else
+                            {
+                                onSwipeLeft();
+                            }
+                            result = true;
+                        }
+                    }
+                    else if (Math.Abs(diffY) > SWIPE_THRESHOLD && Math.Abs(velocityY) > SWIPE_VELOCITY_THRESHOLD)
+                    {
+                        if (diffY > 0)
+                        {
+                            onSwipeBottom();
+                        }
+                        else
+                        {
+                            onSwipeTop();
+                        }
+                        result = true;
+                    }
+                }
+                catch (Exception exception)
+                {
+                    _ = exception.StackTrace;
+                }
+                return result;
+
+            }
+            public void onSwipeRight()
+            {
+                Toast.MakeText(Application.Context, "right", ToastLength.Short).Show();
+            }
+            public void onSwipeLeft()
+            {
+                Toast.MakeText(Application.Context, "left", ToastLength.Short).Show();
+            }
+            public void onSwipeTop()
+            {
+                Toast.MakeText(Application.Context, "top", ToastLength.Short).Show();
+            }
+            public void onSwipeBottom()
+            {
+                Toast.MakeText(Application.Context, "up", ToastLength.Short).Show();
+            }
+
+
+        }
+        //menu_callories.SetOnTouchListener(new OnSwipeTouchListener(menu_callories.Context));
         public FrameLayout Create_framelayout(int w_, int h_, float t_x, float t_y, Android.Graphics.Color color)
         {
             FrameLayout framelayout = new FrameLayout(drawer.Context);
@@ -169,8 +251,6 @@ namespace Calcul
             return canvasView;
         }
 
-
-
         private async Task AnimationObjectAsync(FrameLayout s_, int h, bool f)
         {
             if (f)
@@ -193,6 +273,15 @@ namespace Calcul
             }
         }
 
+        private async Task ExitFlagNot()
+        {
+            View view = (View)basis;
+            Snackbar.Make(view, "Для выхода из приложения нажмите повторно.", Snackbar.LengthLong)
+                .SetAction("Action", (Android.Views.View.IOnClickListener)null).Show();
+            await Task.Delay(10000);
+            flagexit = false;
+        }
+
         //Профильный framelayout
         public void Create_ProfileFramelayout()
         {
@@ -207,11 +296,15 @@ namespace Calcul
             toolbar.SetBackgroundColor(main_);
             basis.RemoveAllViews();
 
-            //ScrollView profile_scrol = new ScrollView(basis.Context);
 
             FrameLayout profile = Create_framelayout(basis.Width, basis.Height, 0, 0, Android.Graphics.Color.White);
             profile.RemoveAllViews();
             profile.VerticalScrollBarEnabled = true;
+            /*ScrollView profile_scrol = new ScrollView(profile.Context);
+            profile_scrol.LayoutParameters = new LinearLayout.LayoutParams(basis.Width, basis.Height);
+            profile_scrol.VerticalScrollBarEnabled = true;
+            profile_scrol.ScrollY = 0;*/
+            //profile_scrol.AddView(profile);
             ImageView im__ = Create_imageview(basis.Width, basis.Width, basis.Width - (basis.Width * 2 / 3), (basis.Height) - (basis.Width * 2 / 3));
             im__.SetImageResource(Resource.Drawable.s);
             profile.AddView(im__);
@@ -227,22 +320,26 @@ namespace Calcul
             else user_image.SetImageBitmap(user.Convert_image_to(user.image));
             user_image.Click += async (s__, e__) =>
             {
-                await CrossMedia.Current.Initialize();
-                var file = await CrossMedia.Current.PickPhotoAsync(new Plugin.Media.Abstractions.PickMediaOptions
+                try
                 {
-                    PhotoSize = Plugin.Media.Abstractions.PhotoSize.Full,
-                    CompressionQuality = 40
+                    await CrossMedia.Current.Initialize();
+                    var file = await CrossMedia.Current.PickPhotoAsync(new Plugin.Media.Abstractions.PickMediaOptions
+                    {
+                        PhotoSize = Plugin.Media.Abstractions.PhotoSize.Full,
+                        CompressionQuality = 40
 
-                });
-                if (file != null)
-                {
-                    byte[] imageArray = System.IO.File.ReadAllBytes(file.Path);
-                    user_image.SetImageBitmap(BitmapFactory.DecodeByteArray(imageArray, 0, imageArray.Length));
-                    user.image = imageArray;
-                }
+                    });
+                    if (file != null)
+                    {
+                        byte[] imageArray = System.IO.File.ReadAllBytes(file.Path);
+                        user_image.SetImageBitmap(BitmapFactory.DecodeByteArray(imageArray, 0, imageArray.Length));
+                        user.image = imageArray;
+                    }
                 else if (user.image == null) user_image.SetImageResource(Resource.Drawable.design_ic_visibility_off);
                 else user_image.SetImageBitmap(user.Convert_image_to(user.image));
                 Create_ProfileFramelayout();
+                }
+                catch { }
             };
             user_name.AddView(user_image);
             TextView setting_text = Create_textview(150, 150, basis.Width - 250, 0,
@@ -309,7 +406,7 @@ namespace Calcul
                 {
                     int imt_h = (h_roz - 125) / 3;
                     string[] imit_int = new string[3];
-                    string[] imit_head = new string[3] { "Вес", "Обхват талии", "Обхват беред" };
+                    string[] imit_head = new string[3] { "Вес", "Обхват талии", "Обхват бедер" };
                     imit_int[0] = ((int)((double)20 * (double)(((double)(user.height) / 100) * ((double)(user.height) / 100)))).ToString() + " кг";
                     imit_int[1] = ((int)((double)0.47 * (double)(double)(user.height))).ToString() + " см";
                     imit_int[2] = ((int)((double)0.62 * (double)(double)(user.height))).ToString() + " см";
@@ -419,6 +516,7 @@ namespace Calcul
                 }
                 basis.AddView(rozrahunok_framelayout);
             };
+
             //Button history_button = Create_button(basis.Width / 2, 250, basis.Width / 2, basis.Height / 5 + 100, "История", GravityFlags.Center, TypefaceStyle.Bold, 15);
             //history_button.Click += (s__, e__) => { };
 
@@ -821,7 +919,7 @@ namespace Calcul
                         text.Text = user.age.ToString();
                         text.Enabled = true;
                         View view = (View)s__;
-                        Snackbar.Make(view, "Возраст выходит за границы допустимого. Можно вводить число в диапазоне от 30 до 300 кг.", Snackbar.LengthLong)
+                        Snackbar.Make(view, "Возраст выходит за границы допустимого. Можно вводить число в диапазоне от 10 до 99 лет.", Snackbar.LengthLong)
                             .SetAction("Action", (Android.Views.View.IOnClickListener)null).Show();
                     }
                     else
@@ -891,7 +989,7 @@ namespace Calcul
                         text.Text = user.height.ToString();
                         text.Enabled = true;
                         View view = (View)s__;
-                        Snackbar.Make(view, "Рост выходит за границы допустимого. Можно вводить число в диапазоне от 30 до 300 кг.", Snackbar.LengthLong)
+                        Snackbar.Make(view, "Рост выходит за границы допустимого. Можно вводить число в диапазоне от 50 до 250 см.", Snackbar.LengthLong)
                             .SetAction("Action", (Android.Views.View.IOnClickListener)null).Show();
                     }
                     else
@@ -1031,6 +1129,8 @@ namespace Calcul
                     bzhu_[i].ToString() + " г", GravityFlags.Center, TypefaceStyle.Bold, 15);
                 menu_fra.AddView(menu_bzhu);
             }
+            //menu_fra.Clickable = true;
+            //menu_fra.SetOnTouchListener(new OnSwipeTouchListener(menu_fra.Context));
             int dd = 0;
             string[] weekbt = new string[7] { "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС" };
             for (int i = 0; i < 7; i++) if (weekbt[i].ToLower() == DateTime.Now.ToString("ddd")) dd = i;
@@ -1099,13 +1199,13 @@ namespace Calcul
                     switch (id_menu)
                     {
                         case 0:
-                            mass_intake = week.menu_of_week[datadef].breakfast;
+                            mass_intake = week.menu_of_week_add[datadef].BreakfastRecipes;
                             break;
                         case 1:
-                            mass_intake = week.menu_of_week[datadef].lunch;
+                            mass_intake = week.menu_of_week_add[datadef].LaunchRecipes;
                             break;
                         case 2:
-                            mass_intake = week.menu_of_week[datadef].dinner;
+                            mass_intake = week.menu_of_week_add[datadef].DinnerRecipes;
                             break;
                     };
 
@@ -1205,14 +1305,14 @@ namespace Calcul
                     week = week.FileRD();
                 //if (week.data_update != DateTime.Now.ToString("dd.MM.yyyy"))
                 {
-                    week.RequestMenu();
+                    week.RequestMenu(user.calories);
                     week.FileWR(week);
                 }
             }
             else
             {
                 Create_SettingFramelayout();
-                week.RequestMenu();
+                week.RequestMenu(user.calories);
                 week.FileWR(week);
             }
         }
@@ -1227,7 +1327,12 @@ namespace Calcul
             }
             else
             {
-                base.OnBackPressed();
+                if (flagexit == false)
+                {
+                    flagexit = true;
+                    ExitFlagNot();
+                }
+                else Process.KillProcess(Process.MyPid());
             }
         }
 

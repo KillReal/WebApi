@@ -26,6 +26,8 @@ namespace ModelLibrary
         Salad = 3,
         [Display(Name = "Напиток")]
         Drink = 4,
+        [Display(Name = "Гарнир")]
+        Garnish = 5,
 
     }
 
@@ -68,9 +70,9 @@ namespace ModelLibrary
         public long Id { get; set; }
         public string Name { get; set; }
         public String Date { get; set; }
-        public List<long> BreakfastRecipes { get; set; } = new List<long>();
-        public List<long> LaunchRecipes { get; set; } = new List<long>();
-        public List<long> DinnerRecipes { get; set; } = new List<long>();
+        public List<Recipe> BreakfastRecipes { get; set; } = new List<Recipe>();
+        public List<Recipe> LaunchRecipes { get; set; } = new List<Recipe>();
+        public List<Recipe> DinnerRecipes { get; set; } = new List<Recipe>();
     }
 
     public static class Serialization<T> where T : SerializableObject
