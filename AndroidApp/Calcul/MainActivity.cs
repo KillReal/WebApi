@@ -29,90 +29,11 @@ namespace Calcul
         PersonalData user;
         MenuData week;
         List<FrameLayout> interface_fl;
-        Color main_;
+        Color main_; 
+        int main_height_, main_width_;
         bool flagexit = false;
 
         Android.Support.V7.Widget.Toolbar toolbar;
-
-        public class OnSwipeTouchListener : Java.Lang.Object, View.IOnTouchListener
-        {
-            private GestureDetector gestureDetector;
-            public OnSwipeTouchListener(Context ctx)
-            {
-                gestureDetector = new GestureDetector(ctx, new GestureListener());
-            }
-
-            public bool OnTouch(View v, MotionEvent e)
-            {
-                return gestureDetector.OnTouchEvent(e);
-            }
-        }
-        public class GestureListener : GestureDetector.SimpleOnGestureListener
-        {
-            private static int SWIPE_THRESHOLD = 100;
-            private static int SWIPE_VELOCITY_THRESHOLD = 100;
-            public override bool OnFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
-            {
-                // TODO
-                bool result = false;
-                try
-                {
-                    float diffY = e2.GetY() - e1.GetY();
-                    float diffX = e2.GetX() - e1.GetX();
-                    if (Math.Abs(diffX) > Math.Abs(diffY))
-                    {
-                        if (Math.Abs(diffX) > SWIPE_THRESHOLD && Math.Abs(velocityX) > SWIPE_VELOCITY_THRESHOLD)
-                        {
-                            if (diffX > 0)
-                            {
-                                onSwipeRight();
-                            }
-                            else
-                            {
-                                onSwipeLeft();
-                            }
-                            result = true;
-                        }
-                    }
-                    else if (Math.Abs(diffY) > SWIPE_THRESHOLD && Math.Abs(velocityY) > SWIPE_VELOCITY_THRESHOLD)
-                    {
-                        if (diffY > 0)
-                        {
-                            onSwipeBottom();
-                        }
-                        else
-                        {
-                            onSwipeTop();
-                        }
-                        result = true;
-                    }
-                }
-                catch (Exception exception)
-                {
-                    _ = exception.StackTrace;
-                }
-                return result;
-
-            }
-            public void onSwipeRight()
-            {
-                Toast.MakeText(Application.Context, "right", ToastLength.Short).Show();
-            }
-            public void onSwipeLeft()
-            {
-                Toast.MakeText(Application.Context, "left", ToastLength.Short).Show();
-            }
-            public void onSwipeTop()
-            {
-                Toast.MakeText(Application.Context, "top", ToastLength.Short).Show();
-            }
-            public void onSwipeBottom()
-            {
-                Toast.MakeText(Application.Context, "up", ToastLength.Short).Show();
-            }
-
-
-        }
         //menu_callories.SetOnTouchListener(new OnSwipeTouchListener(menu_callories.Context));
         public FrameLayout Create_framelayout(int w_, int h_, float t_x, float t_y, Android.Graphics.Color color)
         {
@@ -297,25 +218,25 @@ namespace Calcul
             basis.RemoveAllViews();
 
 
-            FrameLayout profile = Create_framelayout(basis.Width, basis.Height, 0, 0, Android.Graphics.Color.White);
+            FrameLayout profile = Create_framelayout(main_width_, main_height_, 0, 0, Android.Graphics.Color.White);
             profile.RemoveAllViews();
             profile.VerticalScrollBarEnabled = true;
             /*ScrollView profile_scrol = new ScrollView(profile.Context);
-            profile_scrol.LayoutParameters = new LinearLayout.LayoutParams(basis.Width, basis.Height);
+            profile_scrol.LayoutParameters = new LinearLayout.LayoutParams(main_width_, main_height_);
             profile_scrol.VerticalScrollBarEnabled = true;
             profile_scrol.ScrollY = 0;*/
             //profile_scrol.AddView(profile);
-            ImageView im__ = Create_imageview(basis.Width, basis.Width, basis.Width - (basis.Width * 2 / 3), (basis.Height) - (basis.Width * 2 / 3));
+            ImageView im__ = Create_imageview(main_width_, main_width_, main_width_ - (main_width_ * 2 / 3), (main_height_) - (main_width_ * 2 / 3));
             im__.SetImageResource(Resource.Drawable.s);
             profile.AddView(im__);
 
-            FrameLayout user_name = Create_framelayout(basis.Width - 100, basis.Height / 5, 50, 50, main_);
+            FrameLayout user_name = Create_framelayout(main_width_ - 100, main_height_ / 5, 50, 50, main_);
             user_name.RemoveAllViews();
             user_name.SetBackgroundResource(Resource.Drawable.fram_main1);
-            TextView user_name_textview = Create_textview((basis.Width - 100), basis.Height / 5, 0, 0,
-                user.name.ToUpper(), GravityFlags.Center, TypefaceStyle.Bold, 25);
+            TextView user_name_textview = Create_textview((main_width_ * 2) / 3, main_height_ / 5, (main_width_) / 3, 0,
+                user.name.ToUpper(), GravityFlags.CenterVertical, TypefaceStyle.Bold, 25);
             user_name.AddView(user_name_textview);
-            ImageView user_image = Create_imageview((basis.Width) / 3, basis.Height / 5 - 20, 10, 10);
+            ImageView user_image = Create_imageview((main_width_) / 3, main_height_ / 5 - 20, 10, 10);
             if (user.image == null) user_image.SetImageResource(Resource.Drawable.li);
             else user_image.SetImageBitmap(user.Convert_image_to(user.image));
             user_image.Click += async (s__, e__) =>
@@ -342,17 +263,17 @@ namespace Calcul
                 catch { }
             };
             user_name.AddView(user_image);
-            TextView setting_text = Create_textview(150, 150, basis.Width - 250, 0,
+            TextView setting_text = Create_textview(150, 150, main_width_ - 250, 0,
                  "⚙", GravityFlags.Center, TypefaceStyle.Bold, 45);
             setting_text.Click += (s_, e_) => { Create_SettingFramelayout(); };
             user_name.AddView(setting_text);
-            Button statistics_button = Create_button(basis.Width / 2, 250, basis.Width / 4, basis.Height / 5 + 100, "Статистика", GravityFlags.Center, TypefaceStyle.Bold, 15);
+            Button statistics_button = Create_button(main_width_ / 2, 250, main_width_ / 4, main_height_ / 5 + 100, "Статистика", GravityFlags.Center, TypefaceStyle.Bold, 15);
             //statistics_button.SetBackgroundResource(Resource.Drawable.fram_add1);
             statistics_button.Click += (s__, e__) => 
             {
                 basis.RemoveAllViews();
 
-                FrameLayout rozrahunok_framelayout = Create_framelayout(basis.Width, basis.Height, 0, 0, Color.White);
+                FrameLayout rozrahunok_framelayout = Create_framelayout(main_width_, main_height_, 0, 0, Color.White);
                 toolbar.RemoveAllViews();
                 Button back = Create_button(toolbar.Height, toolbar.Height, -(int)(toolbar.Height * 1.25), 0, "✖", GravityFlags.Center, TypefaceStyle.Bold, 20);
                 back.SetBackgroundDrawable(toolbar.Background);
@@ -360,23 +281,23 @@ namespace Calcul
                 toolbar.AddView(back);
 
                 FrameLayout[] roz_mass = new FrameLayout[3];
-                int h_roz = (basis.Height - 100) / 3;
+                int h_roz = (main_height_ - 100) / 3;
                 string[] roz_mass_head = new string[3] { "Ваш индекс массы тела", "Идеальные параметры тела", "Тип телосложения" };
                 for (int i = 0; i < 3; i++)
                 {
-                    roz_mass[i] = Create_framelayout(basis.Width - 50, h_roz - 25, 25, 50 + (i * h_roz), Color.White);
+                    roz_mass[i] = Create_framelayout(main_width_ - 50, h_roz - 25, 25, 50 + (i * h_roz), Color.White);
                     roz_mass[i].SetBackgroundResource(Resource.Drawable.fram_add1);
-                    TextView roz_mass_head_text = Create_textview(basis.Width - 50, 125, 0, 0,
+                    TextView roz_mass_head_text = Create_textview(main_width_ - 50, 125, 0, 0,
                          roz_mass_head[i], GravityFlags.Center, TypefaceStyle.Italic, 25);
                     roz_mass[i].AddView(roz_mass_head_text);
                     rozrahunok_framelayout.AddView(roz_mass[i]);
                 }
                 {
                     int imit_int = (int)((double)user.current_weight / (double)(((double)(user.height) / 100) * ((double)(user.height) / 100)));//(user.current_weight / ((float)(user.height / 100) * (float)(user.height / 100)));
-                    TextView imitint_text = Create_textview(basis.Width - 50, 250, 25, 100,
+                    TextView imitint_text = Create_textview(main_width_ - 50, 250, 25, 100,
                          imit_int.ToString() + ".0", GravityFlags.CenterVertical, TypefaceStyle.Bold, 50);
                     roz_mass[0].AddView(imitint_text);
-                    TextView imitint_text_add = Create_textview(basis.Width - 50, 250, (basis.Width - 50) / 3, 100,
+                    TextView imitint_text_add = Create_textview(main_width_ - 50, 250, (main_width_ - 50) / 3, 100,
                         "", GravityFlags.CenterVertical, TypefaceStyle.Normal, 15);
                     if ((imit_int < 18) & (imit_int >= 15))
                     {
@@ -399,7 +320,7 @@ namespace Calcul
                         imitint_text_add.SetTextColor(Color.Rgb(128, 0, 0));
                     }
                     roz_mass[0].AddView(imitint_text_add);
-                    ImageView imitint_image = Create_imageview(basis.Width, h_roz - 450, 0, 350);
+                    ImageView imitint_image = Create_imageview(main_width_, h_roz - 450, 0, 350);
                     imitint_image.SetImageResource(Resource.Drawable.imit);
                     roz_mass[0].AddView(imitint_image);
                 }
@@ -412,24 +333,24 @@ namespace Calcul
                     imit_int[2] = ((int)((double)0.62 * (double)(double)(user.height))).ToString() + " см";
                     for (int j = 0; j < 3; j++)
                     {
-                        TextView imitint_text1 = Create_textview(basis.Width - 50, imt_h - 25, 25, 100 + (j * imt_h),
+                        TextView imitint_text1 = Create_textview(main_width_ - 50, imt_h - 25, 25, 100 + (j * imt_h),
                              imit_int[j].ToString(), GravityFlags.CenterVertical, TypefaceStyle.Bold, 40);
                         roz_mass[1].AddView(imitint_text1);
-                        TextView imitint_text_add1 = Create_textview(basis.Width - 50, imt_h - 25, (basis.Width - 50) / 3 + 50, 100 + (j * imt_h),
+                        TextView imitint_text_add1 = Create_textview(main_width_ - 50, imt_h - 25, (main_width_ - 50) / 3 + 50, 100 + (j * imt_h),
                             imit_head[j], GravityFlags.CenterVertical, TypefaceStyle.Normal, 15);
                         roz_mass[1].AddView(imitint_text_add1);
                     }
-                    ImageView imitint_image = Create_imageview(basis.Width / 3, h_roz + 55, basis.Width * 2 / 3 - 50, 0);
+                    ImageView imitint_image = Create_imageview(main_width_ / 3, h_roz + 55, main_width_ * 2 / 3 - 50, 0);
                     imitint_image.SetImageResource(Resource.Drawable.ideal);
                     roz_mass[1].AddView(imitint_image);
                 }
                 {
                     int imit_int = 0;
-                    TextView imitint_text = Create_textview(basis.Width - 50, 150, (basis.Width - 50) / 2 + 25, 150,
+                    TextView imitint_text = Create_textview(main_width_ - 50, 150, (main_width_ - 50) / 2 + 25, 150,
                          "Запястье: " + imit_int.ToString() + " см", GravityFlags.CenterVertical, TypefaceStyle.Bold, 20);
                     roz_mass[2].AddView(imitint_text);
 
-                    TextView imitint_text_ = Create_textview(basis.Width - 50, h_roz - 325, 0, 300,
+                    TextView imitint_text_ = Create_textview(main_width_ - 50, h_roz - 325, 0, 300,
                          "", GravityFlags.Center, TypefaceStyle.Bold, 40);
                     roz_mass[2].AddView(imitint_text_);
                     if (user.gender == false)
@@ -444,18 +365,18 @@ namespace Calcul
                         else if ((imit_int >= 14) & (imit_int < 16)) imitint_text_.Text = "Нормостенический";
                         else if (imit_int >= 16) imitint_text_.Text = "Гиперстенический";
                     }
-                    FrameLayout add_ = Create_framelayout(basis.Width - 100, (basis.Width - 100) / 2 + 15, 50, (basis.Height - (basis.Width - 100)) / 2, Color.White);
+                    FrameLayout add_ = Create_framelayout(main_width_ - 100, (main_width_ - 100) / 2 + 15, 50, (main_height_ - (main_width_ - 100)) / 2, Color.White);
                     add_.SetBackgroundResource(Resource.Drawable.fram_main1);
                     add_.Visibility = ViewStates.Invisible;
-                    Button age_button = Create_button((basis.Width - 50) / 2 - 50, 150, 25, 150, "Ввести обхват запястья", GravityFlags.Center, TypefaceStyle.Normal, 15);
+                    Button age_button = Create_button((main_width_ - 50) / 2 - 50, 150, 25, 150, "Ввести обхват запястья", GravityFlags.Center, TypefaceStyle.Normal, 15);
                     age_button.SetBackgroundResource(Resource.Drawable.fram_main1);
                     age_button.Click += (s, e) =>
                     {
-                        int k = 16;
+                        int k = 0;
                         add_.RemoveAllViews();
-                        TextView h_ = Create_textview(basis.Width - 100, 100, 0, 10,
-                            "В о з р а с т", GravityFlags.Center, TypefaceStyle.BoldItalic, 20);
-                        EditText text = Create_edittext(basis.Width - 350, (basis.Width - 100) / 2 - 150, 125, 50,
+                        TextView h_ = Create_textview(main_width_ - 100, 100, 0, 10,
+                            "Обхват запястья", GravityFlags.Center, TypefaceStyle.BoldItalic, 20);
+                        EditText text = Create_edittext(main_width_ - 350, (main_width_ - 100) / 2 - 150, 125, 50,
                             k.ToString(), GravityFlags.Center, TypefaceStyle.Bold, 50);
                         text.InputType = Android.Text.InputTypes.ClassNumber;
                         text.TextChanged += (s_, e_) =>
@@ -464,7 +385,7 @@ namespace Calcul
                             text.SetSelection(text.Text.Length);
                             if (text.Text != "") k = Convert.ToInt32(text.Text); else k = 0;
                         };
-                        Button plus = Create_button(100, 100, 50, ((basis.Width - 100) / 2 - 100) / 2 - 50,
+                        Button plus = Create_button(100, 100, 50, ((main_width_ - 100) / 2 - 100) / 2 - 50,
                             "-", GravityFlags.Top | GravityFlags.CenterHorizontal, TypefaceStyle.Bold, 25);
                         plus.SetBackgroundResource(Resource.Drawable.draver_fram);
                         plus.Click += (s_, e_) =>
@@ -472,7 +393,7 @@ namespace Calcul
                             if (k > 0) k -= 1;
                             text.Text = k.ToString();
                         };
-                        Button minus = Create_button(100, 100, (basis.Width - 250), ((basis.Width - 100) / 2 - 100) / 2 - 50,
+                        Button minus = Create_button(100, 100, (main_width_ - 250), ((main_width_ - 100) / 2 - 100) / 2 - 50,
                             "+", GravityFlags.Top | GravityFlags.CenterHorizontal, TypefaceStyle.Bold, 25);
                         minus.SetBackgroundResource(Resource.Drawable.draver_fram);
                         minus.Click += (s_, e_) =>
@@ -480,7 +401,7 @@ namespace Calcul
                             k++;
                             text.Text = k.ToString();
                         };
-                        Button save = Create_button(basis.Width - 200, 150, 50, ((basis.Width - 100) / 2) - 175,
+                        Button save = Create_button(main_width_ - 200, 150, 50, ((main_width_ - 100) / 2) - 175,
                             "Сохранить изменения", GravityFlags.Center, TypefaceStyle.Bold, 15);
                         save.Click += (s_, e_) =>
                         {
@@ -517,36 +438,36 @@ namespace Calcul
                 basis.AddView(rozrahunok_framelayout);
             };
 
-            //Button history_button = Create_button(basis.Width / 2, 250, basis.Width / 2, basis.Height / 5 + 100, "История", GravityFlags.Center, TypefaceStyle.Bold, 15);
+            //Button history_button = Create_button(main_width_ / 2, 250, main_width_ / 2, main_height_ / 5 + 100, "История", GravityFlags.Center, TypefaceStyle.Bold, 15);
             //history_button.Click += (s__, e__) => { };
 
-            FrameLayout user_grafic = Create_framelayout(basis.Width - 100, basis.Height / 5 + 100, 50, basis.Height / 5 + 400, Android.Graphics.Color.DarkOrange);
+            FrameLayout user_grafic = Create_framelayout(main_width_ - 100, main_height_ / 5 + 100, 50, main_height_ / 5 + 400, Android.Graphics.Color.DarkOrange);
             user_grafic.SetBackgroundResource(Resource.Drawable.fram_add1);
             user_grafic.RemoveAllViews();
-            SKCanvasView graficview = Create_canvasview(basis.Width - 200, basis.Height / 5 - 100, 100, 75);
+            SKCanvasView graficview = Create_canvasview(main_width_ - 200, main_height_ / 5 - 100, 100, 75);
             user_grafic.AddView(graficview);
             {
-                TextView head_ = Create_textview(basis.Width - 100, 75, 0, 0,
+                TextView head_ = Create_textview(main_width_ - 100, 75, 0, 0,
                     "Ц Е Л Ь", GravityFlags.Center, TypefaceStyle.Bold, 20);
                 user_grafic.AddView(head_);
             }
             {
-                TextView head_ = Create_textview(basis.Width - 100, 75, 0, basis.Height / 5,
+                TextView head_ = Create_textview(main_width_ - 100, 75, 0, main_height_ / 5,
                     "> >   " + user.Convert_purpose().ToUpper() + "   < <", GravityFlags.Center, TypefaceStyle.BoldItalic, 15);
                 user_grafic.AddView(head_);
             }
             for (int i = 0; i < 2; i++)
             {
                 double[] k = new double[3] { user.current_weight, user.target_weight, user.target_weight - user.current_weight };
-                if (k[2] < 0) k[2] = 75; else if (k[2] > 0) k[2] = basis.Height / 5 - 100; else k[2] = (basis.Height / 5 - 25) / 2;
-                if (i != 0) k[2] = basis.Height / 5 - 100 - k[2] + 75;
-                TextView a = Create_textview(basis.Width - 100, 75, 10, (float)k[2],
+                if (k[2] < 0) k[2] = 75; else if (k[2] > 0) k[2] = main_height_ / 5 - 100; else k[2] = (main_height_ / 5 - 25) / 2;
+                if (i != 0) k[2] = main_height_ / 5 - 100 - k[2] + 75;
+                TextView a = Create_textview(main_width_ - 100, 75, 10, (float)k[2],
                     k[i].ToString(), GravityFlags.Left, TypefaceStyle.Italic, 15);
                 user_grafic.AddView(a);
             }
 
             {
-                TextView head_ = Create_textview(basis.Width, 75, 0, ((basis.Height / 5) * 2) + 550,
+                TextView head_ = Create_textview(main_width_, 75, 0, ((main_height_ / 5) * 2) + 550,
                       "Л И Ч Н Ы Е   Д А Н Н Ы Е", GravityFlags.Center, TypefaceStyle.Bold, 20);
                 profile.AddView(head_);
             }
@@ -555,10 +476,10 @@ namespace Calcul
                 string s2 = $"\n{user.age.ToString()}\n\n{user.Convert_gender()}" +
                     $"\n\n{user.height.ToString()}\n\n{user.current_weight.ToString()}" +
                     $"\n\n{user.Convert_activity()}\n\n{user.calories.ToString()}";
-                TextView head1_ = Create_textview(basis.Width - 20, 2 * (basis.Height / 5), 10, ((basis.Height / 5) * 2) + 625,
+                TextView head1_ = Create_textview(main_width_ - 20, 2 * (main_height_ / 5), 10, ((main_height_ / 5) * 2) + 625,
                       s1, GravityFlags.Left, TypefaceStyle.Normal, 15);
                 profile.AddView(head1_);
-                TextView head2_ = Create_textview(basis.Width - 20, 2 * (basis.Height / 5), (basis.Width / 2) + 10, ((basis.Height / 5) * 2) + 625,
+                TextView head2_ = Create_textview(main_width_ - 20, 2 * (main_height_ / 5), (main_width_ / 2) + 10, ((main_height_ / 5) * 2) + 625,
                       s2, GravityFlags.Left, TypefaceStyle.Italic, 15);
                 profile.AddView(head2_);
             }
@@ -572,13 +493,13 @@ namespace Calcul
         //Настройки профиля framelayout
         private void Create_SettingFramelayout()
         {
-            if (user.purpose == 0) user.target_weight = user.current_weight - 1;
+            if (user.purpose == 0) if (user.target_weight >= user.current_weight) user.target_weight = user.current_weight - 1;
             if (user.purpose == 1) user.target_weight = user.current_weight;
-            if (user.purpose == 2) user.target_weight = user.current_weight + 1;
-            FrameLayout add_ = Create_framelayout(basis.Width - 100, (basis.Width - 100) / 2 + 15, 50, (basis.Height - (basis.Width - 100)) / 2, Color.White);
+            if (user.purpose == 2) if (user.target_weight <= user.current_weight) user.target_weight = user.current_weight + 1;
+            FrameLayout add_ = Create_framelayout(main_width_ - 100, (main_width_ - 100) / 2 + 15, 50, (main_height_ - (main_width_ - 100)) / 2, Color.White);
             add_.SetBackgroundResource(Resource.Drawable.fram_main1);
             add_.Visibility = ViewStates.Invisible;
-            FrameLayout setting = Create_framelayout(basis.Width, basis.Height, 0, 0, Color.White);
+            FrameLayout setting = Create_framelayout(main_width_, main_height_, 0, 0, Color.White);
             toolbar.RemoveAllViews();
             toolbar.SetBackgroundColor(main_);
             basis.RemoveAllViews();
@@ -604,7 +525,7 @@ namespace Calcul
                 }
             };
             toolbar.AddView(back);
-            Button fon = Create_button(basis.Width, basis.Height, 0, 0, "", GravityFlags.Center, TypefaceStyle.Normal, 0);
+            Button fon = Create_button(main_width_, main_height_, 0, 0, "", GravityFlags.Center, TypefaceStyle.Normal, 0);
             fon.SetBackgroundDrawable(setting.Background);
             fon.Click += (s__, e__) =>
             {
@@ -618,26 +539,26 @@ namespace Calcul
             toolbar.AddView(prof);
 
 
-            TextView head_ = Create_textview(basis.Width, 100, 0, 10,
+            TextView head_ = Create_textview(main_width_, 100, 0, 10,
                   "Ц Е Л Ь", GravityFlags.Center, TypefaceStyle.Bold, 20);
             setting.AddView(head_);
 
 
-            FrameLayout target_button = Create_framelayout(basis.Width - 50, 150, 25, 417, Color.White);
+            FrameLayout target_button = Create_framelayout(main_width_ - 50, 150, 25, 417, Color.White);
             target_button.SetBackgroundResource(Resource.Drawable.fram_add1);
-            TextView target_button_h1 = Create_textview(basis.Width - 50, 150, 10, 0,
+            TextView target_button_h1 = Create_textview(main_width_ - 50, 150, 10, 0,
                 "Ц е л е в о й   в е с", GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 17);
-            TextView target_button_h2 = Create_textview(basis.Width - 50, 150, -10, 0,
+            TextView target_button_h2 = Create_textview(main_width_ - 50, 150, -10, 0,
                 user.target_weight.ToString(), GravityFlags.Right | GravityFlags.CenterVertical, TypefaceStyle.Italic, 15);
             target_button.AddView(target_button_h1);
             target_button.AddView(target_button_h2);
             if (user.purpose == 1) target_button.Visibility = ViewStates.Invisible;
 
-            FrameLayout current_button = Create_framelayout(basis.Width - 50, 150, 25, 266, Color.White);
+            FrameLayout current_button = Create_framelayout(main_width_ - 50, 150, 25, 266, Color.White);
             current_button.SetBackgroundResource(Resource.Drawable.fram_add1);
-            TextView current_button_h1 = Create_textview(basis.Width - 50, 150, 10, 0,
+            TextView current_button_h1 = Create_textview(main_width_ - 50, 150, 10, 0,
                 "Т е к у щ и й   в е с", GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 17);
-            TextView current_button_h2 = Create_textview(basis.Width - 50, 150, -10, 0,
+            TextView current_button_h2 = Create_textview(main_width_ - 50, 150, -10, 0,
                 user.current_weight.ToString(), GravityFlags.Right | GravityFlags.CenterVertical, TypefaceStyle.Italic, 15);
             current_button.AddView(current_button_h1);
             current_button.AddView(current_button_h2);
@@ -655,9 +576,9 @@ namespace Calcul
                     s = "Ц е л е в о й   в е с";
                 }
                 add_.RemoveAllViews();
-                TextView h_ = Create_textview(basis.Width - 100, 100, 0, 10,
+                TextView h_ = Create_textview(main_width_ - 100, 100, 0, 10,
                     s, GravityFlags.Center, TypefaceStyle.BoldItalic, 20);
-                EditText text = Create_edittext(basis.Width - 350, (basis.Width - 100) / 2 - 150, 125, 50,
+                EditText text = Create_edittext(main_width_ - 350, (main_width_ - 100) / 2 - 150, 125, 50,
                     k.ToString(), GravityFlags.Center, TypefaceStyle.Bold, 50);
                 text.InputType = Android.Text.InputTypes.ClassNumber;
                 text.TextChanged += (s__, e__) => 
@@ -666,7 +587,7 @@ namespace Calcul
                     text.SetSelection(text.Text.Length);
                     if (text.Text != "") k = Convert.ToInt32(text.Text); else k = 0;
                 };
-                Button plus = Create_button(100, 100, 50, ((basis.Width - 100) / 2 - 100) / 2 - 50,
+                Button plus = Create_button(100, 100, 50, ((main_width_ - 100) / 2 - 100) / 2 - 50,
                     "-", GravityFlags.Top | GravityFlags.CenterHorizontal, TypefaceStyle.Bold, 25);
                 plus.SetBackgroundResource(Resource.Drawable.draver_fram);
                 plus.Click += (s__, e__) =>
@@ -681,7 +602,7 @@ namespace Calcul
                     }
                     text.Text = k.ToString();
                 };
-                Button minus = Create_button(100, 100, (basis.Width - 250), ((basis.Width - 100) / 2 - 100) / 2 - 50,
+                Button minus = Create_button(100, 100, (main_width_ - 250), ((main_width_ - 100) / 2 - 100) / 2 - 50,
                     "+", GravityFlags.Top | GravityFlags.CenterHorizontal, TypefaceStyle.Bold, 25);
                 minus.SetBackgroundResource(Resource.Drawable.draver_fram);
                 minus.Click += (s__, e__) =>
@@ -696,7 +617,7 @@ namespace Calcul
                     }
                     text.Text = k.ToString();
                 };
-                Button save = Create_button(basis.Width - 200, 150, 50, ((basis.Width - 100) / 2) - 175,
+                Button save = Create_button(main_width_ - 200, 150, 50, ((main_width_ - 100) / 2) - 175,
                     "Сохранить изменения", GravityFlags.Center, TypefaceStyle.Bold, 15);
                 save.Click += (s__, e__) =>
                 {
@@ -735,11 +656,11 @@ namespace Calcul
                 add_.Visibility = ViewStates.Visible;
             }
 
-            FrameLayout purpose_button = Create_framelayout(basis.Width - 50, 150, 25, 115, Color.White);
+            FrameLayout purpose_button = Create_framelayout(main_width_ - 50, 150, 25, 115, Color.White);
             purpose_button.SetBackgroundResource(Resource.Drawable.fram_add1);
-            TextView purpose_button_h1 = Create_textview(basis.Width - 50, 150, 10, 0,
+            TextView purpose_button_h1 = Create_textview(main_width_ - 50, 150, 10, 0,
                 "М о я   ц е л ь", GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 17);
-            TextView purpose_button_h2 = Create_textview(basis.Width - 50, 150, -10, 0,
+            TextView purpose_button_h2 = Create_textview(main_width_ - 50, 150, -10, 0,
                 user.Convert_purpose(), GravityFlags.Right | GravityFlags.CenterVertical, TypefaceStyle.Italic, 15);
             purpose_button.AddView(purpose_button_h1);
             purpose_button.AddView(purpose_button_h2);
@@ -750,10 +671,10 @@ namespace Calcul
                 for (int i = 0; i < 3; i++)
                 {
                     string[] st = new string[3] { "сбросить вес", "поддержать вес", "набрать вес" };
-                    int k = (basis.Width - 100) / 6 - 15;
+                    int k = (main_width_ - 100) / 6 - 15;
                     TypefaceStyle ts = TypefaceStyle.Normal;
                     if (i == user.purpose) ts = TypefaceStyle.Italic;
-                    Button bt = Create_button(basis.Width - 200, k, 50, i * k + 15, st[i], GravityFlags.Center, ts, 15);
+                    Button bt = Create_button(main_width_ - 200, k, 50, i * k + 15, st[i], GravityFlags.Center, ts, 15);
                     bt.Id = i;
                     bt.SetBackgroundDrawable(purpose_button.Background);
                     if (bt.Id == user.purpose) bt.SetBackgroundColor(main_);
@@ -772,15 +693,15 @@ namespace Calcul
                 }
                 add_.Visibility = ViewStates.Visible;
             };
-            head_ = Create_textview(basis.Width, 100, 0, 582,
+            head_ = Create_textview(main_width_, 100, 0, 582,
                               "Л И Ч Н Ы Е   Д А Н Н Ы Е", GravityFlags.Center, TypefaceStyle.Bold, 20);
             setting.AddView(head_);
 
-            FrameLayout name_button = Create_framelayout(basis.Width - 50, 150, 25, 687, Color.White);
+            FrameLayout name_button = Create_framelayout(main_width_ - 50, 150, 25, 687, Color.White);
             name_button.SetBackgroundResource(Resource.Drawable.fram_add1);
-            TextView name_button_h1 = Create_textview(basis.Width - 50, 150, 10, 0,
+            TextView name_button_h1 = Create_textview(main_width_ - 50, 150, 10, 0,
                 "И м я", GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 17);
-            TextView name_button_h2 = Create_textview(basis.Width - 50, 150, -10, 0,
+            TextView name_button_h2 = Create_textview(main_width_ - 50, 150, -10, 0,
                 user.name, GravityFlags.Right | GravityFlags.CenterVertical, TypefaceStyle.Italic, 15);
             name_button.AddView(name_button_h1);
             name_button.AddView(name_button_h2);
@@ -789,10 +710,10 @@ namespace Calcul
                 fon.Visibility = ViewStates.Visible;
                 string k = user.name;
                 add_.RemoveAllViews();
-                TextView h_ = Create_textview(basis.Width - 100, 100, 0, 10,
+                TextView h_ = Create_textview(main_width_ - 100, 100, 0, 10,
                     "И м я", GravityFlags.Center, TypefaceStyle.BoldItalic, 20);
 
-                EditText name_ = Create_edittext(basis.Width - 350, (basis.Width - 100) / 2 - 150, 125, 50,
+                EditText name_ = Create_edittext(main_width_ - 350, (main_width_ - 100) / 2 - 150, 125, 50,
                     k.ToString(), GravityFlags.Center, TypefaceStyle.Bold, 35);
                 name_.InputType = Android.Text.InputTypes.ClassText;
 
@@ -803,7 +724,7 @@ namespace Calcul
                     if (name_.Text != "") k = name_.Text;
                 };
 
-                Button save = Create_button(basis.Width - 200, 150, 50, ((basis.Width - 100) / 2) - 175,
+                Button save = Create_button(main_width_ - 200, 150, 50, ((main_width_ - 100) / 2) - 175,
                     "Сохранить изменения", GravityFlags.Center, TypefaceStyle.Bold, 15);
                 save.Click += (s__, e__) =>
                 {
@@ -820,11 +741,11 @@ namespace Calcul
                 add_.Visibility = ViewStates.Visible;
             };
 
-            FrameLayout genger_button = Create_framelayout(basis.Width - 50, 150, 25, 838, Color.White);
+            FrameLayout genger_button = Create_framelayout(main_width_ - 50, 150, 25, 838, Color.White);
             genger_button.SetBackgroundResource(Resource.Drawable.fram_add1);
-            TextView genger_button_h1 = Create_textview(basis.Width - 50, 150, 10, 0,
+            TextView genger_button_h1 = Create_textview(main_width_ - 50, 150, 10, 0,
                 "П о л", GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 17);
-            TextView genger_button_h2 = Create_textview(basis.Width - 50, 150, -10, 0,
+            TextView genger_button_h2 = Create_textview(main_width_ - 50, 150, -10, 0,
                 user.Convert_gender(), GravityFlags.Right | GravityFlags.CenterVertical, TypefaceStyle.Italic, 15);
             genger_button.AddView(genger_button_h1);
             genger_button.AddView(genger_button_h2);
@@ -833,9 +754,9 @@ namespace Calcul
                 fon.Visibility = ViewStates.Visible;
                 bool flag = user.gender;
                 add_.RemoveAllViews();
-                TextView h_ = Create_textview(basis.Width - 100, 100, 0, 10,
+                TextView h_ = Create_textview(main_width_ - 100, 100, 0, 10,
                     "П о л", GravityFlags.Center, TypefaceStyle.BoldItalic, 20);
-                Button save = Create_button(basis.Width - 200, 150, 50, ((basis.Width - 100) / 2) - 175,
+                Button save = Create_button(main_width_ - 200, 150, 50, ((main_width_ - 100) / 2) - 175,
                     "Сохранить изменения", GravityFlags.Center, TypefaceStyle.Bold, 15);
                 save.Click += (s__, e__) =>
                 {
@@ -845,9 +766,9 @@ namespace Calcul
                     Create_SettingFramelayout();
                 };
 
-                Button w_ = Create_button((basis.Width - 100) / 2 - 25, 150, 25, 150,
+                Button w_ = Create_button((main_width_ - 100) / 2 - 25, 150, 25, 150,
                     "Ж", GravityFlags.Center, TypefaceStyle.BoldItalic, 20);
-                Button m_ = Create_button((basis.Width - 100) / 2 - 25, 150, (basis.Width - 100) / 2, 150,
+                Button m_ = Create_button((main_width_ - 100) / 2 - 25, 150, (main_width_ - 100) / 2, 150,
                     "М", GravityFlags.Center, TypefaceStyle.BoldItalic, 20);
                 if (flag == false) m_.SetBackgroundColor(main_);
                 else w_.SetBackgroundColor(main_);
@@ -869,11 +790,11 @@ namespace Calcul
                 add_.Visibility = ViewStates.Visible;
             };
 
-            FrameLayout age_button = Create_framelayout(basis.Width - 50, 150, 25, 989, Color.White);
+            FrameLayout age_button = Create_framelayout(main_width_ - 50, 150, 25, 989, Color.White);
             age_button.SetBackgroundResource(Resource.Drawable.fram_add1);
-            TextView age_button_h1 = Create_textview(basis.Width - 50, 150, 10, 0,
+            TextView age_button_h1 = Create_textview(main_width_ - 50, 150, 10, 0,
                 "В о з р а с т", GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 17);
-            TextView age_button_h2 = Create_textview(basis.Width - 50, 150, -10, 0,
+            TextView age_button_h2 = Create_textview(main_width_ - 50, 150, -10, 0,
                 user.age.ToString(), GravityFlags.Right | GravityFlags.CenterVertical, TypefaceStyle.Italic, 15);
             age_button.AddView(age_button_h1);
             age_button.AddView(age_button_h2);
@@ -882,9 +803,9 @@ namespace Calcul
                 fon.Visibility = ViewStates.Visible;
                 int k = user.age;
                 add_.RemoveAllViews();
-                TextView h_ = Create_textview(basis.Width - 100, 100, 0, 10,
+                TextView h_ = Create_textview(main_width_ - 100, 100, 0, 10,
                     "В о з р а с т", GravityFlags.Center, TypefaceStyle.BoldItalic, 20);
-                EditText text = Create_edittext(basis.Width - 350, (basis.Width - 100) / 2 - 150, 125, 50,
+                EditText text = Create_edittext(main_width_ - 350, (main_width_ - 100) / 2 - 150, 125, 50,
                     k.ToString(), GravityFlags.Center, TypefaceStyle.Bold, 50);
                 text.InputType = Android.Text.InputTypes.ClassNumber;
                 text.TextChanged += (s__, e__) =>
@@ -893,7 +814,7 @@ namespace Calcul
                     text.SetSelection(text.Text.Length);
                     if (text.Text != "") k = Convert.ToInt32(text.Text); else k = 0;
                 };
-                Button plus = Create_button(100, 100, 50, ((basis.Width - 100) / 2 - 100) / 2 - 50,
+                Button plus = Create_button(100, 100, 50, ((main_width_ - 100) / 2 - 100) / 2 - 50,
                     "-", GravityFlags.Top | GravityFlags.CenterHorizontal, TypefaceStyle.Bold, 25);
                 plus.SetBackgroundResource(Resource.Drawable.draver_fram);
                 plus.Click += (s__, e__) =>
@@ -901,7 +822,7 @@ namespace Calcul
                     if (k > 0) k -= 1;
                     text.Text = k.ToString();
                 };
-                Button minus = Create_button(100, 100, (basis.Width - 250), ((basis.Width - 100) / 2 - 100) / 2 - 50,
+                Button minus = Create_button(100, 100, (main_width_ - 250), ((main_width_ - 100) / 2 - 100) / 2 - 50,
                     "+", GravityFlags.Top | GravityFlags.CenterHorizontal, TypefaceStyle.Bold, 25);
                 minus.SetBackgroundResource(Resource.Drawable.draver_fram);
                 minus.Click += (s__, e__) =>
@@ -909,7 +830,7 @@ namespace Calcul
                     k++;
                     text.Text = k.ToString();
                 };
-                Button save = Create_button(basis.Width - 200, 150, 50, ((basis.Width - 100) / 2) - 175,
+                Button save = Create_button(main_width_ - 200, 150, 50, ((main_width_ - 100) / 2) - 175,
                     "Сохранить изменения", GravityFlags.Center, TypefaceStyle.Bold, 15);
                 save.Click += (s__, e__) =>
                 {
@@ -939,11 +860,11 @@ namespace Calcul
                 add_.Visibility = ViewStates.Visible;
             };
 
-            FrameLayout height_button = Create_framelayout(basis.Width - 50, 150, 25, 1140, Color.White);
+            FrameLayout height_button = Create_framelayout(main_width_ - 50, 150, 25, 1140, Color.White);
             height_button.SetBackgroundResource(Resource.Drawable.fram_add1);
-            TextView height_button_h1 = Create_textview(basis.Width - 50, 150, 10, 0,
+            TextView height_button_h1 = Create_textview(main_width_ - 50, 150, 10, 0,
                 "Р о с т", GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 17);
-            TextView height_button_h2 = Create_textview(basis.Width - 50, 150, -10, 0,
+            TextView height_button_h2 = Create_textview(main_width_ - 50, 150, -10, 0,
                 user.height.ToString(), GravityFlags.Right | GravityFlags.CenterVertical, TypefaceStyle.Italic, 15);
             height_button.AddView(height_button_h1);
             height_button.AddView(height_button_h2);
@@ -952,9 +873,9 @@ namespace Calcul
                 fon.Visibility = ViewStates.Visible;
                 int k = user.height;
                 add_.RemoveAllViews();
-                TextView h_ = Create_textview(basis.Width - 100, 100, 0, 10,
+                TextView h_ = Create_textview(main_width_ - 100, 100, 0, 10,
                     "Р о с т", GravityFlags.Center, TypefaceStyle.BoldItalic, 20);
-                EditText text = Create_edittext(basis.Width - 350, (basis.Width - 100) / 2 - 150, 125, 50,
+                EditText text = Create_edittext(main_width_ - 350, (main_width_ - 100) / 2 - 150, 125, 50,
                     k.ToString(), GravityFlags.Center, TypefaceStyle.Bold, 50);
                 text.InputType = Android.Text.InputTypes.ClassNumber; 
                 text.TextChanged += (s__, e__) =>
@@ -963,7 +884,7 @@ namespace Calcul
                     text.SetSelection(text.Text.Length);
                     if (text.Text != "") k = Convert.ToInt32(text.Text); else k = 0;
                 };
-                Button plus = Create_button(100, 100, 50, ((basis.Width - 100) / 2 - 100) / 2 - 50,
+                Button plus = Create_button(100, 100, 50, ((main_width_ - 100) / 2 - 100) / 2 - 50,
                     "-", GravityFlags.Top | GravityFlags.CenterHorizontal, TypefaceStyle.Bold, 25);
                 plus.SetBackgroundResource(Resource.Drawable.draver_fram);
                 plus.Click += (s__, e__) =>
@@ -971,7 +892,7 @@ namespace Calcul
                     if (k > 30) k -= 1;
                     text.Text = k.ToString();
                 };
-                Button minus = Create_button(100, 100, (basis.Width - 250), ((basis.Width - 100) / 2 - 100) / 2 - 50,
+                Button minus = Create_button(100, 100, (main_width_ - 250), ((main_width_ - 100) / 2 - 100) / 2 - 50,
                     "+", GravityFlags.Top | GravityFlags.CenterHorizontal, TypefaceStyle.Bold, 25);
                 minus.SetBackgroundResource(Resource.Drawable.draver_fram);
                 minus.Click += (s__, e__) =>
@@ -979,7 +900,7 @@ namespace Calcul
                     k++;
                     text.Text = k.ToString();
                 };
-                Button save = Create_button(basis.Width - 200, 150, 50, ((basis.Width - 100) / 2) - 175,
+                Button save = Create_button(main_width_ - 200, 150, 50, ((main_width_ - 100) / 2) - 175,
                     "Сохранить изменения", GravityFlags.Center, TypefaceStyle.Bold, 15);
                 save.Click += (s__, e__) =>
                 {
@@ -1009,11 +930,11 @@ namespace Calcul
                 add_.Visibility = ViewStates.Visible;
             };
 
-            FrameLayout activity_button = Create_framelayout(basis.Width - 50, 150, 25, 1291, Color.White);
+            FrameLayout activity_button = Create_framelayout(main_width_ - 50, 150, 25, 1291, Color.White);
             activity_button.SetBackgroundResource(Resource.Drawable.fram_add1);
-            TextView activity_button_h1 = Create_textview(basis.Width - 50, 150, 10, 0,
+            TextView activity_button_h1 = Create_textview(main_width_ - 50, 150, 10, 0,
                 "У р о в е н ь   а к т и в н о с т и", GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 17);
-            TextView activity_button_h2 = Create_textview(basis.Width - 50, 150, -10, 0,
+            TextView activity_button_h2 = Create_textview(main_width_ - 50, 150, -10, 0,
                 user.Convert_activity(), GravityFlags.Right | GravityFlags.CenterVertical, TypefaceStyle.Italic, 15);
             activity_button.AddView(activity_button_h1);
             activity_button.AddView(activity_button_h2);
@@ -1024,10 +945,10 @@ namespace Calcul
                 for (int i = 0; i < 4; i++)
                 {
                     string[] st = new string[4] { "низкий", "средний", "высокий", "очень высокий" };
-                    int k = (basis.Width - 100) / 8 - 15;
+                    int k = (main_width_ - 100) / 8 - 15;
                     TypefaceStyle ts = TypefaceStyle.Normal;
                     if (i == user.activity) ts = TypefaceStyle.Italic;
-                    Button bt = Create_button(basis.Width - 200, k, 50, i * k + 15, st[i], GravityFlags.Center, ts, 15);
+                    Button bt = Create_button(main_width_ - 200, k, 50, i * k + 15, st[i], GravityFlags.Center, ts, 15);
                     bt.Id = i;
                     bt.SetBackgroundDrawable(purpose_button.Background);
                     if (bt.Id == user.activity) bt.SetBackgroundColor(main_);
@@ -1044,11 +965,11 @@ namespace Calcul
                 add_.Visibility = ViewStates.Visible;
             };
 
-            FrameLayout food_button = Create_framelayout(basis.Width - 50, 150, 25, 1442, Color.White);
+            FrameLayout food_button = Create_framelayout(main_width_ - 50, 150, 25, 1442, Color.White);
             food_button.SetBackgroundResource(Resource.Drawable.fram_add1);
-            TextView food_button_h1 = Create_textview(basis.Width - 50, 150, 10, 0,
+            TextView food_button_h1 = Create_textview(main_width_ - 50, 150, 10, 0,
                 "П р е д п о ч т е н и я   в   е д е", GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 17);
-            TextView food_button_h2 = Create_textview(basis.Width - 50, 150, -10, 0,
+            TextView food_button_h2 = Create_textview(main_width_ - 50, 150, -10, 0,
                 user.food.ToString(),  GravityFlags.Right | GravityFlags.CenterVertical, TypefaceStyle.Italic, 15);
             food_button.AddView(food_button_h1);
             food_button.AddView(food_button_h2);
@@ -1061,10 +982,10 @@ namespace Calcul
                 {
                     food_hd = (Food_)i;
                     string[] st = new string[3] { "нет", "веган", "вегетарианец" };
-                    int k = (basis.Width - 100) / 6 - 15;
+                    int k = (main_width_ - 100) / 6 - 15;
                     TypefaceStyle ts = TypefaceStyle.Normal;
                     if (i == (int)user.food) ts = TypefaceStyle.Italic;
-                    Button bt = Create_button(basis.Width - 200, k, 50, i * k + 15, st[i], GravityFlags.Center, ts, 15);
+                    Button bt = Create_button(main_width_ - 200, k, 50, i * k + 15, st[i], GravityFlags.Center, ts, 15);
                     bt.Id = i;
                     bt.SetBackgroundDrawable(food_button.Background);
                     if (bt.Id == (int)user.food) bt.SetBackgroundColor(main_);
@@ -1109,39 +1030,37 @@ namespace Calcul
             toolbar.SetBackgroundColor(main_);
             basis.RemoveAllViews();
 
-            FrameLayout menuday = Create_framelayout(basis.Width, basis.Height, 0, 0, Android.Graphics.Color.White);
+            FrameLayout menuday = Create_framelayout(main_width_, main_height_, 0, 0, Android.Graphics.Color.White);
             menuday.RemoveAllViews();
 
-            FrameLayout menu_fra = Create_framelayout(basis.Width - 100, basis.Height / 3 - 100, 50, 50, main_);
+            FrameLayout menu_fra = Create_framelayout(main_width_ - 100, main_height_ / 3 - 100, 50, 50, main_);
             menu_fra.RemoveAllViews();
             menu_fra.SetBackgroundResource(Resource.Drawable.fram_main1);
-            TextView menu_callories = Create_textview((basis.Width - 100), (basis.Height / 3 - 100) / 2, 0, 0,
+            TextView menu_callories = Create_textview((main_width_ - 100), (main_height_ / 3 - 100) / 2, 0, 0,
                 user.calories.ToString() + "\nккал", GravityFlags.Center, TypefaceStyle.Bold, 30);
             menu_fra.AddView(menu_callories);
             for (int i = 0; i < 3; i++)
             {
                 string[] bzhu_string_h = new string[3] { "БЕЛКИ", "ЖИРЫ", "УГЛЕВОДЫ" };
                 int[] bzhu_ = new int[3] { (int)(user.calories * 0.03), (int)(user.calories * 0.02), (int)(user.calories * 0.05) };
-                TextView menu_bzhu_h = Create_textview((basis.Width - 100) / 3, (basis.Height / 3 - 100) / 2, i * (basis.Width - 100) / 3, (basis.Height / 3 - 100) / 2,
+                TextView menu_bzhu_h = Create_textview((main_width_ - 100) / 3, (main_height_ / 3 - 100) / 2, i * (main_width_ - 100) / 3, (main_height_ / 3 - 100) / 2,
                     bzhu_string_h[i], GravityFlags.Center, TypefaceStyle.Normal, 17);
                 menu_fra.AddView(menu_bzhu_h);
-                TextView menu_bzhu = Create_textview((basis.Width - 100) / 3, (basis.Height / 3 - 100) / 2, i * (basis.Width - 100) / 3, (basis.Height / 3 - 100) / 2 + 50,
+                TextView menu_bzhu = Create_textview((main_width_ - 100) / 3, (main_height_ / 3 - 100) / 2, i * (main_width_ - 100) / 3, (main_height_ / 3 - 100) / 2 + 50,
                     bzhu_[i].ToString() + " г", GravityFlags.Center, TypefaceStyle.Bold, 15);
                 menu_fra.AddView(menu_bzhu);
             }
-            //menu_fra.Clickable = true;
-            //menu_fra.SetOnTouchListener(new OnSwipeTouchListener(menu_fra.Context));
             int dd = 0;
             string[] weekbt = new string[7] { "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС" };
             for (int i = 0; i < 7; i++) if (weekbt[i].ToLower() == DateTime.Now.ToString("ddd")) dd = i;
             string date = DateTime.Now.AddDays((double)(datadef - dd)).ToString("dd MMMM, ddd"); //week.menu_of_week[datadef].date;
-            TextView head_ = Create_textview(basis.Width, 100, 0, basis.Height / 3,
+            TextView head_ = Create_textview(main_width_, 100, 0, main_height_ / 3,
                   date, GravityFlags.Center, TypefaceStyle.Bold, 25);
             menuday.AddView(head_);
-            TextView h_ = Create_textview(basis.Width / 2 - 50, 100, 50, basis.Height / 3,
+            TextView h_ = Create_textview(main_width_ / 2 - 50, 100, 50, main_height_ / 3,
                   "ᐊ", GravityFlags.CenterVertical | GravityFlags.Left, TypefaceStyle.Bold, 25);
             menuday.AddView(h_);
-            TextView h = Create_textview(basis.Width / 2 - 50, 100, basis.Width / 2, basis.Height / 3,
+            TextView h = Create_textview(main_width_ / 2 - 50, 100, main_width_ / 2, main_height_ / 3,
                   "ᐅ", GravityFlags.CenterVertical | GravityFlags.Right, TypefaceStyle.Bold, 25);
             menuday.AddView(h);
             h_.Click += Click_h;
@@ -1165,8 +1084,8 @@ namespace Calcul
             FrameLayout[] button_intake = new FrameLayout[3];
             for (int i = 0; i < 3; i++)
             {
-                int k = (basis.Height - (basis.Height / 3 + 150));
-                button_intake[i] = Create_framelayout(basis.Width - 20, k / 3 - 20, 10, (basis.Height / 3 + 150) + (k / 3 * i), Color.Rgb(255, 250, 240));
+                int k = (main_height_ - (main_height_ / 3 + 150));
+                button_intake[i] = Create_framelayout(main_width_ - 20, k / 3 - 20, 10, (main_height_ / 3 + 150) + (k / 3 * i), Color.Rgb(255, 250, 240));
                 button_intake[i].SetBackgroundResource(Resource.Drawable.fram_add1);
                 menuday.AddView(button_intake[i]);
 
@@ -1174,103 +1093,121 @@ namespace Calcul
                 _image.SetImageResource(intake_im[i]);
                 button_intake[i].AddView(_image);
 
-                TextView h_intake = Create_textview((basis.Width - 20) - (k / 3), k / 3 - 20, k / 3, 0,
+                TextView h_intake = Create_textview((main_width_ - 20) - (k / 3), k / 3 - 20, k / 3, 0,
                       head_but[i], GravityFlags.CenterVertical | GravityFlags.Left, TypefaceStyle.Bold, 25);
                 button_intake[i].AddView(h_intake);
-                TextView nor_intake = Create_textview((basis.Width - 20) - (k / 3), 50, k / 3, k / 3 - 80,
+                TextView nor_intake = Create_textview((main_width_ - 20) - (k / 3), 50, k / 3, k / 3 - 80,
                       "Рекомендуется: " + intake_norm[i].ToString() + " ккал", GravityFlags.CenterVertical | GravityFlags.Left, TypefaceStyle.Italic, 12);
                 button_intake[i].AddView(nor_intake);
                 button_intake[i].Click += (s_, e_) =>
                 {
-                    basis.RemoveAllViews();
-
-                    FrameLayout intake_menu = Create_framelayout(basis.Width, basis.Height, 0, 0, Color.White);
-
-                    toolbar.RemoveAllViews();
-                    Button back = Create_button(toolbar.Height, toolbar.Height, -(int)(toolbar.Height * 1.25), 0, "✖", GravityFlags.Center, TypefaceStyle.Bold, 20);
-                    back.SetBackgroundDrawable(toolbar.Background);
-                    back.Click += (s__, e__) => { basis.RemoveAllViews(); CreateMenuFramelayout(datadef); };
-                    toolbar.AddView(back);
-
-
-                    List<Recipe> mass_intake = new List<Recipe>();
                     int id_menu = 0;
                     for (int j = 0; j < 3; j++) if (s_ == button_intake[j]) id_menu = j;
-                    switch (id_menu)
-                    {
-                        case 0:
-                            mass_intake = week.menu_of_week_add[datadef].BreakfastRecipes;
-                            break;
-                        case 1:
-                            mass_intake = week.menu_of_week_add[datadef].LaunchRecipes;
-                            break;
-                        case 2:
-                            mass_intake = week.menu_of_week_add[datadef].DinnerRecipes;
-                            break;
-                    };
-
-                    FrameLayout add_intake = Create_framelayout(basis.Width - 100, basis.Height / 3 - 100, 50, 50, main_);
-                    add_intake.RemoveAllViews();
-                    add_intake.SetBackgroundResource(Resource.Drawable.fram_main1);
-                    intake_menu.AddView(add_intake);
-                    TextView intake_callories = Create_textview((basis.Width - 100) / 2, (basis.Height / 3 - 100) / 2, 0, 0,
-                        intake_norm[id_menu].ToString() + "\nккал", GravityFlags.Center, TypefaceStyle.Bold, 30);
-                    add_intake.AddView(intake_callories);
-                    int[] bzhu_ = new int[3] { (int)(intake_norm[id_menu] * 0.03), (int)(intake_norm[id_menu] * 0.02), (int)(intake_norm[id_menu] * 0.05) };
-                    string add_hbzu = "⦿ БЕЛКИ			" + bzhu_[0].ToString() + " г\n⦿ ЖИРЫ			" + bzhu_[1].ToString() + "г \n⦿ УГЛЕВОДЫ			" + bzhu_[2].ToString() + " г";
-                    TextView menu_bzhu_h = Create_textview((basis.Width - 100) / 2, (basis.Height / 3 - 100) / 2, (basis.Width - 100) / 2, 0,
-                        add_hbzu, GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Italic, 17);
-                    add_intake.AddView(menu_bzhu_h);
-                    string[] head_b_in = new string[3] { "Завтрак", "Обед", "Ужин" };
-                    int dd_add = 0;
-                    string[] weekbt_add = new string[7] { "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС" };
-                    for (int j = 0; j < 7; j++) if (weekbt[j].ToLower() == DateTime.Now.ToString("ddd")) dd = i;
-                    string date_add = DateTime.Now.AddDays((double)(datadef - dd)).ToString("dd MMMM yyyy");
-                    TextView menu_in_h = Create_textview((basis.Width - 100), 100, 25, basis.Height / 3 - 250,
-                        head_b_in[id_menu], GravityFlags.Left, TypefaceStyle.Bold, 20);
-                    add_intake.AddView(menu_in_h);
-                    TextView menu_date_h = Create_textview((basis.Width - 100), 50, 25, basis.Height / 3 - 175,
-                        date_add, GravityFlags.Left, TypefaceStyle.Normal, 15);
-                    add_intake.AddView(menu_date_h);
-                    ImageView _image_intake = Create_imageview(basis.Width / 4 * 3, basis.Width / 4 * 3, (basis.Width - 100) / 3, (basis.Height / 3 - 100) / 3);
-                    _image_intake.SetImageResource(intake_im[id_menu]);
-                    add_intake.AddView(_image_intake);
-
-                    int ki = (basis.Height - (basis.Height / 3)) / 5;
-                    for (int j = 0; j < mass_intake.Count; j++)
-                    {
-                        FrameLayout add_i = Create_framelayout(basis.Width - 100, ki - 10, 50, (basis.Height / 3) + (ki * j), main_);
-                        add_i.RemoveAllViews();
-                        add_i.SetBackgroundResource(Resource.Drawable.fram_add1);
-                        intake_menu.AddView(add_i);
-                        ImageView image_i = Create_imageview(ki - 20, ki - 20, 5, 5);
-                        Bitmap bb = week.RequestIntakeImage(mass_intake[j].Id);
-                        if (bb != null)
-                            image_i.SetImageBitmap(bb);
-                        else image_i.SetImageResource(intake_im[id_menu]);
-                        TextView nm_i = Create_textview((basis.Width - ki) / 2, (ki - 10) / 2, ki + 10, 0,
-                              mass_intake[j].Name, GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 20);
-                        TextView nm_i_k = Create_textview(basis.Width - 110, (ki - 10) / 2, 0, 0,
-                              mass_intake[j].Colories.ToString() + " ккал", GravityFlags.Right | GravityFlags.CenterVertical, TypefaceStyle.Bold, 20);
-                        TextView nm_v_i = Create_textview(basis.Width - ki, (ki - 10) / 2, ki + 10, (ki - 10) / 2,
-                              mass_intake[j].Weight.ToString() + " г		⊛		Б: " + mass_intake[j].Proteins.ToString() +
-                              " г, Ж: " + mass_intake[j].Greases.ToString() + " г, У: " + mass_intake[j].Carbohydrates.ToString() + " г",
-                              GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Normal, 15);
-
-                        add_i.AddView(image_i);
-                        add_i.AddView(nm_i);
-                        add_i.AddView(nm_i_k);
-                        add_i.AddView(nm_v_i);
-                    }
-
-                    basis.AddView(intake_menu);
+                    CreateAddMenuFramelayot(datadef, id_menu);
                 };
             }
             basis.AddView(menuday);
             menuday.AddView(menu_fra);
         }
+        public void CreateAddMenuFramelayot(int datadef, int id_menu)
+        {
+            int dd = 0;
+            string[] weekbt = new string[7] { "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС" };
+            int[] intake_im = new int[3] { Resource.Drawable.b, Resource.Drawable.l, Resource.Drawable.d };
+            basis.RemoveAllViews();
+
+            FrameLayout intake_menu = Create_framelayout(main_width_, main_height_, 0, 0, Color.White);
+
+            toolbar.RemoveAllViews();
+            Button back = Create_button(toolbar.Height, toolbar.Height, -(int)(toolbar.Height * 1.25), 0, "✖", GravityFlags.Center, TypefaceStyle.Bold, 20);
+            back.SetBackgroundDrawable(toolbar.Background);
+            back.Click += (s__, e__) => { basis.RemoveAllViews(); CreateMenuFramelayout(datadef); };
+            toolbar.AddView(back);
+
+
+            List<Recipe> mass_intake = new List<Recipe>();
+            List<Recipe> mass_intake_week = new List<Recipe>();
+            switch (id_menu)
+            {
+                case 0:
+                    mass_intake = week.menu_of_week_add[datadef].BreakfastRecipes;
+                    mass_intake_week = week.menu_of_week[datadef].BreakfastRecipes;
+                    break;
+                case 1:
+                    mass_intake = week.menu_of_week_add[datadef].LaunchRecipes;
+                    mass_intake_week = week.menu_of_week[datadef].LaunchRecipes;
+                    break;
+                case 2:
+                    mass_intake = week.menu_of_week_add[datadef].DinnerRecipes;
+                    mass_intake_week = week.menu_of_week[datadef].DinnerRecipes;
+                    break;
+            };
+
+            int intake_norm = 0;
+            for (int l = 0; l < mass_intake.Count; l++) intake_norm += mass_intake[l].Colories;
+                FrameLayout add_intake = Create_framelayout(main_width_ - 100, main_height_ / 3 - 100, 50, 50, main_);
+            add_intake.RemoveAllViews();
+            add_intake.SetBackgroundResource(Resource.Drawable.fram_main1);
+            intake_menu.AddView(add_intake);
+            TextView intake_callories = Create_textview((main_width_ - 100) / 2, (main_height_ / 3 - 100) / 2, 0, 0,
+                intake_norm.ToString() + "\nккал", GravityFlags.Center, TypefaceStyle.Bold, 30);
+            add_intake.AddView(intake_callories);
+            int[] bzhu_ = new int[3] { (int)(intake_norm * 0.03), (int)(intake_norm * 0.02), (int)(intake_norm * 0.05) };
+            string add_hbzu = "⦿ БЕЛКИ			" + bzhu_[0].ToString() + " г\n⦿ ЖИРЫ			" + bzhu_[1].ToString() + "г \n⦿ УГЛЕВОДЫ			" + bzhu_[2].ToString() + " г";
+            TextView menu_bzhu_h = Create_textview((main_width_ - 100) / 2, (main_height_ / 3 - 100) / 2, (main_width_ - 100) / 2, 0,
+                add_hbzu, GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Italic, 17);
+            add_intake.AddView(menu_bzhu_h);
+            string[] head_b_in = new string[3] { "Завтрак", "Обед", "Ужин" };
+            int dd_add = 0;
+            string[] weekbt_add = new string[7] { "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС" };
+            for (int j = 0; j < 7; j++) if (weekbt[j].ToLower() == DateTime.Now.ToString("ddd")) dd = j;
+            string date_add = DateTime.Now.AddDays((double)(datadef - dd)).ToString("dd MMMM yyyy");
+            TextView menu_in_h = Create_textview((main_width_ - 100), 100, 25, main_height_ / 3 - 250,
+                head_b_in[id_menu], GravityFlags.Left, TypefaceStyle.Bold, 20);
+            add_intake.AddView(menu_in_h);
+            TextView menu_date_h = Create_textview((main_width_ - 100), 50, 25, main_height_ / 3 - 175,
+                date_add, GravityFlags.Left, TypefaceStyle.Normal, 15);
+            add_intake.AddView(menu_date_h);
+            ImageView _image_intake = Create_imageview(main_width_ / 4 * 3, main_width_ / 4 * 3, (main_width_ - 100) / 3, (main_height_ / 3 - 100) / 3);
+            _image_intake.SetImageResource(intake_im[id_menu]);
+            add_intake.AddView(_image_intake);
+
+            int ki = (main_height_ - (main_height_ / 3)) / 5;
+            for (int j = 0; j < mass_intake.Count; j++)
+            {
+                FrameLayout add_i = Create_framelayout(main_width_ - 100, ki - 10, 50, (main_height_ / 3) + (ki * j), main_);
+                add_i.Clickable = true;
+                add_i.SetOnTouchListener(new OnSwipeTouchListener(add_i.Context, this, datadef, week, mass_intake_week, id_menu, mass_intake, (int)mass_intake[j].Id, user.calories));
+                add_i.RemoveAllViews();
+                add_i.SetBackgroundResource(Resource.Drawable.fram_add1);
+                intake_menu.AddView(add_i);
+                ImageView image_i = Create_imageview(ki - 20, ki - 20, 5, 5);
+                Bitmap bb = week.RequestIntakeImage(mass_intake[j].Id);
+                if (bb != null)
+                    image_i.SetImageBitmap(bb);
+                else image_i.SetImageResource(intake_im[id_menu]);
+                TextView nm_i = Create_textview((main_width_ - ki) / 2, (ki - 10) / 2, ki + 10, 0,
+                      mass_intake[j].Name, GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 20);
+                TextView nm_i_k = Create_textview(main_width_ - 110, (ki - 10) / 2, 0, 0,
+                      mass_intake[j].Colories.ToString() + " ккал", GravityFlags.Right | GravityFlags.CenterVertical, TypefaceStyle.Bold, 20);
+                TextView nm_v_i = Create_textview(main_width_ - ki, (ki - 10) / 2, ki + 10, (ki - 10) / 2,
+                      mass_intake[j].Weight.ToString() + " г		⊛		Б: " + mass_intake[j].Proteins.ToString() +
+                      " г, Ж: " + mass_intake[j].Greases.ToString() + " г, У: " + mass_intake[j].Carbohydrates.ToString() + " г",
+                      GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Normal, 15);
+
+                add_i.AddView(image_i);
+                add_i.AddView(nm_i);
+                add_i.AddView(nm_i_k);
+                add_i.AddView(nm_v_i);
+            }
+
+            basis.AddView(intake_menu);
+        }
         protected override void OnCreate(Bundle savedInstanceState)
         {
+            var display = Xamarin.Essentials.DeviceDisplay.MainDisplayInfo;
+            main_height_ = (int)display.Height;
+            main_width_ = (int)display.Width;
             main_ = Color.Rgb(255, 198, 24);
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
@@ -1298,23 +1235,25 @@ namespace Calcul
             FileInfo ff = new FileInfo(path);
             if (ff.Exists)
             {
-                user = user.FileRD(); 
+                user = user.FileRD();
                 path = System.IO.Path.Combine(Xamarin.Essentials.FileSystem.AppDataDirectory, "week_file.txt");
                 ff = new FileInfo(path);
                 if (ff.Exists)
                     week = week.FileRD();
                 //if (week.data_update != DateTime.Now.ToString("dd.MM.yyyy"))
                 {
-                    week.RequestMenu(user.calories);
+                    week = week.RequestMenu(user.calories);
                     week.FileWR(week);
                 }
             }
             else
             {
                 Create_SettingFramelayout();
-                week.RequestMenu(user.calories);
+                week = week.RequestMenu(user.calories);
                 week.FileWR(week);
             }
+            string[] weekbt = new string[7] { "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС" };
+            for (int i = 0; i < 7; i++) if (weekbt[i].ToLower() == DateTime.Now.ToString("ddd")) CreateMenuFramelayout(i);
         }
 
 
@@ -1376,15 +1315,9 @@ namespace Calcul
                 case Resource.Id.nav_gallery:
                     Create_ProfileFramelayout();
                     return true;
-                case Resource.Id.nav_slideshow:
-                    return true;
                 case Resource.Id.nav_manage:
-                    week = week.FileRD();
+                    Create_SettingFramelayout();
                     return true;
-                case Resource.Id.nav_share:
-                case Resource.Id.nav_send:
-                    return true;
-
             }
             return false;
         }
@@ -1395,6 +1328,108 @@ namespace Calcul
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        public class OnSwipeTouchListener : Java.Lang.Object, View.IOnTouchListener
+        {
+            private GestureDetector gestureDetector;
+            public OnSwipeTouchListener(Context ctx, MainActivity ac, int data, MenuData wk, List<Recipe> _mw, int t_mt, List<Recipe> mw_add, int if_f, int cal)
+            {
+                gestureDetector = new GestureDetector(ctx, new GestureListener(ac, data, wk, _mw, t_mt, mw_add, if_f, cal));
+            }
+
+            public bool OnTouch(View v, MotionEvent e)
+            {
+                return gestureDetector.OnTouchEvent(e);
+            }
+        }
+        public class GestureListener : GestureDetector.SimpleOnGestureListener
+        {
+            MainActivity ac_;
+            int data_;
+            MenuData wk_;
+            List<Recipe> _mw_;
+            int t_mt_;
+            List<Recipe> mw_add_;
+            int if_f_;
+            int cal_;
+            private static int SWIPE_THRESHOLD = 100;
+            private static int SWIPE_VELOCITY_THRESHOLD = 100;
+            public GestureListener(MainActivity ac, int dat, MenuData wk, List<Recipe> _mw, int t_mt, List<Recipe> mw_add, int if_f, int cal)
+            {
+                ac_ = ac;
+                data_ = dat;
+                wk_ = wk;
+                _mw_ = _mw;
+                t_mt_ = t_mt;
+                mw_add_ = mw_add;
+                if_f_ = if_f;
+                cal_ = cal;
+            }
+            public override bool OnFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
+            {
+                // TODO
+                bool result = false;
+                try
+                {
+                    float diffY = e2.GetY() - e1.GetY();
+                    float diffX = e2.GetX() - e1.GetX();
+                    if (Math.Abs(diffX) > Math.Abs(diffY))
+                    {
+                        if (Math.Abs(diffX) > SWIPE_THRESHOLD && Math.Abs(velocityX) > SWIPE_VELOCITY_THRESHOLD)
+                        {
+                            if (diffX > 0)
+                            {
+                                onSwipeRight();
+                            }
+                            else
+                            {
+                                onSwipeLeft();
+                            }
+                            result = true;
+                        }
+                    }
+                    else if (Math.Abs(diffY) > SWIPE_THRESHOLD && Math.Abs(velocityY) > SWIPE_VELOCITY_THRESHOLD)
+                    {
+                        if (diffY > 0)
+                        {
+                            onSwipeBottom();
+                        }
+                        else
+                        {
+                            onSwipeTop();
+                        }
+                        result = true;
+                    }
+                }
+                catch (Exception exception)
+                {
+                    _ = exception.StackTrace;
+                }
+                return result;
+
+            }
+            public void onSwipeRight()
+            {
+                Toast.MakeText(Application.Context, "right", ToastLength.Short).Show();
+            }
+            public void onSwipeLeft()
+            {
+                MainActivity ac = new MainActivity();
+                //Toast.MakeText(Application.Context, "left " + int_id.ToString(), ToastLength.Short).Show();
+                wk_.RequestChange(data_, _mw_, t_mt_, mw_add_, if_f_, cal_);
+                ac_.CreateAddMenuFramelayot(data_, t_mt_);
+            }
+            public void onSwipeTop()
+            {
+                Toast.MakeText(Application.Context, "top", ToastLength.Short).Show();
+            }
+            public void onSwipeBottom()
+            {
+                Toast.MakeText(Application.Context, "up", ToastLength.Short).Show();
+            }
+
+
         }
     }
 }
