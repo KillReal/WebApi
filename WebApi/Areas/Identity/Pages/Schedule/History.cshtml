@@ -58,7 +58,7 @@
                     <tbody>
                         @foreach (var item in Model.Input.Recipes[i][j])
                         {
-                            <tr onclick="location.href = '@(Url.Page("/RecipeModify/Edit", new { id = item.Id, returnUrl = "/Schedule/Index", area = "Identity" }))'" class="main-table">
+                            <tr onclick="location.href = '@(Url.Page("/RecipeModify/Modify", new { id = item.Id, returnUrl = "/Schedule/Index", area = "Identity" }))'" class="main-table">
                                 <td>
                                     <img src="@Url.Action("Image", "AdminRecipes", new { id = item.Id })" alt="Recipe image" height="150" />
                                 </td>

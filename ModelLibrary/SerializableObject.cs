@@ -23,10 +23,9 @@ namespace ModelLibrary
         [Display(Name = "Гарнир")]
         Garnish = 2,
         [Display(Name = "Холодные закуски")]
-        Desert = 3,
+        ColdSnacks = 3,
         [Display(Name = "Напиток")]
-        Drink = 4,
-
+        Drink = 4
     }
 
     public static class Tools 
@@ -58,6 +57,7 @@ namespace ModelLibrary
         public int Carbohydrates { get; set; }
         public bool IsVegan { get; set; }
         public bool IsVegetarian { get; set; }
+        public byte[] MainPicture { get; set; }
         public int PictureCount { get; set; }
         public RecipeType Type { get; set; }
     }
