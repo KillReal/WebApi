@@ -42,15 +42,25 @@ namespace WebApi.Areas.Identity.Pages.Schedule
         {
             public bool ModifyType { get; set; } = false;
             public DayMenu DayMenu { get; set; } = new DayMenu();
-            public List<List<bool>> RecipeUsageList { get; set; } = new List<List<bool>>();
 
-            public List<Recipe> RecipeList = new List<Recipe>();
+            public List<List<List<bool>>> RecipeUsageList { get; set; } = new List<List<List<bool>>>();
 
-            public List<String> MenuType = new List<string>() { "Завтрак", "Обед", "Ужин" };
+            public List<List<Recipe>> RecipeList = new List<List<Recipe>>();
+
+            public List<string> TypeNameList = new List<string>();
+            public int RecipeTypeCount { set; get; }
+
         }
 
         public async Task<IActionResult> OnGet(int id = -1, string returnUrl = null)
         {
+            Input.RecipeTypeCount = Enum.GetNames(typeof(ModelLibrary.RecipeType)).Length;
+            for (int i = 0; i < Input.RecipeTypeCount; i++)
+            {
+                Input.RecipeUsageList.Add(new List<List<bool>>());
+                Input.RecipeList.Add(new List<Recipe>());
+                Input.TypeNameList.Add(ModelLibrary.Tools.GetEnumName((ModelLibrary.RecipeType)i));
+            }
             _logger.LogInformation($"provided acces to /admin/recipes/modify?get&id={id} by user: {await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             if (DayMenuExists(id))
             {
@@ -74,15 +84,16 @@ namespace WebApi.Areas.Identity.Pages.Schedule
                     RecipeList = new List<RecipeList>()
                 };
             }
-            Input.RecipeList = await _context.Recipe.Include(x => x.RecipeList).OrderBy(x => x.Id).ToListAsync();
-            foreach (var recipe in Input.RecipeList)
+            var recipes = await _context.Recipe.Include(x => x.RecipeList).OrderBy(x => x.Id).ToListAsync();
+            foreach (var recipe in recipes)
             {
                 var usage = (await _context.RecipeList.Where(x => x.DayMenu.Id == Input.DayMenu.Id && x.Recipe.Id == recipe.Id)
                                                                  .FirstOrDefaultAsync());
                 List<bool> UsageList = new List<bool>() { false, false, false };
                 if (usage != null)
                     UsageList = usage.DayUsage.ToList();
-                Input.RecipeUsageList.Add(UsageList);
+                Input.RecipeList[recipe.Type].Add(recipe);
+                Input.RecipeUsageList[recipe.Type].Add(UsageList);
             }
             ReturnUrl = returnUrl;
             return Page();
@@ -103,8 +114,11 @@ namespace WebApi.Areas.Identity.Pages.Schedule
                 else
                     _context.DayMenu.Add(Input.DayMenu);
                 List<RecipeList> recipeList = new List<RecipeList>();
-                for (int i = 0; i < recipes.Count(); i++)
-                    recipeList.Add(new RecipeList() { Recipe = recipes[i], DayMenu = Input.DayMenu, DayUsage = Input.RecipeUsageList[i].ToArray() });
+                foreach (var recipe in recipes)
+                {
+                    recipeList.Add(new RecipeList() { Recipe = recipe, DayMenu = Input.DayMenu, DayUsage = Input.RecipeUsageList[recipe.Type].First().ToArray() });
+                    Input.RecipeUsageList[recipe.Type].RemoveAt(0);
+                }
                 _context.AddRange(recipeList);
                 _context.SaveChanges();
             }

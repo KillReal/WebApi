@@ -41,11 +41,11 @@
         </div>
     </div>
     <div class="row">
-    @for (int i = 0; i < Model.Input.MenuType.Count(); i++)
+    @for (int i = 0; i < Model.Input.RecipeTypeCount; i++)
     {
         <div class="col-md-6">
             <div class="tab-title-container">
-                <h4>@Html.Label("", Model.Input.MenuType[i])</h4>
+                <h4>@Html.Label("", Model.Input.TypeNameList[i])</h4>
             </div>
             <hr />
             <div class="table-wrapper">
@@ -53,39 +53,49 @@
                     <thead>
                         <tr>
                             <th>
-                                @Html.DisplayNameFor(model => model.Input.RecipeList[0].Name)
+                                @Html.DisplayNameFor(model => model.Input.RecipeList[0][0].Name)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.Input.RecipeList[0].Weight)
+                                @Html.DisplayNameFor(model => model.Input.RecipeList[0][0].Weight)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.Input.RecipeList[0].Colories)
+                                @Html.DisplayNameFor(model => model.Input.RecipeList[0][0].Colories)
                             </th>
                             <th>
+                                Завтрак
+                            </th>
+                            <th>
+                                Обед
+                            </th>
+                            <th>
+                                Ужин
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        @for (int j = 0; j < Model.Input.RecipeList.Count(); j++)
+                        @for (int j = 0; j < Model.Input.RecipeList[i].Count(); j++)
                         {
-                            <tr>
-                                <td>
-                                    @Html.DisplayFor(model => model.Input.RecipeList[j].Name)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(model => model.Input.RecipeList[j].Weight) гр.
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(model => model.Input.RecipeList[j].Colories) ккал.
-                                </td>
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(model => model.Input.RecipeList[i][j].Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => model.Input.RecipeList[i][j].Weight) гр.
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => model.Input.RecipeList[i][j].Colories) ккал.
+                            </td>
+                            @for (int k = 0; k < 3; k++)
+                            {
                                 <td>
                                     <div class="checkbox">
-                                        <input class="custom-checkbox" type="checkbox" id="checkboxin" asp-for="Input.RecipeUsageList[j][i]">
+                                        <input class="custom-checkbox" type="checkbox" id="checkboxin" asp-for="Input.RecipeUsageList[i][j][k]">
                                         <label for="checkboxin"></label>
-                                        <span asp-validation-for="Input.RecipeUsageList[j][i]" class="text-danger"></span>
+                                        <span asp-validation-for="Input.RecipeUsageList[i][j]" class="text-danger"></span>
                                     </div>
                                 </td>
-                            </tr>
+                            }
+                        </tr>
                         }
                     </tbody>
                 </table>
