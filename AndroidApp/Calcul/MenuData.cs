@@ -32,7 +32,7 @@ namespace Calcul
 
         private Recipe error_;
         private string path = System.IO.Path.Combine(Xamarin.Essentials.FileSystem.AppDataDirectory, "weekmenu_file.txt");
-        private string uri_ = "http://27ddea050785.ngrok.io";
+        private string uri_ = "http://09d4e44dcc53.ngrok.io";
 
         public MenuData()
         {
@@ -79,14 +79,19 @@ namespace Calcul
         }
         public MenuData FileRD()
         {
-            using (FileStream filer = File.OpenRead(path))
+            FileInfo fl = new FileInfo(path);
+            if (fl.Exists)
             {
-                byte[] array = new byte[filer.Length];
-                filer.Read(array, 0, array.Length);
-                string textout = System.Text.Encoding.Default.GetString(array);
-                filer.Close();
-                return Serialization<MenuData>.Read(textout);
+                using (FileStream filer = File.OpenRead(path))
+                {
+                    byte[] array = new byte[filer.Length];
+                    filer.Read(array, 0, array.Length);
+                    string textout = System.Text.Encoding.Default.GetString(array);
+                    filer.Close();
+                    return Serialization<MenuData>.Read(textout);
+                }
             }
+            else return this;
         }
         public string[] Week()
         {
@@ -220,7 +225,7 @@ namespace Calcul
                     break;
             }
             for (int i = 0; i < _menuweek.Count; i++)
-                if ((food_norm.Type == _menuweek[i].Type) & (_menuweek[i].Colories <= food_norm.Colories) & (_menuweek[i].Id != food_norm.Id))
+                if ((food_norm.Type == _menuweek[i].Type) & (_menuweek[i].Colories < food_norm.Colories) & (_menuweek[i].Id != food_norm.Id))
                     food_add.Add(_menuweek[i]);
             if (food_add.Count == 0)
                 for (int i = 0; i < _menuweek.Count; i++)
@@ -232,33 +237,6 @@ namespace Calcul
             if (type_mealtime == 0) menu_of_week_add[data].BreakfastRecipes[k_norm] = (max);
             else if (type_mealtime == 1) menu_of_week_add[data].LaunchRecipes[k_norm] = (max);
             else menu_of_week_add[data].DinnerRecipes[k_norm] = (max);
-            /*
-            List<Recipe> in_add = new List<Recipe>();
-            int maxcal = 0;
-            int idd_lya;
-            switch (int_type)
-            {
-                case 0:
-                    maxcal = (int)(calories * 0.25);
-                    if (type != (int)RecipeType.Drink) maxcal = (int)(maxcal * 0.9); else maxcal = (int)(maxcal * 0.1);
-
-                    break;
-                case 1:
-                    maxcal = (int)(calories * 0.5);
-                    if (type == (int)RecipeType.Primary) maxcal = (int)(maxcal * 0.2);
-                    else if (type == (int)RecipeType.Secondary) maxcal = (int)(maxcal * 0.4);
-                    else if (type == (int)RecipeType.Garnish) maxcal = (int)(maxcal * 0.3);
-                    else if (type == (int)RecipeType.Drink) maxcal = (int)(maxcal * 0.1);
-                    break;
-                case 2:
-                    maxcal = (int)(calories * 0.25);
-                    if (type == (int)RecipeType.Secondary) maxcal = (int)(maxcal * 0.45);
-                    else if (type == (int)RecipeType.Garnish) maxcal = (int)(maxcal * 0.35);
-                    else if (type == (int)RecipeType.Drink) maxcal = (int)(maxcal * 0.2);
-                    break;
-            }
-            for (int i = 0; i < intake.Count; i++) if ((intake[i].Colories <= maxcal) & ((int)intake[i].Type == type)) in_add.Add(intake[i]);
-            for (int i = 0; i < in_add.Count; i++) ;*/
         }
         private Recipe RequestFood(long id_food)
         {

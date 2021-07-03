@@ -20,9 +20,32 @@ using SkiaSharp.Views.Android;
 
 namespace Calcul
 {
-    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true)]
+    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true, Icon = "@drawable/icon")]
     public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
-    {
+    {//Загрузка
+        public class SplashActivity : AppCompatActivity
+        {
+            static readonly string TAG = "X:" + typeof(SplashActivity).Name;
+
+            public override void OnCreate(Bundle savedInstanceState, PersistableBundle persistentState)
+            {
+                base.OnCreate(savedInstanceState, persistentState);
+                Android.Util.Log.Debug(TAG, "SplashActivity.OnCreate");
+            }
+            protected override void OnResume()
+            {
+                base.OnResume();
+                Task startupWork = new Task(() => { SimulateStartup(); });
+                startupWork.Start();
+            }
+            async void SimulateStartup()
+            {
+                Android.Util.Log.Debug(TAG, "Performing some startup work that takes a bit of time.");
+                await Task.Delay(5); // Simulate a bit of startup work.
+                Android.Util.Log.Debug(TAG, "Startup work is finished - starting MainActivity.");
+                StartActivity(new Intent(Application.Context, typeof(MainActivity)));
+            }
+        }
         DrawerLayout drawer;
         NavigationView navigationView;
         RelativeLayout basis;
@@ -206,6 +229,15 @@ namespace Calcul
         //Профильный framelayout
         public void Create_ProfileFramelayout()
         {
+            ImageView image_navigation = FindViewById<ImageView>(Resource.Id.imageView);
+            image_navigation.LayoutParameters = new LinearLayout.LayoutParams(300, 300);
+            if (user.image != null) image_navigation.SetImageBitmap(user.Convert_image_to(user.image));
+            else image_navigation.SetImageResource(Resource.Drawable.li);
+            TextView text_navigation = FindViewById<TextView>(Resource.Id.texttView);
+            text_navigation.TranslationX = 50;
+            text_navigation.TextSize = 20;
+            text_navigation.SetTextColor(Color.Black);
+            text_navigation.Text = user.name;
             user.FileWR(user);
             toolbar.RemoveAllViews();
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, Resource.String.navigation_drawer_open, Resource.String.navigation_drawer_close);
@@ -233,7 +265,7 @@ namespace Calcul
             FrameLayout user_name = Create_framelayout(main_width_ - 100, main_height_ / 5, 50, 50, main_);
             user_name.RemoveAllViews();
             user_name.SetBackgroundResource(Resource.Drawable.fram_main1);
-            TextView user_name_textview = Create_textview((main_width_ * 2) / 3, main_height_ / 5, (main_width_) / 3, 0,
+            TextView user_name_textview = Create_textview((main_width_ * 2) / 3, main_height_ / 5, (main_width_) / 3 + 50, 0,
                 user.name.ToUpper(), GravityFlags.CenterVertical, TypefaceStyle.Bold, 25);
             user_name.AddView(user_name_textview);
             ImageView user_image = Create_imageview((main_width_) / 3, main_height_ / 5 - 20, 10, 10);
@@ -1017,7 +1049,7 @@ namespace Calcul
             setting.Visibility = ViewStates.Visible;
             interface_fl.Add(setting);
         }
-        //Меню на день framelayout
+        //Меню на неделю framelayout
         private void CreateMenuFramelayout(int datadef)
         {
             toolbar.RemoveAllViews();
@@ -1182,9 +1214,12 @@ namespace Calcul
                 add_i.SetBackgroundResource(Resource.Drawable.fram_add1);
                 intake_menu.AddView(add_i);
                 ImageView image_i = Create_imageview(ki - 20, ki - 20, 5, 5);
-                Bitmap bb = week.RequestIntakeImage(mass_intake[j].Id);
-                if (bb != null)
+                //
+                if (mass_intake[j].MainPicture != null)
+                {
+                    Bitmap bb = user.Convert_image_to(mass_intake[j].MainPicture);//week.RequestIntakeImage(mass_intake[j].Id);
                     image_i.SetImageBitmap(bb);
+                }
                 else image_i.SetImageResource(intake_im[id_menu]);
                 TextView nm_i = Create_textview((main_width_ - ki) / 2, (ki - 10) / 2, ki + 10, 0,
                       mass_intake[j].Name, GravityFlags.Left | GravityFlags.CenterVertical, TypefaceStyle.Bold, 20);
@@ -1206,7 +1241,7 @@ namespace Calcul
         protected override void OnCreate(Bundle savedInstanceState)
         {
             var display = Xamarin.Essentials.DeviceDisplay.MainDisplayInfo;
-            main_height_ = (int)display.Height;
+            main_height_ = (int)display.Height - 277;
             main_width_ = (int)display.Width;
             main_ = Color.Rgb(255, 198, 24);
             base.OnCreate(savedInstanceState);
@@ -1215,6 +1250,7 @@ namespace Calcul
             toolbar = FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.toolbar);
             SetSupportActionBar(toolbar);
             FloatingActionButton fab = FindViewById<FloatingActionButton>(Resource.Id.fab);
+            fab.Visibility = ViewStates.Invisible;
             fab.Click += FabOnClick;
 
             basis = FindViewById<RelativeLayout>(Resource.Id.basis);
@@ -1279,6 +1315,15 @@ namespace Calcul
         {
             LinearLayout linearl = FindViewById<LinearLayout>(Resource.Id.linear_1);
             linearl.SetBackgroundResource(Resource.Drawable.fram_main1);
+            ImageView image_navigation = FindViewById<ImageView>(Resource.Id.imageView);
+            image_navigation.LayoutParameters = new LinearLayout.LayoutParams(300, 300);
+            if (user.image != null) image_navigation.SetImageBitmap(user.Convert_image_to(user.image));
+            else image_navigation.SetImageResource(Resource.Drawable.li);
+            TextView text_navigation = FindViewById<TextView>(Resource.Id.texttView);
+            text_navigation.TranslationX = 50;
+            text_navigation.TextSize = 20;
+            text_navigation.SetTextColor(Color.Black);
+            text_navigation.Text = user.name;
             //MenuInflater.Inflate(Resource.Menu.menu_main, menu);
             return true;
         }
@@ -1411,7 +1456,7 @@ namespace Calcul
             }
             public void onSwipeRight()
             {
-                Toast.MakeText(Application.Context, "right", ToastLength.Short).Show();
+               // Toast.MakeText(Application.Context, "right", ToastLength.Short).Show();
             }
             public void onSwipeLeft()
             {
@@ -1422,11 +1467,11 @@ namespace Calcul
             }
             public void onSwipeTop()
             {
-                Toast.MakeText(Application.Context, "top", ToastLength.Short).Show();
+               // Toast.MakeText(Application.Context, "top", ToastLength.Short).Show();
             }
             public void onSwipeBottom()
             {
-                Toast.MakeText(Application.Context, "up", ToastLength.Short).Show();
+               // Toast.MakeText(Application.Context, "up", ToastLength.Short).Show();
             }
 
 
