@@ -52,7 +52,7 @@ namespace WebApi.Areas.Identity.Pages.RecipeModify
             _logger.LogInformation($"provided acces to /admin/recipes/modify?get&id={id} by user: " +
                 $"{await _userManager.GetUserAsync(HttpContext.User)} [{DateTime.Now}] {HttpContext.Connection.RemoteIpAddress}");
             if (RecipeExists(id))
-            {
+            {   
                 Input.Recipe = _context.Recipe.Where(x => x.Id == id).Include(x => x.PictureList).FirstOrDefault();
                 Input.ModifyType = true;
             }

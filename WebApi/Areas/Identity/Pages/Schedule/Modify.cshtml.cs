@@ -116,7 +116,8 @@ namespace WebApi.Areas.Identity.Pages.Schedule
                 List<RecipeList> recipeList = new List<RecipeList>();
                 foreach (var recipe in recipes)
                 {
-                    recipeList.Add(new RecipeList() { Recipe = recipe, DayMenu = Input.DayMenu, DayUsage = Input.RecipeUsageList[recipe.Type].First().ToArray() });
+                    if (Input.RecipeUsageList[recipe.Type].First().Contains(true))
+                        recipeList.Add(new RecipeList() { Recipe = recipe, DayMenu = Input.DayMenu, DayUsage = Input.RecipeUsageList[recipe.Type].First().ToArray() });
                     Input.RecipeUsageList[recipe.Type].RemoveAt(0);
                 }
                 _context.AddRange(recipeList);

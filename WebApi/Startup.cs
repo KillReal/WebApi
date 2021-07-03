@@ -35,13 +35,13 @@ namespace WebApi
                      builder.SetPostgresVersion(new Version(9, 6));
                      options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
                  });
+
+            services.AddRazorPages();
+
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<MainDbContext>()
                 .AddDefaultTokenProviders();
-
-            //services.AddControllersWithViews();
-            services.AddRazorPages();
 
             services.Configure<IdentityOptions>(options =>
             {
